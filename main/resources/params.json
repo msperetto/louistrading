@@ -1,11 +1,11 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.04.2024",
+    "startTime": "01.01.2024",
     "strategy": 
     [
         {
             "indicator": "sma",
-            "period": "30m",
+            "period": "1h",
             "params":
                 {
                 "length": 40

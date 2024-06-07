@@ -148,7 +148,7 @@ def get_kline(pair: str, interval: str, startTime: str, endTime: int = round(tim
     
     df = pd.DataFrame(kline, columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close_time', 'Quote_asset_volume', 'Number_of_trades', 'Tbbav', 'Tbqav', 'Ignore'])
     df['Date'] = pd.to_datetime(df['Date'], unit='ms')
-    df.drop(['Quote_asset_volume', 'Number_of_trades', 'Tbbav', 'Tbqav', 'Ignore'], axis=1, inplace=True)
+    df.drop(['Close_time','Quote_asset_volume', 'Number_of_trades', 'Tbbav', 'Tbqav', 'Ignore'], axis=1, inplace=True)
     df['Open'] = pd.to_numeric(df['Open'], errors='coerce')
     df['High'] = pd.to_numeric(df['High'], errors='coerce')
     df['Low'] = pd.to_numeric(df['Low'], errors='coerce')

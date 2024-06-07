@@ -1,41 +1,53 @@
 import pandas_ta as ta
 import pandas as pd
-import binance
+import binance 
 import management
+from backtest import PlaygroundLouis
+from backtesting import Backtest
 
-def run_strategies():
-    strategy_info = management.readJson("main/resources/params.json")
+class Main():
+    def __init__(self):
+        strategy_info = management.readJson("main/resources/params.json")
+        self.pair = strategy_info["pair"]
+        self.interval = [interval["period"] for interval in strategy_info["strategy"]]
+        self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
+        self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
+        self.startTime = strategy_info["startTime"]
+        
 
-    pair = strategy_info["pair"]
-    interval = [interval["period"] for interval in strategy_info["strategy"]]
-    strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
-    params = [strategy["params"] for strategy in strategy_info["strategy"]]
-    startTime = strategy_info["startTime"]
+    def run_strategies(self):
+        previous_interval = 0
+        df_list = []
+        for index, interval in enumerate(self.interval):
+            strategy_params = management.dict_to_params(self.params[index])
+            if previous_interval != interval:
+                df_list.append(binance.get_kline(self.pair, interval, self.startTime))
+                exec(f"df_list[{index}].ta.{self.strategies[index]}({strategy_params}, append=True)")
+            previous_interval = interval
+            # todo execute ta strategy if same interval
 
-    previous_interval = 0
-    df_list = []
-    for index, interval in enumerate(interval):
-        strategy_params = management.dict_to_params(params[index])
-        if previous_interval != interval:
-            df_list.append(binance.get_kline(pair, interval, startTime))
-            exec(f"df_list[{index}].ta.{strategies[index]}({strategy_params}, append=True)")
-        previous_interval = interval
-
-    for df in df_list:
-        print(df)
+        for df in df_list:
+            print(df)
 
 
-run_strategies()
+    def run_backtest(self):
+        dataset = binance.get_kline(self.pair, self.interval[0], self.startTime)
+        bt = Backtest(dataset, PlaygroundLouis, cash=1_000_000, commission=0.0015)
+        print(bt.run(sma_period1=21, sma_period2=50, rsi_period=3, rsi_layer1=20, rsi_layer2=80))
+        bt.plot()
 
-# df.ta.sma(length=20, append=True)
-# df.ta.ema(length=20, append=True)
+Main().run_backtest()
+
 # df.ta.rsi(length=40, append=True)
 # help(df.ta.indicators())
 # help(ta.sma)
 # print(df.dtypes)
 
 
-# print(df)
+
+
+
+
 
 # metamask: aevo
 # Register
