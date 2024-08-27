@@ -129,12 +129,32 @@ async def get_orderbook(pairs_to_filter: list[str], pair: str = None):
     return ordered_result
     # return [float(result["bidPrice"]), float(result["askPrice"])]
 
-def get_kline(pair: str, interval: str, startTime: str, endTime: int = round(time.time() * 1000)):
+
+
+    # Possible intervals for klines
+    # 1m
+    # 3m
+    # 5m
+    # 15m
+    # 30m
+    # 1h
+    # 2h
+    # 4h
+    # 6h
+    # 8h
+    # 12h
+    # 1d
+    # 3d
+    # 1w
+    # 1M
+def get_kline(pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000)):
+    # current time code = round(time.time() * 1000)
     endpoint = "/fapi/v1/klines"
     params = {
         "symbol": pair,
         "interval": interval,
-        "startTime": management.date_to_ms(startTime),
+        # "startTime": management.date_to_ms(startTime),
+        'startTime': startTime,
         "endTime": endTime,
         "limit": 1500
     }
@@ -156,6 +176,42 @@ def get_kline(pair: str, interval: str, startTime: str, endTime: int = round(tim
     df['Volume'] = pd.to_numeric(df['Volume'], errors='coerce')
     df.set_index('Date', inplace=True)
     return df
+
+def get_extended_kline(pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000)):
+    # Binance only allow 1500 max candles per request, so for longer periods of time, its necessary
+    # to concatenate each request call.
+
+    df = pd.DataFrame({})
+    startTime = management.date_to_ms(startTime)
+    endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
+
+    time_intervals = [startTime] # array to store all the time intervals to call the api
+    startTime_offset = time_intervals_to_seconds(interval)*1000
+
+    while ((startTime) + (startTime_offset) * 1499) < endTime:
+        startTime += startTime_offset * 1499
+        time_intervals.append(startTime) 
+    
+    time_intervals.append(endTime)
+
+    for i, time_interval in enumerate(time_intervals):
+        if i < len(time_intervals) -1:
+            df = pd.concat([df, get_kline(pair, interval, time_interval + startTime_offset, time_intervals[i+1])])
+    
+    return df
+
+
+def time_intervals_to_seconds(interval: str) -> int:
+    match interval[-1]:
+        case 'm':
+            return int(interval[:-1])*60
+        case 'h':
+            return int(interval[:-1])*3600
+        case 'd':
+            return int(interval[:-1])*86400
+        case 'w':
+            return int(interval[:-1])*604800
+
 
 def get_bid(pair_info: dict):
     return pair_info["bidPrice"]
@@ -311,4 +367,4 @@ async def combine():
     ]
     await asyncio.gather(*tasks)
 
-# df = get_kline("BTCUSDT", "1h", "01.04.2024")
+# get_extended_kline("BTCUSDT", "1h", "01.01.2024", "26.06.2024")

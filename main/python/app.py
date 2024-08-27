@@ -2,6 +2,7 @@ import pandas_ta as ta
 import pandas as pd
 import binance 
 import management
+import database_operations as db
 from backtest import PlaygroundLouis
 from backtesting import Backtest
 
@@ -31,10 +32,38 @@ class Main():
 
 
     def run_backtest(self):
-        dataset = binance.get_kline(self.pair, self.interval[0], self.startTime)
-        bt = Backtest(dataset, PlaygroundLouis, cash=1_000_000, commission=0.0015)
-        print(bt.run(sma_period1=21, sma_period2=50, rsi_period=3, rsi_layer1=20, rsi_layer2=80))
-        bt.plot()
+        dataset = binance.get_extended_kline(self.pair, self.interval[0], self.startTime)
+        bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
+
+        stats = bt.run(
+            sma_period_medium=15,
+            sma_period_long=48,
+            rsi_period=5,
+            rsi_layer_cheap=26,
+            rsi_layer_expensive=84,
+            max_candles=5)
+            # filter = FilterBuy_RSI(self.rsi, self.rsi_layer_cheap),
+            # triggeredState = TriggeredState_MaxCandles(5, False),
+            # trade = Trade_Buy_HighLastCandle())
+
+
+        # stats, heatmap = bt.optimize(
+        #     rsi_layer1 = range(19, 30, 1),
+        #     rsi_layer2 = range(80, 90, 1),
+        #     rsi_period = range(4, 7, 1),
+        #     # sma_period1 = range(15, 20, 1),
+        #     # sma_period2 = range(45, 50, 1),
+        #     max_candles = range(2, 5, 1),
+        #     maximize = 'Equity Final [$]',
+        #     return_heatmap = True)
+        
+        # print(stats['Return (Ann.) [%]'])
+        stats.drop([], inplace=True)
+        print(stats)
+        db.insert_report(self.pair, 'Test1', stats, 'combination_test')
+        # print(heatmap.sort_values().iloc[-7:])
+             
+        # bt.plot()
 
 Main().run_backtest()
 
