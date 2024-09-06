@@ -5,6 +5,7 @@ from backtesting import Backtest, Strategy
 from backtesting.lib import crossover
 import pandas_ta as ta
 import pandas as pd
+from time import sleep
 
 
 class PlaygroundLouis(Strategy):
@@ -27,13 +28,13 @@ class PlaygroundLouis(Strategy):
         self.rsi = self.I(ta.rsi, pd.Series(self.data.Close), self.rsi_period)
 
         #instantiating buying support objects
-        self.filterBuy = FilterBuy_RSI(self.rsi, self.rsi_layer_cheap)
-        self.triggeredStateBuy = TriggeredState_MaxCandles(5)
+        self.filterBuy = FilterBuy_RSI(lambda: self.rsi[:len(self.rsi)], self.rsi_layer_cheap)
+        self.triggeredStateBuy = TriggeredState_MaxCandles(self.max_candles)
         self.tradeBuy = Trade_Buy_HighLastCandle(self.data)
 
         #instantiating selling support objects
-        self.filterSell = FilterSell_RSI(self.rsi, self.rsi_layer_expensive)
-        self.triggeredStateSell = TriggeredState_MaxCandles(5)
+        self.filterSell = FilterSell_RSI(lambda: self.rsi[:len(self.rsi)], self.rsi_layer_expensive)
+        self.triggeredStateSell = TriggeredState_MaxCandles(self.max_candles)
         self.tradeSell = Trade_Sell_LowLastCandle(self.data)
 
         #instantiating buying and selling strategy classes

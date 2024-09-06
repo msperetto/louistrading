@@ -40,31 +40,29 @@ class Main():
             sma_period_long=48,
             rsi_period=5,
             rsi_layer_cheap=26,
-            rsi_layer_expensive=84,
+            rsi_layer_expensive=80,
             max_candles=5)
+            
             # filter = FilterBuy_RSI(self.rsi, self.rsi_layer_cheap),
             # triggeredState = TriggeredState_MaxCandles(5, False),
             # trade = Trade_Buy_HighLastCandle())
 
 
         # stats, heatmap = bt.optimize(
-        #     rsi_layer1 = range(19, 30, 1),
-        #     rsi_layer2 = range(80, 90, 1),
+        #     rsi_layer_cheap = range(19, 23, 1),
+        #     rsi_layer_expensive = range(80, 85, 1),
         #     rsi_period = range(4, 7, 1),
-        #     # sma_period1 = range(15, 20, 1),
-        #     # sma_period2 = range(45, 50, 1),
-        #     max_candles = range(2, 5, 1),
+        #     # sma_period_medium = range(15, 20, 1),
+        #     # sma_period_long = range(45, 50, 1),
+        #     max_candles = range(4, 5, 1),
         #     maximize = 'Equity Final [$]',
         #     return_heatmap = True)
         
-        # print(stats['Return (Ann.) [%]'])
-        stats.drop([], inplace=True)
         print(stats)
-        db.insert_report(self.pair, 'Test1', stats, 'combination_test')
+        # db.insert_report(self.pair, 'Name_RSI', stats, str(stats["_strategy"]))
         # print(heatmap.sort_values().iloc[-7:])
              
-        # bt.plot()
-
+        bt.plot()
 Main().run_backtest()
 
 # df.ta.rsi(length=40, append=True)
