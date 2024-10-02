@@ -6,15 +6,24 @@ import database_operations as db
 from backtest import PlaygroundLouis
 from backtesting import Backtest
 
+
 class Main():
     def __init__(self):
         strategy_info = management.readJson("main/resources/params.json")
         self.pair = strategy_info["pair"]
-        self.interval = [interval["period"] for interval in strategy_info["strategy"]]
-        self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
-        self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
+        self.interval = strategy_info["period"]
         self.startTime = strategy_info["startTime"]
-        
+        self.endTime = strategy_info["endTime"]
+        # self.filter_buy_classes = database_operations.get
+        self.filter_buy_classes = strategy_info["filter_buy_classes"]
+        self.trigger_buy_classes = strategy_info["trigger_buy_classes"]
+        self.trade_buy_classes = strategy_info["trade_buy_classes"] 
+        self.filter_sell_classes = strategy_info["filter_sell_classes"]
+        self.trigger_sell_classes = strategy_info["trigger_sell_classes"]
+        self.trade_sell_classes = strategy_info["trade_sell_classes"]
+ 
+        # self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
+        # self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
 
     def run_strategies(self):
         previous_interval = 0
@@ -32,46 +41,65 @@ class Main():
 
 
     def run_backtest(self):
-        dataset = binance.get_extended_kline(self.pair, self.interval[0], self.startTime)
+
+        dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
 
-        stats = bt.run(
-            sma_period_medium=15,
-            sma_period_long=48,
-            rsi_period=5,
-            rsi_layer_cheap=26,
-            rsi_layer_expensive=80,
-            max_candles=5)
-            
-            # filter = FilterBuy_RSI(self.rsi, self.rsi_layer_cheap),
-            # triggeredState = TriggeredState_MaxCandles(5, False),
-            # trade = Trade_Buy_HighLastCandle())
+        for filter_buy_class in self.filter_buy_classes:
+            for trigger_buy_class in self.trigger_buy_classes:
+                for trade_buy_class in self.trade_buy_classes:
+                    for filter_sell_class in self.filter_sell_classes:
+                        for trigger_sell_class in self.trigger_sell_classes:
+                            for trade_sell_class in self.trade_sell_classes:
+                                stats, heatmap = bt.optimize(
+                                            # sma_p_short = range(3,4,1),
+                                            # sma_p_medium = range(15,16,1),
+                                            sma_p_long = range(50,51,1),
+                                            ema_p_short = range(8,10,1),
+                                            rsi_layer_cheap = range(22, 23, 1),
+                                            rsi_layer_expensive = range(78, 80, 1),
+                                            rsi_period = range(4, 7, 1),
+                                            max_candles_buy = range(5, 7, 1),
+                                            max_candles_sell = range(5, 7, 1),
+                                            filter_buy_class=filter_buy_class,
+                                            trigger_buy_class=trigger_buy_class,
+                                            trade_buy_class=trade_buy_class,
+                                            filter_sell_class=filter_sell_class,
+                                            trigger_sell_class=trigger_sell_class,
+                                            trade_sell_class=trade_sell_class,
+                                            maximize = 'Equity Final [$]',
+                                            return_heatmap = True)
+                                        
+                                        # print(heatmap.sort_values().iloc[-7:])
+                                            
 
+                                # stats = bt.run(
+                                #     sma_p_short=2,
+                                #     sma_p_medium=15,
+                                #     sma_p_long=52,
+                                #     ema_p_short=5,
+                                #     rsi_period=4,
+                                #     rsi_layer_cheap=23,
+                                #     rsi_layer_expensive=73,
+                                #     max_candles=6,
+                                #     filter_buy_class=filter_buy_class,
+                                #     trigger_buy_class=trigger_buy_class,
+                                #     trade_buy_class=trade_buy_class,
+                                #     filter_sell_class=filter_sell_class,
+                                #     trigger_sell_class=trigger_sell_class,
+                                #     trade_sell_class=trade_sell_class)
 
-        # stats, heatmap = bt.optimize(
-        #     rsi_layer_cheap = range(19, 23, 1),
-        #     rsi_layer_expensive = range(80, 85, 1),
-        #     rsi_period = range(4, 7, 1),
-        #     # sma_period_medium = range(15, 20, 1),
-        #     # sma_period_long = range(45, 50, 1),
-        #     max_candles = range(4, 5, 1),
-        #     maximize = 'Equity Final [$]',
-        #     return_heatmap = True)
-        
-        print(stats)
-        # db.insert_report(self.pair, 'Name_RSI', stats, str(stats["_strategy"]))
-        # print(heatmap.sort_values().iloc[-7:])
-             
-        bt.plot()
+                                cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
+                                db.insert_report(self.pair, str(self.interval[0]), stats, str(stats["_strategy"])[:cut_long_string]+")")
+           
+        # bt.plot()
 Main().run_backtest()
 
 # df.ta.rsi(length=40, append=True)
 # help(df.ta.indicators())
 # help(ta.sma)
 # print(df.dtypes)
-
-
-
 
 
 

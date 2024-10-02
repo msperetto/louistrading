@@ -1,4 +1,5 @@
 from abc import ABC
+import inspect
 
 class Filter(ABC):
     def isValid(self) -> bool:
@@ -7,13 +8,14 @@ class Filter(ABC):
 
 class FilterBuy_RSI(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap):
+        # print(rsi_fn())
         self.get_rsi = rsi_fn
         self.rsi_layer_cheap = rsi_layer_cheap
 
     def isValid(self) -> bool:
         return self.get_rsi()[-1] < self.rsi_layer_cheap
 
-class FilterBuy_RSI_EMA_short_SMA_long(Filter):
+class FilterBuy_RSI_EMAshort_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_long_fn):
         self.get_rsi = rsi_fn
         self.rsi_layer_cheap = rsi_layer_cheap
@@ -23,7 +25,7 @@ class FilterBuy_RSI_EMA_short_SMA_long(Filter):
     def isValid(self) -> bool:
         return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_long()[-1])
 
-class FilterBuy_RSI_price_SMA_long(Filter):
+class FilterBuy_RSI_price_x_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, data, sma_long_fn):
         self.get_rsi = rsi_fn
         self.rsi_layer_cheap = rsi_layer_cheap

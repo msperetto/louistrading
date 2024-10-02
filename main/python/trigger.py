@@ -7,6 +7,8 @@ class TriggeredState(ABC):
     def reset(self):
         pass
 
+class TriggeredState_alwaysTrue(Tri)
+
 
 class TriggeredState_MaxCandles(TriggeredState):
     def __init__(self, max_candles):
@@ -31,7 +33,7 @@ class TriggeredState_MaxCandles(TriggeredState):
             return False
 
 
-class TriggeredState_MaxCandles_EMA_short_SMA_long_Price_SMA_long(TriggeredState):
+class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
     def __init__(self, max_candles, ema_short_fn, sma_long_fn, data):
         self.max_candles = max_candles
         self.candles_after_triggered = max_candles
