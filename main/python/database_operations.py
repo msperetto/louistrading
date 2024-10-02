@@ -36,7 +36,7 @@ def get_class_code(class_name):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT class_code FROM classes_map WHERE class_name == %s;
+                SELECT class_code FROM classes_map WHERE class_name = %s;
                 """, (class_name))
             return cur.fetchone()
 
@@ -54,7 +54,7 @@ def export_to_csv():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT * FROM  optmization_tests;
+                SELECT * FROM optmization_tests;
                 """)
             keys = ""
             with open('noshirt_optmization.csv', 'w', newline='') as csvfile:
