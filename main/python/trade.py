@@ -25,7 +25,7 @@ class TradeBuy_Close_x_CloseLastCandle(Trade):
         if self.data.Close[-1] > self.data.Close[-2]:
             return True
  
-class TradeBuy_High_x_High_LastCandle(Trade):
+class TradeBuy_High_x_HighLastCandle(Trade):
     def __init__(self, data):
         self.data = data
 
@@ -59,7 +59,7 @@ class TradeSell_HighLastCandle(Trade):
         if self.data.Close[-1] < self.data.High[-2]:
             return True
 
-class TradeSell_Price_x_EMAshort(Trade):
+class TradeSell_Price_EMAshort(Trade):
     def __init__(self, data, fn_ema_short):
         self.data = data
         self.get_ema_p_short = fn_ema_short

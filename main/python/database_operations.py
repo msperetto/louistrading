@@ -64,4 +64,4 @@ def export_to_csv():
 
 # export_to_csv()
 # insert_class("TradeSell_Price_EMAshort", "self.tradeSell = TradeSell_Price_EMAshort(self.data, lambda self=self: self.ema_short[:len(self.ema_short)])")
-get_class_code("FilterBuy_RSI")
+# get_class_code("FilterBuy_RSI")

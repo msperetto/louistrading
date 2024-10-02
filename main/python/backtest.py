@@ -1,4 +1,4 @@
-from filter import Filter, FilterBuy_RSI, FilterSell_RSI, FilterBuy_RSI_price_SMAlong
+from filter import Filter, FilterBuy_RSI, FilterSell_RSI, FilterBuy_RSI_price_x_SMAlong
 from trigger import TriggeredState, TriggeredState_MaxCandles, TriggeredState_MaxCandles_LongSma
 from trade import Trade, TradeBuy_HighLastCandle, TradeSell_LowLastCandle, TradeBuy_High_x_HighLastCandle, TradeSell_Price_EMAshort
 from backtesting import Backtest, Strategy
@@ -24,10 +24,10 @@ class PlaygroundLouis(Strategy):
     max_candles_sell = 0
     filter_buy_class = "self.filterBuy = FilterBuy_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap)"
     trigger_buy_class = "self.triggerBuy = TriggeredState_MaxCandles(self.max_candles_buy)"
-    trade_buy_class = "self.tradeBuy = Trade_Buy_HighLastCandle(self.data)"
+    trade_buy_class = "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
     filter_sell_class = "self.filterSell = FilterSell_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_expensive)"
     trigger_sell_class = "self.triggerSell = TriggeredState_MaxCandles(self.max_candles_sell)"
-    trade_sell_class = "self.tradeSell = Trade_Sell_LowLastCandle(self.data)"
+    trade_sell_class = "self.tradeSell = TradeSell_LowLastCandle(self.data)"
 
 
     def init(self):

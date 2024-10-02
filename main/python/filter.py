@@ -6,6 +6,11 @@ class Filter(ABC):
         pass
 
 
+class Filter_alwaysTrue(Filter):
+    def isValid(self) -> bool:
+        return True
+
+
 class FilterBuy_RSI(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap):
         # print(rsi_fn())
