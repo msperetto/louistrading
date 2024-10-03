@@ -2,6 +2,7 @@ import psycopg
 import csv
 
 dev_env_con = "dbname=noshirt user=peretto"
+# dev_env_con = "dbname=noshirt user=postgres password=@tkTYB9i"
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
 def insert_report(pair, period, stats, best_indicators_combination):
@@ -36,9 +37,9 @@ def get_class_code(class_name):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT class_code FROM classes_map WHERE class_name = %s;
-                """, (class_name))
-            return cur.fetchone()
+                SELECT class_code FROM classes_map WHERE class_name = %(value)s;
+                """, {"value": class_name})
+            return cur.fetchone()[0]
 
 
 def get_binance_config():
@@ -64,4 +65,3 @@ def export_to_csv():
 
 # export_to_csv()
 # insert_class("TradeSell_Price_EMAshort", "self.tradeSell = TradeSell_Price_EMAshort(self.data, lambda self=self: self.ema_short[:len(self.ema_short)])")
-# get_class_code("FilterBuy_RSI")

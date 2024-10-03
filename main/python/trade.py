@@ -33,7 +33,7 @@ class TradeBuy_High_x_HighLastCandle(Trade):
         if self.data.High[-1] > self.data.High[-2]:
             return True
 
-class TradeBuy_HighLastCandle_EMAshort_x_SMAmedium(Trade):
+class TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium(Trade):
     def __init__(self, data, ema_short_fn, sma_medium_fn):
         self.data = data
         self.get_ema_short = ema_short_fn

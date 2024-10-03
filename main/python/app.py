@@ -14,7 +14,6 @@ class Main():
         self.interval = strategy_info["period"]
         self.startTime = strategy_info["startTime"]
         self.endTime = strategy_info["endTime"]
-        # self.filter_buy_classes = database_operations.get
         self.filter_buy_classes = strategy_info["filter_buy_classes"]
         self.trigger_buy_classes = strategy_info["trigger_buy_classes"]
         self.trade_buy_classes = strategy_info["trade_buy_classes"] 
@@ -62,12 +61,14 @@ class Main():
                                             rsi_period = range(4, 7, 1),
                                             max_candles_buy = range(5, 7, 1),
                                             max_candles_sell = range(5, 7, 1),
-                                            filter_buy_class=filter_buy_class,
-                                            trigger_buy_class=trigger_buy_class,
-                                            trade_buy_class=trade_buy_class,
-                                            filter_sell_class=filter_sell_class,
-                                            trigger_sell_class=trigger_sell_class,
-                                            trade_sell_class=trade_sell_class,
+                                            stop_loss = range(2,5,1), # percentage of maximum loss - float number (i.e. 3 or 2.5 etc)
+                                            # take_profit = range() # percentage of maximum profit - float number
+                                            filter_buy_class=db.get_class_code(filter_buy_class),
+                                            trigger_buy_class=db.get_class_code(trigger_buy_class),
+                                            trade_buy_class=db.get_class_code(trade_buy_class),
+                                            filter_sell_class=db.get_class_code(filter_sell_class),
+                                            trigger_sell_class=db.get_class_code(trigger_sell_class),
+                                            trade_sell_class=db.get_class_code(trade_sell_class),
                                             maximize = 'Equity Final [$]',
                                             return_heatmap = True)
                                         

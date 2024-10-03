@@ -20,7 +20,7 @@ class FilterBuy_RSI(Filter):
     def isValid(self) -> bool:
         return self.get_rsi()[-1] < self.rsi_layer_cheap
 
-class FilterBuy_RSI_EMAshort_SMAlong(Filter):
+class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_long_fn):
         self.get_rsi = rsi_fn
         self.rsi_layer_cheap = rsi_layer_cheap

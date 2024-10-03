@@ -5,51 +5,24 @@
     "period_label": "",
     "period": "1h",
     "filter_buy_classes": [
-        "self.filterBuy = FilterBuy_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap)",
-        "self.filterBuy = FilterBuy_RSI_price_x_SMAlong(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap, self.data, lambda self=self: self.sma_long[:len(self.sma_long)])"
+        "FilterBuy_RSI",
+        "FilterBuy_RSI_price_x_SMAlong"
     ],
     "trigger_buy_classes": [
-        "self.triggerBuy = TriggeredState_MaxCandles(self.max_candles_buy)"
+        "TriggeredState_MaxCandles"
     ],
     "trade_buy_classes": [
-        "self.tradeBuy = TradeBuy_High_x_HighLastCandle(self.data)",
-        "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
+        "TradeBuy_High_x_HighLastCandle",
+        "TradeBuy_HighLastCandle"
     ],
     "filter_sell_classes": [
-        "self.filterSell = FilterSell_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_expensive)"
+        "FilterSell_RSI"
     ],
     "trigger_sell_classes": [
-        "self.triggerSell = TriggeredState_MaxCandles(self.max_candles_sell)"
+        "TriggeredState_MaxCandles_Sell"
     ],
     "trade_sell_classes": [
-        "self.tradeSell = TradeSell_LowLastCandle(self.data)",
-        "self.tradeSell = TradeSell_Price_EMAshort(self.data, lambda self=self: self.ema_short[:len(self.ema_short)])"
-    ],
-    "strategy": 
-    [
-        {
-            "indicator": "sma",
-            "period": "1h",
-            "params":
-                {
-                "length": 40
-                }
-        },
-        {
-            "indicator": "rsi",
-            "period": "1h",
-            "params":
-                {
-                "length": 50
-                }
-        },
-        {
-            "indicator": "ema",
-            "period": "2h",
-            "params":
-                {
-                "length": 20
-                }
-        }
+        "TradeSell_LowLastCandle",
+        "TradeSell_Price_EMAshort"
     ]
 }

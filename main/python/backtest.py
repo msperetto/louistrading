@@ -1,6 +1,6 @@
-from filter import Filter, FilterBuy_RSI, FilterSell_RSI, FilterBuy_RSI_price_x_SMAlong
-from trigger import TriggeredState, TriggeredState_MaxCandles, TriggeredState_MaxCandles_LongSma
-from trade import Trade, TradeBuy_HighLastCandle, TradeSell_LowLastCandle, TradeBuy_High_x_HighLastCandle, TradeSell_Price_EMAshort
+from filter import *
+from trigger import *
+from trade import *
 from backtesting import Backtest, Strategy
 from backtesting.lib import crossover
 import pandas_ta as ta
@@ -22,6 +22,8 @@ class PlaygroundLouis(Strategy):
     candles_after_triggered = 0
     max_candles_buy = 0
     max_candles_sell = 0
+    stop_loss = None
+    take_profit = None
     filter_buy_class = "self.filterBuy = FilterBuy_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap)"
     trigger_buy_class = "self.triggerBuy = TriggeredState_MaxCandles(self.max_candles_buy)"
     trade_buy_class = "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
@@ -68,7 +70,14 @@ class PlaygroundLouis(Strategy):
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
 
     def next(self):
-        if self.strategyBuy.shouldBuy(): self.buy()
+        if self.stop_loss:
+            stop_loss = self.data.Close[-1] * ((100-self.stop_loss)/100)
+        else: stop_loss = None
+        if self.take_profit:
+            take_profit = self.data.Close[-1] * ((100+self.take_profit)/100)
+        else: take_profit = None
+
+        if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
         if self.strategySell.shouldSell(): self.position.close()
 
     

@@ -35,6 +35,7 @@ class TriggeredState_MaxCandles(TriggeredState):
             return False
 
 
+#not finished, but not sure if is needed
 class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
     def __init__(self, max_candles, ema_short_fn, sma_long_fn, data):
         self.max_candles = max_candles
