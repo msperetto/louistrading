@@ -5,7 +5,7 @@ class Filter(ABC):
     def isValid(self) -> bool:
         pass
 
-
+# self.filterBuy = Filter_alwaysTrue()
 class Filter_alwaysTrue(Filter):
     def isValid(self) -> bool:
         return True
@@ -20,6 +20,7 @@ class FilterBuy_RSI(Filter):
     def isValid(self) -> bool:
         return self.get_rsi()[-1] < self.rsi_layer_cheap
 
+# self.filterBuy = FilterBuy_RSI_EMAshort_gt_SMAlong(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap, lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_long[:len(self.sma_long)])
 class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_long_fn):
         self.get_rsi = rsi_fn

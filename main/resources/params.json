@@ -2,7 +2,7 @@
     "pair": "BTCUSDT",
     "startTime": "01.10.2021",
     "endTime": "01.12.2021",
-    "period_label": "",
+    "period_label": "bear",
     "period": "1h",
     "filter_buy_classes": [
         "FilterBuy_RSI",

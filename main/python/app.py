@@ -12,6 +12,7 @@ class Main():
         strategy_info = management.readJson("main/resources/params.json")
         self.pair = strategy_info["pair"]
         self.interval = strategy_info["period"]
+        self.period_label = strategy_info["period_label"]
         self.startTime = strategy_info["startTime"]
         self.endTime = strategy_info["endTime"]
         self.filter_buy_classes = strategy_info["filter_buy_classes"]
@@ -92,7 +93,7 @@ class Main():
                                 #     trade_sell_class=trade_sell_class)
 
                                 cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-                                db.insert_report(self.pair, str(self.interval[0]), stats, str(stats["_strategy"])[:cut_long_string]+")")
+                                db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label)
            
         # bt.plot()
 Main().run_backtest()

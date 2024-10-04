@@ -7,6 +7,7 @@ class TriggeredState(ABC):
     def reset(self):
         pass
 
+# 
 class TriggeredState_alwaysTrue(TriggeredState):
     def isStillValid(self) -> bool:
         return True
