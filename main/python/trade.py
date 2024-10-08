@@ -17,7 +17,41 @@ class TradeBuy_HighLastCandle(Trade):
         if self.data.Close[-1] > self.data.High[-2]:
             return True
 
-class TradeBuy_Close_x_CloseLastCandle(Trade):
+class TradeBuy_Price_gt_EMAshort(Trade):
+    def __init__(self, data, ema_short_fn):
+        self.data = data
+        self.get_ema_short = ema_short_fn
+
+    def buyConfirmation(self):
+        return self.data.Close[-1] > self.get_ema_short()[-1]
+
+class TradeBuy_Price_gt_SMAmedium(Trade):
+    def __init__(self, data, sma_medium_fn):
+        self.data = data
+        self.get_sma_medium = sma_medium_fn
+
+    def buyConfirmation(self):
+        return self.data.Close[-1] > self.get_sma_medium()[-1]
+
+class TradeBuy_EMAshort_gt_SMAmedium(Trade):
+    def __init__(self, ema_short_fn, sma_medium_fn):
+        self.get_ema_short = ema_short_fn
+        self.get_sma_medium = sma_medium_fn
+
+    def buyConfirmation(self):
+        return self.get_ema_short()[-1] > self.get_sma_medium()[-1]
+
+class TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle(Trade):
+    def __init__(self, ema_short_fn, sma_medium_fn, data):
+        self.get_ema_short = ema_short_fn
+        self.get_sma_medium = sma_medium_fn
+        self.data = data
+
+    def buyConfirmation(self):
+        return self.get_ema_short()[-1] > self.get_sma_medium()[-1] and
+                self.data.High[-1] > self.data.High[-2]
+
+class TradeBuy_Close_gt_CloseLastCandle(Trade):
     def __init__(self, data):
         self.data = data
 
