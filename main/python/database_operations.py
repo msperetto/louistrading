@@ -1,8 +1,7 @@
 import psycopg
 import csv
 
-dev_env_con = "dbname=noshirt user=peretto"
-# dev_env_con = "dbname=noshirt user=postgres password=@tkTYB9i"
+dev_env_con = "dbname=noshirt user=postgres password=@tkTYB9i"
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
 def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = ""):
