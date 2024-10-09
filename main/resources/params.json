@@ -23,7 +23,8 @@
         "TradeBuy_Price_gt_SMAmedium",
         "TradeBuy_EMAshort_gt_SMAmedium",
         "TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle",
-        "TradeBuy_Close_gt_CloseLastCandle"
+        "TradeBuy_Close_gt_CloseLastCandle",
+        "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
     ],
     "filter_sell_classes": [
         "FilterSell_RSI",

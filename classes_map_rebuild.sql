@@ -25,6 +25,7 @@ VALUES
 ('TradeBuy_EMAshort_gt_SMAmedium', 'self.tradeBuy = TradeBuy_EMAshort_gt_SMAmedium(lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)])'),
 ('TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle', 'self.tradeBuy = TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle(lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)], self.data)'),
 ('TradeBuy_HighLastCandle',	'self.tradeBuy = TradeBuy_HighLastCandle(self.data)'),
+('TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium', 'self.tradeBuy = TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium(self.data, lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)])'),
 ('TradeBuy_Close_gt_CloseLastCandle', 'self.tradeBuy = TradeBuy_Close_gt_CloseLastCandle(self.data)'),
 ('FilterSell_RSI',	'self.filterSell = FilterSell_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_expensive)'),
 ('TriggeredState_MaxCandles_Sell',	'self.triggerSell = TriggeredState_MaxCandles(self.max_candles_sell)'),
