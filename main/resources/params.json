@@ -6,17 +6,28 @@
     "period": "1h",
     "filter_buy_classes": [
         "FilterBuy_RSI",
-        "FilterBuy_RSI_price_x_SMAlong"
+        "FilterBuy_RSI_price_x_SMAlong",
+        "FilterBuy_RSI_price_x_SMAmedium",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAlong",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAmedium",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong",
+        "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium"
     ],
     "trigger_buy_classes": [
         "TriggeredState_MaxCandles"
     ],
     "trade_buy_classes": [
         "TradeBuy_High_x_HighLastCandle",
-        "TradeBuy_HighLastCandle"
+        "TradeBuy_HighLastCandle",
+        "TradeBuy_Price_gt_EMAshort",
+        "TradeBuy_Price_gt_SMAmedium",
+        "TradeBuy_EMAshort_gt_SMAmedium",
+        "TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle",
+        "TradeBuy_Close_gt_CloseLastCandle"
     ],
     "filter_sell_classes": [
-        "FilterSell_RSI"
+        "FilterSell_RSI",
+        "FilterSell_alwaysTrue"
     ],
     "trigger_sell_classes": [
         "TriggeredState_MaxCandles_Sell"

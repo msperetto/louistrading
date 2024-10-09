@@ -53,16 +53,16 @@ class Main():
                         for trigger_sell_class in self.trigger_sell_classes:
                             for trade_sell_class in self.trade_sell_classes:
                                 stats, heatmap = bt.optimize(
-                                            # sma_p_short = range(3,4,1),
-                                            # sma_p_medium = range(15,16,1),
+                                            sma_p_short = range(3,4,1),
+                                            sma_p_medium = range(15,16,1),
                                             sma_p_long = range(50,51,1),
-                                            ema_p_short = range(8,10,1),
+                                            ema_p_short = range(8,9,1),
                                             rsi_layer_cheap = range(22, 23, 1),
-                                            rsi_layer_expensive = range(78, 80, 1),
-                                            rsi_period = range(4, 7, 1),
-                                            max_candles_buy = range(5, 7, 1),
-                                            max_candles_sell = range(5, 7, 1),
-                                            stop_loss = range(2,5,1), # percentage of maximum loss - float number (i.e. 3 or 2.5 etc)
+                                            rsi_layer_expensive = range(79, 80, 1),
+                                            rsi_period = range(4, 5, 1),
+                                            max_candles_buy = range(5, 6, 1),
+                                            max_candles_sell = range(5, 6, 1),
+                                            # stop_loss = range(2,5,1), # percentage of maximum loss - float number (i.e. 3 or 2.5 etc)
                                             # take_profit = range() # percentage of maximum profit - float number
                                             filter_buy_class=db.get_class_code(filter_buy_class),
                                             trigger_buy_class=db.get_class_code(trigger_buy_class),
