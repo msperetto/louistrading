@@ -7,7 +7,6 @@ import pandas_ta as ta
 import pandas as pd
 from time import sleep
 
-
 class PlaygroundLouis(Strategy):
     sma_p_short = 0
     sma_p_medium = 0

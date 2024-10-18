@@ -5,6 +5,7 @@ import management
 import database_operations as db
 from backtest import PlaygroundLouis
 from backtesting import Backtest
+from strategy import *
 
 
 class Main():
@@ -39,13 +40,14 @@ class Main():
         for df in df_list:
             print(df)
 
+    def plot_single_strat(self, bt, filename, strategy):
+        stats = bt.run(**vars(strategy))
 
-    def run_backtest(self):
+        stats["_trades"].to_csv("main/outputs/trades.csv")
 
-        dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
+        bt.plot(filename=filename)
 
+    def run_optimization(self, bt):
         for filter_buy_class in self.filter_buy_classes:
             for trigger_buy_class in self.trigger_buy_classes:
                 for trade_buy_class in self.trade_buy_classes:
@@ -72,30 +74,22 @@ class Main():
                                             trade_sell_class=db.get_class_code(trade_sell_class),
                                             maximize = 'Equity Final [$]',
                                             return_heatmap = True)
-                                        
-                                        # print(heatmap.sort_values().iloc[-7:])
-                                            
-
-                                # stats = bt.run(
-                                #     sma_p_short=2,
-                                #     sma_p_medium=15,
-                                #     sma_p_long=52,
-                                #     ema_p_short=5,
-                                #     rsi_period=4,
-                                #     rsi_layer_cheap=23,
-                                #     rsi_layer_expensive=73,
-                                #     max_candles=6,
-                                #     filter_buy_class=filter_buy_class,
-                                #     trigger_buy_class=trigger_buy_class,
-                                #     trade_buy_class=trade_buy_class,
-                                #     filter_sell_class=filter_sell_class,
-                                #     trigger_sell_class=trigger_sell_class,
-                                #     trade_sell_class=trade_sell_class)
 
                                 cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
                                 db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label)
-           
-        # bt.plot()
+                
+
+    def run_backtest(self):
+
+        dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
+
+        # self.run_optimization(bt)
+        strategy = Strategy_B1()
+        self.plot_single_strat(bt, "teste", strategy)
+
+          
 Main().run_backtest()
 
 # df.ta.rsi(length=40, append=True)
