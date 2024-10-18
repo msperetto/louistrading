@@ -1,7 +1,7 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.10.2021",
-    "endTime": "01.12.2021",
+    "startTime": "01.08.2024",
+    "endTime": "17.10.2024",
     "period_label": "bear",
     "period": "1h",
     "filter_buy_classes": [

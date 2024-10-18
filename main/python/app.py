@@ -43,6 +43,9 @@ class Main():
     def plot_single_strat(self, bt, filename, strategy):
         stats = bt.run(**vars(strategy))
 
+        cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
+        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label)
+
         stats["_trades"].to_csv("main/outputs/trades.csv")
 
         bt.plot(filename=filename)
@@ -82,7 +85,7 @@ class Main():
     def run_backtest(self):
 
         dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        # dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
 
         # self.run_optimization(bt)

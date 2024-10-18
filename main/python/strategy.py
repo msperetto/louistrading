@@ -35,7 +35,3 @@ class Strategy_C1():
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
-
-
-# sttg1 = Strategy_B1()
-# print(vars(sttg1))
