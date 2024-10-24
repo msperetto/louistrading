@@ -4,6 +4,8 @@
     "endTime": "17.10.2024",
     "period_label": "bear",
     "period": "1h",
+    "trend_period": "D",
+    "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "filter_buy_classes": [
         "FilterBuy_RSI",
         "FilterBuy_RSI_price_x_SMAlong",
@@ -36,5 +38,12 @@
     "trade_sell_classes": [
         "TradeSell_LowLastCandle",
         "TradeSell_Price_EMAshort"
+    ],
+    "trend_classes": [
+        "AlwaysTrend",
+        "UpTrend_EMAshort_gt_SMAlong"
+    ],
+    "strategy_classes": [
+        ""
     ]
 }

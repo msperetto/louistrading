@@ -3,16 +3,27 @@ import pandas as pd
 import binance 
 import management
 import database_operations as db
-from backtest import PlaygroundLouis
+from backtest import PlaygroundLouis, NoShirt
 from backtesting import Backtest
 from strategy import *
 
+# criar nova branch no git para subir novas atualizações - ok
+# criar novas classes de filtro + adicionar no mapping do banco - ok
+#todo: adicionar na base de dados os campos para relatório: ok
+#   -period-trend - ok
+#   -trend-class - ok
+#   -strategy-class - ok
+# Expor no json o periodo trend -ok 
+# ajustar nome do file gerado pelos trades (csv) - ok
+
+# adicionar strategy_classes no json e usá-las para rodar os backtests
 
 class Main():
     def __init__(self):
         strategy_info = management.readJson("main/resources/params.json")
         self.pair = strategy_info["pair"]
         self.interval = strategy_info["period"]
+        self.trend_interval = strategy_info["trend_period"]
         self.period_label = strategy_info["period_label"]
         self.startTime = strategy_info["startTime"]
         self.endTime = strategy_info["endTime"]
@@ -22,31 +33,33 @@ class Main():
         self.filter_sell_classes = strategy_info["filter_sell_classes"]
         self.trigger_sell_classes = strategy_info["trigger_sell_classes"]
         self.trade_sell_classes = strategy_info["trade_sell_classes"]
+        self.trend_classes = strategy_info["trend_classes"]
  
         # self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
         # self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
 
-    def run_strategies(self):
-        previous_interval = 0
-        df_list = []
-        for index, interval in enumerate(self.interval):
-            strategy_params = management.dict_to_params(self.params[index])
-            if previous_interval != interval:
-                df_list.append(binance.get_kline(self.pair, interval, self.startTime))
-                exec(f"df_list[{index}].ta.{self.strategies[index]}({strategy_params}, append=True)")
-            previous_interval = interval
-            # todo execute ta strategy if same interval
+    # def run_strategies(self):
+    #     previous_interval = 0
+    #     df_list = []
+    #     for index, interval in enumerate(self.interval):
+    #         strategy_params = management.dict_to_params(self.params[index])
+    #         if previous_interval != interval:
+    #             df_list.append(binance.get_kline(self.pair, interval, self.startTime))
+    #             exec(f"df_list[{index}].ta.{self.strategies[index]}({strategy_params}, append=True)")
+    #         previous_interval = interval
+    #         # todo execute ta strategy if same interval
 
-        for df in df_list:
-            print(df)
+    #     for df in df_list:
+    #         print(df)
 
-    def plot_single_strat(self, bt, filename, strategy):
-        stats = bt.run(**vars(strategy))
+    def plot_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
+        stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label)
+        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        stats["_trades"].to_csv("main/outputs/trades.csv")
+        trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        stats["_trades"].to_csv(trades_filename)
 
         bt.plot(filename=filename)
 
@@ -67,6 +80,7 @@ class Main():
                                             rsi_period = range(4, 5, 1),
                                             max_candles_buy = range(5, 6, 1),
                                             max_candles_sell = range(5, 6, 1),
+                                            trend_interval = self.trend_interval,
                                             # stop_loss = range(2,5,1), # percentage of maximum loss - float number (i.e. 3 or 2.5 etc)
                                             # take_profit = range() # percentage of maximum profit - float number
                                             filter_buy_class=db.get_class_code(filter_buy_class),
@@ -79,18 +93,48 @@ class Main():
                                             return_heatmap = True)
 
                                 cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-                                db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label)
-                
+                                db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+
+    
+    def run_trend_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
+        stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
+
+        cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
+        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+
+        trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        stats["_trades"].to_csv(trades_filename)
+
+        bt.plot(filename=filename)
+
+
+    def run_trend_optimization(self, bt, strategy):
+        for trend_class in self.trend_classes:
+            stats, heatmap = bt.optimize(
+                        **vars(strategy), 
+                        trend_class=db.get_class_code(trend_class),
+                        maximize = 'Equity Final [$]',
+                        return_heatmap = True) 
+
+            cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
+            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+
 
     def run_backtest(self):
 
         dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        # dataset2 = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, PlaygroundLouis, cash=150_000, commission=0.0015)
+        bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
+
+        filename = self.period_label+"-"+self.pair
 
         # self.run_optimization(bt)
+
         strategy = Strategy_B1()
-        self.plot_single_strat(bt, "teste", strategy)
+
+        self.plot_single_strat(bt, filename, strategy)
+
+        # self.run_trend_single_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
+
 
           
 Main().run_backtest()
