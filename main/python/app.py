@@ -135,10 +135,9 @@ class Main():
 
         strategy = Strategy_B1()
 
-        self.plot_single_strat(bt, filename, strategy)
-
+        self.run_trend_optimization(bt, strategy)
+        # self.plot_single_strat(bt, filename, strategy)
         # self.run_trend_single_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
-
 
           
 Main().run_backtest()
