@@ -121,7 +121,7 @@ class Main():
                         return_heatmap = True) 
 
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
 
     def run_backtest(self):
