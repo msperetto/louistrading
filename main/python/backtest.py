@@ -177,7 +177,8 @@ class StrategyBuy():
 
     def shouldBuy(self):
         if self.filter.isValid(): 
-            self.triggeredState.reset()
+            self.triggeredState.reset(True)
+        else: self.triggeredState.reset(False)
 
         if self.triggeredState.isStillValid():
             if self.trend.ontrend():
@@ -192,7 +193,8 @@ class StrategySell():
 
     def shouldSell(self):
         if self.filter.isValid():
-            self.triggeredState.reset()
+            self.triggeredState.reset(True)
+        else: self.triggeredState.reset(False)
 
         if self.triggeredState.isStillValid():
             if self.trade.sellConfirmation(): return True
