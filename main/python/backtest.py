@@ -31,11 +31,11 @@ class NoShirt(Strategy):
     stop_loss = None
     take_profit = None
     trend_class = "self.trend = AlwaysTrend()"
-    filter_buy_class = "self.filterBuy = FilterBuy_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_cheap)"
-    trigger_buy_class = "self.triggerBuy = TriggeredState_MaxCandles(self.max_candles_buy)"
+    filter_buy_class = "self.filterBuy = Filter_alwaysTrue()"
+    trigger_buy_class = "self.triggerBuy = TriggeredState_alwaysTrue()"
     trade_buy_class = "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
-    filter_sell_class = "self.filterSell = FilterSell_RSI(lambda self=self: self.rsi[:len(self.rsi)], self.rsi_layer_expensive)"
-    trigger_sell_class = "self.triggerSell = TriggeredState_MaxCandles(self.max_candles_sell)"
+    filter_sell_class = "self.filterSell = Filter_alwaysTrue()"
+    trigger_sell_class = "self.triggerSell = TriggeredState_alwaysTrue()"
     trade_sell_class = "self.tradeSell = TradeSell_LowLastCandle(self.data)"
 
 
