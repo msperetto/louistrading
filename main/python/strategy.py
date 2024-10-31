@@ -20,12 +20,6 @@ class Strategy_B1():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
-            self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
         else:
             self.ema_trend_short = 8
@@ -41,12 +35,13 @@ class Strategy_B1():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
-            self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
+        self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
 class Strategy_B2():
     def __init__(self, op_type: str = "single"):
@@ -64,13 +59,6 @@ class Strategy_B2():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
-            self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
-
         else:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -85,12 +73,14 @@ class Strategy_B2():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
-            self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
+        self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+       
 
 class Strategy_B3():
     def __init__(self, op_type: str = "single"):
@@ -108,12 +98,6 @@ class Strategy_B3():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
-            self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
         else:
             self.ema_trend_short = 8
@@ -129,23 +113,17 @@ class Strategy_B3():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-            self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong_or_price_x_SMAlong_price_x_SMAmedium")
-            self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
-            self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-            self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-            self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-            self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
+        self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
 
 class Strategy_C1():
     def __init__(self, op_type: str = "single"):
-        self.filter_buy_class=db.get_class_code("FilterBuy_RSI")
-        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
-        self.trade_buy_class=db.get_class_code("TradeBuy_EMAshort_gt_SMAmedium")
-        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
-        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
-        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
-        
         if op_type == "single":
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -174,3 +152,10 @@ class Strategy_C1():
             self.rsi_period = 4
             self.max_candles_buy = 5
             self.max_candles_sell = 5
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_RSI")
+        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
+        self.trade_buy_class=db.get_class_code("TradeBuy_EMAshort_gt_SMAmedium")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
