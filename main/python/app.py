@@ -58,8 +58,11 @@ class Main():
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
         db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        # trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        trades_filename = f"main/outputs/{filename}.csv"
+
         stats["_trades"].to_csv(trades_filename)
+        # stats["_trades"].to_csv("main/outputs/trades.csv")
 
         bt.plot(filename=filename)
 
@@ -100,9 +103,10 @@ class Main():
         stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        # trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
+        trades_filename = f"main/outputs/{filename}.csv"
         stats["_trades"].to_csv(trades_filename)
 
         bt.plot(filename=filename)
@@ -125,7 +129,7 @@ class Main():
         dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
 
-        filename = self.period_label+"-"+self.pair
+        filename = self.period_label+"-"+self.pair+"-"+self.interval
 
         # self.run_optimization(bt)
 
