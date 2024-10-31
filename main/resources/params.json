@@ -41,7 +41,12 @@
     ],
     "trend_classes": [
         "AlwaysTrend",
-        "UpTrend_EMAshort_gt_SMAlong"
+        "UpTrend_EMAshort_gt_SMAlong",
+        "UpTrend_EMAshort_gt_SMAmedium",
+        "UpTrend_SMAmedium_gt_SMAlong",
+        "UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong",
+        "UpTrend_Price_gt_SMAmedium",
+        "UpTrend_Price_gt_SMAlong"
     ],
     "strategy_classes": [
         ""
