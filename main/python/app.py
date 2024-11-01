@@ -129,7 +129,7 @@ class Main():
         dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
 
-        filename = self.period_label+"-"+self.pair+"-"+self.interval
+        filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval
 
         # self.run_optimization(bt)
 
