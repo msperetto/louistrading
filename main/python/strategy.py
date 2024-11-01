@@ -10,7 +10,7 @@ class Strategy_B1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = 7
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -25,7 +25,7 @@ class Strategy_B1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = range(7, 9, 1)
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -49,7 +49,7 @@ class Strategy_B2():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = 7
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -63,7 +63,7 @@ class Strategy_B2():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = range(7, 9, 1)
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -88,7 +88,7 @@ class Strategy_B3():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = 7
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -103,7 +103,7 @@ class Strategy_B3():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = range(7, 9, 1)
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -128,7 +128,7 @@ class Strategy_C1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = 9
             self.sma_p_medium = 20
             self.sma_p_long = 48
@@ -142,7 +142,7 @@ class Strategy_C1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adr_trend_layer = 25
+            self.adx_trend_layer = 25
             self.sma_p_short = 7
             self.sma_p_medium = 20
             self.sma_p_long = 48

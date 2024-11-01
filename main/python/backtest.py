@@ -13,7 +13,8 @@ class NoShirt(Strategy):
     ema_trend_short = 0
     sma_trend_medium = 0
     sma_trend_long = 0
-    adr_trend_layer = 0
+    adx_period = 0
+    adx_trend_layer = 0
     trend_interval = "D"
     sma_p_short = 0
     sma_p_medium = 0
@@ -45,6 +46,7 @@ class NoShirt(Strategy):
         if self.ema_p_short != 0: self.ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_short)
         if self.ema_p_medium != 0: self.ema_medium = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_medium)
         if self.ema_p_long != 0: self.ema_long = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_long)
+        if self.adx_period != 0: self.adx = self.I(ta.adx, pd.Series(self.data.High), pd.Series(self.data.Low), pd.Series(self.data.Close), self.adx_period)
 
         if self.sma_p_short != 0: self.sma_short = self.I(ta.sma, pd.Series(self.data.Close), self.sma_p_short)
         if self.sma_p_medium != 0: self.sma_medium = self.I(ta.sma, pd.Series(self.data.Close), self.sma_p_medium)
