@@ -58,6 +58,13 @@ class UpTrend_Price_gt_SMAlong(Trend):
     def ontrend(self):
         return self.data.Close[-1] > self.get_sma_long()[-1]
 
+class UpTrend_Price_gt_EMAshort(Trend):
+    def __init__(self, data, ema_short_fn):
+        self.data = data
+        self.get_ema_short = ema_short_fn
+
+    def ontrend(self):
+        return self.data.Close[-1] > self.get_ema_short()[-1]
 
 class AlwaysTrend(Trend):
     def ontrend(self):
