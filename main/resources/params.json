@@ -49,6 +49,9 @@
         "UpTrend_Price_gt_SMAlong"
     ],
     "strategy_classes": [
-        ""
+        "B1",
+        "B2",
+        "B3",
+        "C1"
     ]
 }

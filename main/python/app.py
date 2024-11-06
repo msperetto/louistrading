@@ -34,6 +34,14 @@ class Main():
         self.trigger_sell_classes = strategy_info["trigger_sell_classes"]
         self.trade_sell_classes = strategy_info["trade_sell_classes"]
         self.trend_classes = strategy_info["trend_classes"]
+        self.strategy_classes = strategy_info["strategy_classes"]
+
+        self.strategy_dict = {
+            "B1": Strategy_B1(),
+            "B2": Strategy_B2(),
+            "B3": Strategy_B3(),
+            "C1": Strategy_C1()
+        }
  
         # self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
         # self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
@@ -135,9 +143,10 @@ class Main():
 
         strategy = Strategy_B1()
 
-        self.run_trend_optimization(bt, strategy)
-        # self.plot_single_strat(bt, filename, strategy)
-        # self.run_trend_single_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
+        for strategy in self.strategy_classes:
+            self.run_trend_optimization(bt, self.strategy_dict[strategy])
+            # self.plot_single_strat(bt, filename, strategy)
+            # self.run_trend_single_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
 
           
 Main().run_backtest()
