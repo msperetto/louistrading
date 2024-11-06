@@ -107,7 +107,7 @@ class Main():
                                 db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
 
     
-    def run_trend_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
+    def run_trend_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
         stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
@@ -146,7 +146,7 @@ class Main():
         for strategy in self.strategy_classes:
             self.run_trend_optimization(bt, self.strategy_dict[strategy])
             # self.plot_single_strat(bt, filename, strategy)
-            # self.run_trend_single_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
+            # self.run_trend_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
 
           
 Main().run_backtest()
