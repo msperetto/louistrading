@@ -108,16 +108,16 @@ class Main():
 
     
     def run_trend_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
-        stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
+        for trend_class in self.trend_classes:
+            stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
-        cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-        db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
+            cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
+            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        # trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
-        trades_filename = f"main/outputs/{filename}.csv"
-        stats["_trades"].to_csv(trades_filename)
+            trades_filename = f"main/outputs/{filename}.csv"
+            stats["_trades"].to_csv(trades_filename)
 
-        bt.plot(filename=filename)
+            bt.plot(filename=filename)
 
 
     def run_trend_optimization(self, bt, strategy):
