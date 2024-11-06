@@ -66,13 +66,11 @@ class Main():
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
         db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        # trades_filename = f"main/outputs/{self.period_label}-{self.pair}.csv"
-        trades_filename = f"main/outputs/{filename}.csv"
+        trades_filename = f"main/outputs/{filename+trend_class}.csv"
 
         stats["_trades"].to_csv(trades_filename)
-        # stats["_trades"].to_csv("main/outputs/trades.csv")
 
-        bt.plot(filename=filename)
+        bt.plot(filename=filename+trend_class)
 
     def run_optimization(self, bt):
         for filter_buy_class in self.filter_buy_classes:
@@ -114,10 +112,10 @@ class Main():
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
             db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-            trades_filename = f"main/outputs/{filename}.csv"
+            trades_filename = f"main/outputs/{filename+trend_class}.csv"
             stats["_trades"].to_csv(trades_filename)
 
-            bt.plot(filename=filename)
+            bt.plot(filename=filename+trend_class)
 
 
     def run_trend_optimization(self, bt, strategy):
@@ -137,16 +135,16 @@ class Main():
         dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
 
-        filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval
 
         # self.run_optimization(bt)
 
         strategy = Strategy_B1()
 
         for strategy in self.strategy_classes:
-            self.run_trend_optimization(bt, self.strategy_dict[strategy])
+            filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
+            # self.run_trend_optimization(bt, self.strategy_dict[strategy])
             # self.plot_single_strat(bt, filename, strategy)
-            # self.run_trend_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
+            self.run_trend_strat(bt, filename, strategy, "UpTrend_EMAshort_gt_SMAlong")
 
           
 Main().run_backtest()
