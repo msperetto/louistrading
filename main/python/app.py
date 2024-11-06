@@ -60,7 +60,7 @@ class Main():
     #     for df in df_list:
     #         print(df)
 
-    def plot_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
+    def plot_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend", should_plot = True):
         stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
@@ -70,7 +70,7 @@ class Main():
 
         stats["_trades"].to_csv(trades_filename)
 
-        bt.plot(filename=filename+trend_class)
+        if should_plot: bt.plot(filename=filename+trend_class)
 
     def run_optimization(self, bt):
         for filter_buy_class in self.filter_buy_classes:
@@ -105,7 +105,7 @@ class Main():
                                 db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
 
     
-    def run_trend_strat(self, bt, filename, strategy, trend_class="AlwaysTrend"):
+    def run_trend_strat(self, bt, filename, strategy, trend_class="AlwaysTrend", should_plot = True):
         for trend_class in self.trend_classes:
             stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
@@ -115,7 +115,7 @@ class Main():
             trades_filename = f"main/outputs/{filename+trend_class}.csv"
             stats["_trades"].to_csv(trades_filename)
 
-            bt.plot(filename=filename+trend_class)
+            if should_plot: bt.plot(filename=filename+trend_class)
 
 
     def run_trend_optimization(self, bt, strategy):
