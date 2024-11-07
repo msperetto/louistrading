@@ -30,7 +30,7 @@ class NoShirt(Strategy):
     max_candles_sell = 0
     stop_loss = None
     take_profit = None
-    trend_class = "self.trend = AlwaysTrend()"
+    trend_class = "self.trend = UpTrend_AlwaysTrend()"
     filter_buy_class = "self.filterBuy = Filter_alwaysTrue()"
     trigger_buy_class = "self.triggerBuy = TriggeredState_alwaysTrue()"
     trade_buy_class = "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
@@ -80,8 +80,9 @@ class NoShirt(Strategy):
 
 
         #instantiating buying and selling strategy classes
-        self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy, self.trend)
+        self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
+        self.trendAnalysis = TrendAnalysis(self.trend)
 
     def next(self):
         if self.stop_loss:
@@ -91,9 +92,13 @@ class NoShirt(Strategy):
             take_profit = self.data.Close[-1] * ((100+self.take_profit)/100)
         else: take_profit = None
 
-        if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
-        if self.strategySell.shouldSell(): self.position.close()
+        if self.trendAnalysis.is_upTrend():
+            if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
+        else:
+            #keeps updating trigger status even if not on trend
+            self.strategyBuy.triggeredState.isStillValid()
 
+        if self.strategySell.shouldSell(): self.position.close()
 
 
 class PlaygroundLouis(Strategy):
@@ -152,7 +157,6 @@ class PlaygroundLouis(Strategy):
         self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
         self.classes['trade_sell'] = self.tradeSell.__class__.__name__
 
-
         #instantiating buying and selling strategy classes
         self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
@@ -168,13 +172,24 @@ class PlaygroundLouis(Strategy):
         if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
         if self.strategySell.shouldSell(): self.position.close()
 
-    
+
+class TrendAnalysis():
+    def __init__(self, trend):
+        self.trend = trend
+
+    def is_upTrend(self):
+        if self.trend.__class__.__name__[0:self.trend.__class__.__name__.find("_")] == "UpTrend":
+            return self.trend.ontrend()
+
+    def is_downTrend(self):
+        if self.trend.__class__.__name__[0:self.trend.__class__.__name__.find("_")] == "DownTrend":
+            return self.trend.ontrend()
+
 class StrategyBuy():
-    def __init__(self, filterBuy, triggeredState, trade, trend):
+    def __init__(self, filterBuy, triggeredState, trade):
         self.filter = filterBuy
         self.triggeredState = triggeredState
         self.trade = trade
-        self.trend = trend
 
     def shouldBuy(self):
         if self.filter.isValid(): 
@@ -182,8 +197,7 @@ class StrategyBuy():
         else: self.triggeredState.reset(False)
 
         if self.triggeredState.isStillValid():
-            if self.trend.ontrend():
-                if self.trade.buyConfirmation(): return True
+            if self.trade.buyConfirmation(): return True
         
 
 class StrategySell():

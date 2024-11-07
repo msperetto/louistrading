@@ -40,7 +40,7 @@
         "TradeSell_Price_EMAshort"
     ],
     "trend_classes": [
-        "AlwaysTrend",
+        "UpTrend_AlwaysTrend",
         "UpTrend_EMAshort_gt_SMAlong",
         "UpTrend_EMAshort_gt_SMAmedium",
         "UpTrend_SMAmedium_gt_SMAlong",

@@ -98,6 +98,6 @@ class UpTrend_SMAmedium_gt_SMAlong_ADX(Trend):
     def ontrend(self):
         return self.get_sma_medium()[-1] > self.get_sma_long()[-1] and self.get_adx()[-1] > self.adx_trend_layer
 
-class AlwaysTrend(Trend):
+class UpTrend_AlwaysTrend(Trend):
     def ontrend(self):
         return True
