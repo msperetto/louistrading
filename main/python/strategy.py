@@ -1,12 +1,12 @@
 import database_operations as db
 
 class Strategy_Test():
-    def __init__(self, op_type: str):
+    def __init__(self, optimize: bool = True):
         pass
 
 class Strategy_B1():
-    def __init__(self, op_type: str = "single"):
-        if op_type == "single":
+    def __init__(self, optimize: bool = True):
+        if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
@@ -20,7 +20,6 @@ class Strategy_B1():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-
         else:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -44,8 +43,8 @@ class Strategy_B1():
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
 class Strategy_B2():
-    def __init__(self, op_type: str = "single"):
-        if op_type == "single":
+    def __init__(self, optimize: bool = True):
+        if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
@@ -83,8 +82,8 @@ class Strategy_B2():
        
 
 class Strategy_B3():
-    def __init__(self, op_type: str = "single"):
-        if op_type == "single":
+    def __init__(self, optimize: bool = True):
+        if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
@@ -98,7 +97,6 @@ class Strategy_B3():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-
         else:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -123,8 +121,8 @@ class Strategy_B3():
 
 
 class Strategy_C1():
-    def __init__(self, op_type: str = "single"):
-        if op_type == "single":
+    def __init__(self, optimize: bool = True):
+        if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
