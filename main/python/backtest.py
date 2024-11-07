@@ -25,7 +25,6 @@ class NoShirt(Strategy):
     rsi_period = 0
     rsi_layer_cheap = 0
     rsi_layer_expensive = 0
-    # triggered = False
     candles_after_triggered = 0
     max_candles_buy = 0
     max_candles_sell = 0

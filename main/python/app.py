@@ -7,16 +7,6 @@ from backtest import PlaygroundLouis, NoShirt
 from backtesting import Backtest
 from strategy import *
 
-# criar nova branch no git para subir novas atualizações - ok
-# criar novas classes de filtro + adicionar no mapping do banco - ok
-#todo: adicionar na base de dados os campos para relatório: ok
-#   -period-trend - ok
-#   -trend-class - ok
-#   -strategy-class - ok
-# Expor no json o periodo trend -ok 
-# ajustar nome do file gerado pelos trades (csv) - ok
-
-# adicionar strategy_classes no json e usá-las para rodar os backtests
 
 class Main():
     def __init__(self):
@@ -48,22 +38,6 @@ class Main():
             "B3": Strategy_B3(),
             "C1": Strategy_C1()
         }
-        # self.strategies = [strategy["indicator"] for strategy in strategy_info["strategy"]]
-        # self.params = [strategy["params"] for strategy in strategy_info["strategy"]]
-
-    # def run_strategies(self):
-    #     previous_interval = 0
-    #     df_list = []
-    #     for index, interval in enumerate(self.interval):
-    #         strategy_params = management.dict_to_params(self.params[index])
-    #         if previous_interval != interval:
-    #             df_list.append(binance.get_kline(self.pair, interval, self.startTime))
-    #             exec(f"df_list[{index}].ta.{self.strategies[index]}({strategy_params}, append=True)")
-    #         previous_interval = interval
-    #         # todo execute ta strategy if same interval
-
-    #     for df in df_list:
-    #         print(df)
 
     def plot_single_strat(self, bt, filename, strategy, trend_class="AlwaysTrend", should_plot = True):
         stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
