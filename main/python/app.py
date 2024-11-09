@@ -122,9 +122,10 @@ class Main():
 
         for strategy in self.strategy_classes:
             filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
+            
             # self.run_trend_optimization(bt, self.strategy_optimize_dict[strategy])
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy])
-            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong")
+            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong", False)
 
           
 Main().run_backtest()
