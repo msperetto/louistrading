@@ -30,12 +30,16 @@ class Main():
             "B1": Strategy_B1(optimize=False),
             "B2": Strategy_B2(optimize=False),
             "B3": Strategy_B3(optimize=False),
+            "B4": Strategy_B4(optimize=False),
+            "B5": Strategy_B5(optimize=False),            
             "C1": Strategy_C1(optimize=False)
         }
         self.strategy_optimize_dict = {
             "B1": Strategy_B1(),
             "B2": Strategy_B2(),
             "B3": Strategy_B3(),
+            "B4": Strategy_B4(),
+            "B5": Strategy_B5(),
             "C1": Strategy_C1()
         }
 
