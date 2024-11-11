@@ -45,7 +45,7 @@ VALUES
 ('FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong', 'self.filterBuy = FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong(lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)], lambda self=self: self.sma_long[:len(self.sma_long)])'),
 ('FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium', 'self.filterBuy = FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium(lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)], lambda self=self: self.sma_long[:len(self.sma_long)], self.data)'),
 ('FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAlong', 'self.filterBuy = FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAlong(lambda self=self: self.ema_short[:len(self.ema_short)], lambda self=self: self.sma_medium[:len(self.sma_medium)], lambda self=self: self.sma_long[:len(self.sma_long)], self.data)'),
-('AlwaysTrend', 'self.trend = AlwaysTrend()'),
+('UpTrend_AlwaysTrend', 'self.trend = UpTrend_AlwaysTrend()'),
 ('UpTrend_EMAshort_gt_SMAlong', 'self.trend = UpTrend_EMAshort_gt_SMAlong(lambda self=self: self.ema_trend_short[:len(self.ema_trend_short)], lambda self=self: self.sma_trend_long[:len(self.sma_trend_long)])'),
 ('UpTrend_EMAshort_gt_SMAmedium', 'self.trend = UpTrend_EMAshort_gt_SMAmedium(lambda self=self: self.ema_trend_short[:len(self.ema_trend_short)], lambda self=self: self.sma_trend_medium[:len(self.sma_trend_medium)])'),
 ('UpTrend_SMAmedium_gt_SMAlong', 'self.trend = UpTrend_SMAmedium_gt_SMAlong(lambda self=self: self.sma_trend_medium[:len(self.sma_trend_medium)], lambda self=self: self.sma_trend_long[:len(self.sma_trend_long)])'),
