@@ -10,7 +10,7 @@ from strategy import *
 
 class Main():
     def __init__(self):
-        strategy_info = management.readJson("main/resources/params.json")
+        strategy_info = management.readJson("main/backtest/resources/params.json")
         self.pair = strategy_info["pair"]
         self.interval = strategy_info["period"]
         self.trend_interval = strategy_info["trend_period"]
@@ -45,7 +45,7 @@ class Main():
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
         db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        trades_filename = f"main/outputs/{filename+trend_class}.csv"
+        trades_filename = f"main/backtest/output/csv/{filename+trend_class}.csv"
 
         stats["_trades"].to_csv(trades_filename)
 
@@ -91,7 +91,7 @@ class Main():
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
             db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-            trades_filename = f"main/outputs/{filename+trend_class}.csv"
+            trades_filename = f"main/backtest/output/csv/{filename+trend_class}.csv"
             stats["_trades"].to_csv(trades_filename)
 
             if should_plot: bt.plot(filename=filename+trend_class)
@@ -117,7 +117,7 @@ class Main():
         # self.run_optimization(bt)
 
         for strategy in self.strategy_classes:
-            filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
+            filename = "main/backtest/output/plot/"+self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
             # self.run_trend_optimization(bt, self.strategy_optimize_dict[strategy])
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy])
             self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong")

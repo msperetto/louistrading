@@ -1,2 +1,3 @@
 venv/
-main/python/__pycache__/
+main/backtest/python/__pycache__/
+main/prod/python/__pycache__/
