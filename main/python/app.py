@@ -3,7 +3,7 @@ import pandas as pd
 import binance 
 import management
 import database_operations as db
-from backtest import PlaygroundLouis, NoShirt
+from backtest import NoShirt
 from backtesting import Backtest
 from strategy import *
 
@@ -122,21 +122,4 @@ class Main():
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy])
             self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong")
 
-          
 Main().run_backtest()
-
-# df.ta.rsi(length=40, append=True)
-# help(df.ta.indicators())
-# help(ta.sma)
-# print(df.dtypes)
-
-
-
-
-# metamask: aevo
-# Register
-
-#     Key:
-#     0xe0176e52e4ae6ffaa8d8a815d9a25f84545be455ddbb1a717934ed4f4276d325
-#     Expiry:
-#     1713539274
