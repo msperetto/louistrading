@@ -9,8 +9,14 @@ class TriggeredState(ABC):
 
 # 
 class TriggeredState_alwaysTrue(TriggeredState):
+    def __init__(self):
+        self.is_filtered = False
+
+    def reset(self, is_filtered):
+        self.is_filtered = is_filtered
+
     def isStillValid(self) -> bool:
-        return True
+        return self.is_filtered
 
 
 class TriggeredState_MaxCandles(TriggeredState):
@@ -19,8 +25,9 @@ class TriggeredState_MaxCandles(TriggeredState):
         self.candles_after_triggered = max_candles
         # self.triggered = False
 
-    def reset(self):
-        self.candles_after_triggered = 0
+    def reset(self, is_filtered):
+        if is_filtered:
+            self.candles_after_triggered = 0
 
     def isStillValid(self):
         # starting to count the next candles after triggered
@@ -45,8 +52,9 @@ class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
         self.get_ema_short = ema_short_fn
         self.get_sma_long = sma_long_fn
 
-    def reset(self):
-        self.candles_after_triggered = 0
+    def reset(self, is_filtered):
+        if is_filtered:
+            self.candles_after_triggered = 0
 
     def isStillValid(self):
         # starting to count the next candles after triggered
