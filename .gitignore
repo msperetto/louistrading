@@ -1,3 +1,10 @@
 venv/
+.venv/
+__pycache__/
+main/__pycache__/
+main/backtest/__pycache__/
 main/backtest/python/__pycache__/
+main/prod/__pycache__/
 main/prod/python/__pycache__/
+main/common/__pycache__/
+main/common/python/__pycache__/
