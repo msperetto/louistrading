@@ -1,16 +1,15 @@
 import pandas_ta as ta
 import pandas as pd
-import binance 
-import management
-import database_operations as db
-from backtest import NoShirt
 from backtesting import Backtest
+from common.python import management
+from common.python import database_operations as db
+from backtest import NoShirt
 from strategy import *
-
+from prod.python import binance
 
 class Main():
     def __init__(self):
-        strategy_info = management.readJson("main/backtest/resources/params.json")
+        strategy_info = management.readJson("backtest/resources/params.json")
         self.pair = strategy_info["pair"]
         self.interval = strategy_info["period"]
         self.trend_interval = strategy_info["trend_period"]
@@ -25,6 +24,9 @@ class Main():
         self.trade_sell_classes = strategy_info["trade_sell_classes"]
         self.trend_classes = strategy_info["trend_classes"]
         self.strategy_classes = strategy_info["strategy_classes"]
+
+        self.path_plot = "backtest/output/plot/"
+        self.path_csv = "backtest/output/csv/"
 
         self.strategy_dict = {
             "B1": Strategy_B1(optimize=False),
@@ -45,11 +47,11 @@ class Main():
         cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
         db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-        trades_filename = f"main/backtest/output/csv/{filename+trend_class}.csv"
+        trades_filename = f"{self.path_csv+filename+trend_class}.csv"
 
         stats["_trades"].to_csv(trades_filename)
 
-        if should_plot: bt.plot(filename=filename+trend_class)
+        if should_plot: bt.plot(filename=self.path_plot+filename+trend_class)
 
     def run_optimization(self, bt):
         for filter_buy_class in self.filter_buy_classes:
@@ -91,10 +93,10 @@ class Main():
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
             db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-            trades_filename = f"main/backtest/output/csv/{filename+trend_class}.csv"
+            trades_filename = f"{self.path_csv+filename+trend_class}.csv"
             stats["_trades"].to_csv(trades_filename)
 
-            if should_plot: bt.plot(filename=filename+trend_class)
+            if should_plot: bt.plot(filename=self.path_plot+filename+trend_class)
 
 
     def run_trend_optimization(self, bt, strategy):
@@ -117,9 +119,10 @@ class Main():
         # self.run_optimization(bt)
 
         for strategy in self.strategy_classes:
-            filename = "main/backtest/output/plot/"+self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
+            filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
             # self.run_trend_optimization(bt, self.strategy_optimize_dict[strategy])
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy])
             self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong")
 
 Main().run_backtest()
+
