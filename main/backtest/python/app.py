@@ -5,7 +5,7 @@ from common.python import management
 from common.python import database_operations as db
 from backtest import NoShirt
 from strategy import *
-from prod.python import binance
+from prod.python.binance import Binance as binance
 
 class Main():
     def __init__(self):
@@ -113,7 +113,7 @@ class Main():
 
     def run_backtest(self):
 
-        dataset = binance.get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
 
         # self.run_optimization(bt)
