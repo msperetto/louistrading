@@ -1,8 +1,8 @@
 {
     "pair": "BTCUSDT",
     "startTime": "01.12.2023",
-    "endTime": "01.11.2024",
-    "period_label": "test",
+    "endTime": "18.11.2024",
+    "period_label": "uptrend-strategy-B2",
     "period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
@@ -25,15 +25,9 @@
         "TradeSell_LowLastCandle"
     ],
     "trend_classes": [
-        "UpTrend_EMAshort_gt_SMAmedium",
-        "UpTrend_EMAshort_gt_SMAlong",
-        "UpTrend_SMAmedium_gt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong",
-        "UpTrend_Price_gt_EMAshort",
-        "UpTrend_Price_gt_SMAmedium",
         "UpTrend_Price_gt_SMAlong"
     ],
     "strategy_classes": [
-        "B4"
+        "B2"
     ]
 }

@@ -45,13 +45,13 @@ class Strategy_B1():
 class Strategy_B2():
     def __init__(self, optimize: bool = True):
         if not optimize:
-            self.ema_trend_short = 8
+            self.ema_trend_short = 6
             self.sma_trend_medium = 18
-            self.sma_trend_long = 44
+            self.sma_trend_long = 50
             self.adx_trend_layer = 25
             self.ema_p_short = 9
             self.sma_p_medium = 19
-            self.sma_p_long = 48
+            self.sma_p_long = 51
         else:
             self.ema_trend_short = range(6, 10, 1)
             self.sma_trend_medium = range(18, 22, 1)
