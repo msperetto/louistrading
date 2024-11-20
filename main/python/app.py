@@ -125,7 +125,7 @@ class Main():
             
             # self.run_trend_optimization(bt, self.strategy_optimize_dict[strategy])
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy])
-            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong", False)
+            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], "UpTrend_EMAshort_gt_SMAlong", True)
 
           
 Main().run_backtest()
