@@ -149,7 +149,7 @@ class Binance():
         # 3d
         # 1w
         # 1M
-    def get_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000)):
+    def get_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000), limit: int = 1500):
         # current time code = round(time.time() * 1000)
         endpoint = "/fapi/v1/klines"
         params = {
@@ -158,7 +158,7 @@ class Binance():
             # "startTime": management.date_to_ms(startTime),
             'startTime': startTime,
             "endTime": endTime,
-            "limit": 1500
+            "limit": limit
         }
 
         try:
