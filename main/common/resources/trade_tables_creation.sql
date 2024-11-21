@@ -18,6 +18,19 @@ CREATE TABLE IF NOT EXISTS exchange_config (
     exchange varchar(25) NOT NULL
 )
 
+CREATE TABLE IF NOT EXISTS initial_config (
+    exchange varchar(25) NOT NULL,
+    pair varchar(30) NOT NULL,
+    intraday_interval varchar(5) NOT NULL,
+    trend_interval varchar(5) NOT NULL,
+    trend_class varchar(60) NOT NULL,
+    strategy_class varchar(3) NOT NULL,
+    max_open_orders integer,
+    order_value real NOT NULL,
+    max_risk real
+);
+
+
 DELETE FROM public.pair_status;
 
 INSERT INTO public.pair_status(status_id, status)
