@@ -43,14 +43,6 @@ def get_class_code(class_name):
             return cur.fetchone()[0]
 
 
-def get_binance_config():
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, sk FROM config_binance;
-                """)
-            return cur.fetchone()
-
 def insert_exchange_config(id, key, exchange: str):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
