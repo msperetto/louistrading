@@ -51,6 +51,24 @@ def get_binance_config():
                 """)
             return cur.fetchone()
 
+def insert_exchange_config(id, key, exchange: str):
+    with psycopg.connect(dev_env_con) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO exchange_config (id, sk, exchange) VALUES(%s, %s, %s); 
+            """, (id, key, exchange))
+
+            conn.commit()
+
+
+def get_exchange_config(exchange: str):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, sk FROM exchange_config WHERE exchange = %s;
+                """,(exchange,))
+            return cur.fetchone()
+
 
 def export_to_csv():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:

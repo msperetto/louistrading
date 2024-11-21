@@ -12,6 +12,12 @@ CREATE TABLE IF NOT EXISTS pair (
     status_id int REFERENCES pair_status (status_id)
 );
 
+CREATE TABLE IF NOT EXISTS exchange_config (
+    id varchar(120) NOT NULL,
+    sk varchar(120) NOT NULL,
+    exchange varchar(25) NOT NULL
+)
+
 DELETE FROM public.pair_status;
 
 INSERT INTO public.pair_status(status_id, status)
