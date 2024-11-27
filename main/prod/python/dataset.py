@@ -12,6 +12,12 @@ class Dataset():
     def populate_initial_kline(self):
         self.dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
 
-    def new_row(self):
+    def get_new_row(self):
         return binance().get_kline(self.pair, self.interval, None, None, 2).iloc[0]
 
+    def append_row_to_df(self, row):
+        self.dataset.loc[len(self.dataset)] = row
+
+    def update_dataset(self, row):
+        self.append_row_to_df(row)
+        self.dataset.drop([0])
