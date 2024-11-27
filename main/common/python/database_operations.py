@@ -43,6 +43,15 @@ def get_class_code(class_name):
             return cur.fetchone()[0]
 
 
+def get_pairs():
+    with psycopg.connect(dev_env_con) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT pair_code, status_id from pair where active is true;
+                """)
+            return cur.fetchall()
+
+
 def insert_exchange_config(id, key, exchange: str):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
