@@ -4,7 +4,7 @@ from backtesting import Backtest
 from common.python import management
 from common.python import database_operations as db
 from backtest import NoShirt
-from strategy import *
+from common.python.strategy import *
 from prod.python.binance import Binance as binance
 
 class Main():

@@ -1,13 +1,13 @@
-from filter import *
-from trigger import *
-from trade import *
-from trend import *
+from common.python.filter import *
+from common.python.trigger import *
+from common.python.trade import *
+from common.python.trend import *
 from backtesting import Backtest, Strategy
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
-from strategy import *
+from common.python.strategy import *
 
 class NoShirt(Strategy):
     ema_trend_short = 0
