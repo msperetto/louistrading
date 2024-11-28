@@ -206,3 +206,105 @@ class Strategy_C1():
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+class Strategy_X1():
+    def __init__(self, optimize: bool = True):
+        if not optimize:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = 8
+            self.sma_p_medium = 19
+            self.sma_p_long = 51
+            self.max_candles_buy = 22  #17, 22
+            self.rsi_period = 4
+            self.rsi_layer_cheap = 23
+            self.rsi_layer_expensive = 90
+        else:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = range(6, 12, 1)
+            self.sma_p_medium = 19
+            self.sma_p_long = 51
+            self.max_candles_buy = range(2, 30, 1)
+            self.rsi_period = range(3, 10, 1)
+            self.rsi_layer_cheap = range(10, 25, 1)
+            self.rsi_layer_expensive = 90
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_RSI")
+        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
+        self.trade_buy_class=db.get_class_code("TradeBuy_Price_gt_EMAshort")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+class Strategy_X2():
+    def __init__(self, optimize: bool = True):
+        if not optimize:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = 10
+            self.sma_p_medium = 19
+            self.sma_p_long = 51
+            self.max_candles_buy = 15 #15
+            self.rsi_period = 5
+            self.rsi_layer_cheap = 15
+            self.rsi_layer_expensive = 90
+        else:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = range(6, 12, 1)
+            self.sma_p_medium = 19
+            self.sma_p_long = 51
+            self.max_candles_buy = range(3, 23, 1)
+            self.rsi_period = range(3, 10, 1)
+            self.rsi_layer_cheap = range(10, 24, 1)
+            self.rsi_layer_expensive = 90
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_RSI_EMAshort_lt_SMAmedium_lt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
+        self.trade_buy_class=db.get_class_code("TradeBuy_Price_gt_EMAshort")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+
+class Strategy_X3():
+    def __init__(self, optimize: bool = True):
+        if not optimize:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = 10
+            self.sma_p_medium = 19
+            self.sma_p_long = 51
+            self.max_candles_buy = 15 #15
+            self.rsi_period = 5
+            self.rsi_layer_cheap = 15
+            self.rsi_layer_expensive = 90
+        else:
+            self.ema_trend_short = 6
+            self.sma_trend_medium = 18
+            self.sma_trend_long = 50
+            self.adx_trend_layer = 25
+            self.ema_p_short = range(6, 12, 1)
+            self.sma_p_medium = range(18, 21, 1)
+            self.sma_p_long = 51
+            self.max_candles_buy = range(3, 23, 1)
+            self.rsi_period = range(3, 10, 1)
+            self.rsi_layer_cheap = range(10, 24, 1)
+            self.rsi_layer_expensive = 90
+
+        self.filter_buy_class=db.get_class_code("FilterBuy_RSI_EMAshort_lt_SMAmedium_lt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
+        self.trade_buy_class=db.get_class_code("TradeBuy_EMAshort_gt_SMAmedium")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")

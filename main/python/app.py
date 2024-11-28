@@ -32,7 +32,10 @@ class Main():
             "B3": Strategy_B3(optimize=False),
             "B4": Strategy_B4(optimize=False),
             "B5": Strategy_B5(optimize=False),            
-            "C1": Strategy_C1(optimize=False)
+            "C1": Strategy_C1(optimize=False),
+            "X1": Strategy_X1(optimize=False),
+            "X2": Strategy_X2(optimize=False),
+            "X3": Strategy_X3(optimize=False)
         }
         self.strategy_optimize_dict = {
             "B1": Strategy_B1(),
@@ -40,7 +43,10 @@ class Main():
             "B3": Strategy_B3(),
             "B4": Strategy_B4(),
             "B5": Strategy_B5(),
-            "C1": Strategy_C1()
+            "C1": Strategy_C1(),
+            "X1": Strategy_X1(),
+            "X2": Strategy_X2(),
+            "X3": Strategy_X3()
         }
 
     def plot_single_strat(self, bt, filename, strategy, trend_class="UpTrend_AlwaysTrend", should_plot = True):
