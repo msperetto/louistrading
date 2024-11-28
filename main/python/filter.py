@@ -79,6 +79,18 @@ class FilterBuy_RSI_EMAshort_gt_SMAmedium_gt_SMAlong(Filter):
     def isValid(self) -> bool:
         return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_medium()[-1]) \
                 and (self.get_sma_medium()[-1] > self.get_sma_long()[-1])
+    
+class FilterBuy_RSI_EMAshort_lt_SMAmedium_lt_SMAlong(Filter):
+    def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_medium_fn, sma_long_fn):
+        self.get_rsi = rsi_fn
+        self.rsi_layer_cheap = rsi_layer_cheap
+        self.get_ema_short = ema_short_fn
+        self.get_sma_medium = sma_medium_fn
+        self.get_sma_long = sma_long_fn
+
+    def isValid(self) -> bool:
+        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] < self.get_sma_medium()[-1]) \
+                and (self.get_sma_medium()[-1] < self.get_sma_long()[-1])
 
 class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong(Filter):
     def __init__(self, ema_short_fn, sma_medium_fn, sma_long_fn):
