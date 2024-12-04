@@ -310,9 +310,23 @@ class Binance():
         else:
             return position
 
+    def get_open_orders(self, b_id, b_sk):
+        endpoint = '/fapi/v1/openOrders'
+
+        params = {
+            'timestamp': str(self.get_servertime())
+        }
+        binance_out = 1
+        while binance_out:
+            open_orders = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+            if 'code' in open_orders.keys():
+                print(f'erro get open orders {open_orders}')
+            else:
+                return open_orders
+
+
     def query_order(self, symbol, orderId, b_id, b_sk):
         endpoint = '/fapi/v1/order'
-
         params = {
             'symbol': symbol,
             'orderId': orderId,

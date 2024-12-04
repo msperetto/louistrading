@@ -78,6 +78,13 @@ def get_initial_config():
                 """)
             return cur.fetchone()
 
+def get_open_orders():
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM order_control WHERE status = %s;
+                """,("open"))
+            return cur.fetchone()
 
 def export_to_csv():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
@@ -90,6 +97,7 @@ def export_to_csv():
                 writer = csv.DictWriter(csvfile, cur.fetchone().keys())
                 writer.writeheader()
                 writer.writerows(cur.fetchall())
+
 
 # export_to_csv()
 # insert_class("FilterBuy_alwaysTrue", "self.filterBuy = Filter_alwaysTrue()")
