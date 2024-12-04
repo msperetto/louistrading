@@ -1,11 +1,12 @@
 from common.python import database_operations as db
+from common.python.strategylong import StrategyLong
 
 class Strategy_Test():
-    def __init__(self, optimize: bool = True):
+    def __init__(self, optimize: bool = False):
         pass
 
-class Strategy_B1():
-    def __init__(self, optimize: bool = True):
+class Strategy_B1(StrategyLong):
+    def __init__(self, optimize: bool = False):
         if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -43,7 +44,7 @@ class Strategy_B1():
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
 class Strategy_B2():
-    def __init__(self, optimize: bool = True):
+    def __init__(self, optimize: bool = False):
         if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -82,7 +83,7 @@ class Strategy_B2():
        
 
 class Strategy_B3():
-    def __init__(self, optimize: bool = True):
+    def __init__(self, optimize: bool = False):
         if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
@@ -121,7 +122,7 @@ class Strategy_B3():
 
 
 class Strategy_C1():
-    def __init__(self, optimize: bool = True):
+    def __init__(self, optimize: bool = False):
         if not optimize:
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
