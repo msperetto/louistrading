@@ -1,15 +1,15 @@
 import pandas_ta as ta
-from dataset import Dataset as ohlc_df
 
 class Indicators():
     def __init__(self):
         #initializing strategy (group of indicators)
+        #a strategy for pandas_ta is a group of indicators that will be added to the dataset
         self.strategy = ta.Strategy(
             name="grouping_indicators",
             ta=[{}]
         )
 
-    def calc_indicator(self, df: ohlc_df, indicator: str, **kwargs):
+    def calc_indicator(self, df, indicator: str, **kwargs):
         try:
             return df.ta(kind=indicator, append=True, **kwargs)
         except Exception as e:

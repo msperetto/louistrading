@@ -9,7 +9,7 @@ class Dataset():
         self.startTime = startTime
         self.endTime = endTime
     
-    def populate_initial_kline(self):
+    def populate_ohlc(self):
         self.dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
 
     def get_new_row(self):
