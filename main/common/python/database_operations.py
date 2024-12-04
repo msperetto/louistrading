@@ -47,7 +47,7 @@ def get_pairs():
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT pair_code, status_id from pair where active is true;
+                SELECT pair_code, active from pair where active is true;
                 """)
             return cur.fetchall()
 
@@ -68,6 +68,14 @@ def get_exchange_config(exchange: str):
             cur.execute("""
                 SELECT id, sk FROM exchange_config WHERE exchange = %s;
                 """,(exchange,))
+            return cur.fetchone()
+
+def get_initial_config():
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM initial_config;
+                """)
             return cur.fetchone()
 
 
