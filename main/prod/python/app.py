@@ -1,9 +1,11 @@
 from common.python import database_operations as db
 from noshirt import NoShirt
 from env_setup import Env_setup
-from dataset import Dataset
+from ohcl import Ohcl
 from common.python.strategy import *
 
+
+#todo calculate logic to get start date to ohcl_df (get now - biggest interval for trend indicators times strategy candle interval)
 class Main():
     def __init__(self):
         base_config = db.get_initial_config()
@@ -13,10 +15,11 @@ class Main():
         pass
     
     def run_noshirt(self):
+        # print(type(self.setup.active_pairs[0]))
         for pair in self.setup.active_pairs:
-            df = Dataset("BTCUSDT", "1h", "01.11.2024", "30.11.2024")
+            df = Ohcl(pair, "1h", "01.11.2024")
             df.populate_ohlc()
-            NoShirt(df.dataset, Strategy_B1())
+            NoShirt(df.ohcl_df, Strategy_B1())
 
 Main().run_noshirt()
 
