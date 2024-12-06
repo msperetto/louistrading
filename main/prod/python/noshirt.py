@@ -6,65 +6,74 @@ from common.python.trend import *
 from common.python.strategybuy import StrategyBuy
 from common.python.strategysell import StrategySell
 from common.python.trendanalysis import TrendAnalysis
-from prod.python.indicators import Indicators
+from prod.python.dataset import Dataset
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
 from common.python.strategy import *
 
-#todo 
 
+# strategy manager 
 class NoShirt():
 
-    def __init__(self, dataset, strategy_long=None, strategy_short=None):
+    def __init__(self, pair, ohcl_df, strategy_long=None, strategy_short=None):
 
-        self.dataset = dataset
-        self.indicators = Indicators()
+        self.pair = pair
+        self.data = ohcl_df #dataframe containing only ohcl data, with no indicators
         self.strategy_long = strategy_long
         self.strategy_short = strategy_short
         
         self.classes = {}
 
-        #instantiating buying support objects
-        # exec(self.filter_buy_class)
-        # exec(self.trigger_buy_class)
-        # exec(self.trade_buy_class)
-        # exec(self.trend_class)
+            # run everything necessary to the strategy evaluation for the last candle.
+    def run(self):
+        self.update_dataset()
+        if self.strategy_long:
+            self.update_indicators(self.strategy_long)
+        if self.strategy_short:
+            self.update_indicators(self.strategy_short)
 
-        # #adding classes name to stats list to populate DB
-        # self.classes['filter_buy'] = self.filterBuy.__class__.__name__
-        # self.classes['trigger_buy'] = self.triggerBuy.__class__.__name__
-        # self.classes['trade_buy']= self.tradeBuy.__class__.__name__
-        # self.classes['trend'] = self.trend.__class__.__name__
+    # instantiating objects for filter, trigger, trade e trend classes
+    def set_support_objects(self, strategy):
+        exec(strategy.filter_buy_class)
+        exec(strategy.trigger_buy_class)
+        exec(strategy.trade_buy_class)
+        exec(strategy.trend_class)
 
-        # #instantiating selling support objects
-        # exec(self.filter_sell_class)
-        # exec(self.trigger_sell_class)
-        # exec(self.trade_sell_class)
+        #adding classes name to stats list to populate DB
+        self.classes['filter_buy'] = self.filterBuy.__class__.__name__
+        self.classes['trigger_buy'] = self.triggerBuy.__class__.__name__
+        self.classes['trade_buy']= self.tradeBuy.__class__.__name__
+        self.classes['trend'] = self.trend.__class__.__name__
+
+        #instantiating selling support objects
+        exec(strategy.filter_sell_class)
+        exec(strategy.trigger_sell_class)
+        exec(strategy.trade_sell_class)
         
-        # #adding classes name to stats list to populate DB
-        # self.classes['filter_sell'] = self.filterSell.__class__.__name__
-        # self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
-        # self.classes['trade_sell'] = self.tradeSell.__class__.__name__
+        #adding classes name to stats list to populate DB
+        self.classes['filter_sell'] = self.filterSell.__class__.__name__
+        self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
+        self.classes['trade_sell'] = self.tradeSell.__class__.__name__
 
+        #instantiating buying and selling strategy classes
+        self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
+        self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
+        self.trendAnalysis = TrendAnalysis(self.trend)
 
-        # #instantiating buying and selling strategy classes
-        # self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
-        # self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
-        # self.trendAnalysis = TrendAnalysis(self.trend)
 
     def update_dataset(self):
         #dataframes with indicators
         if self.strategy_long:
-            self.long_df = self.prepare_indicators(self.strategy_long, self.dataset)
-        
+            self.long_df = self.prepare_indicators(self.strategy_long) #df containing ochl + indicators
+                    
         if self.strategy_short:
-            self.short_df = self.prepare_indicators(self.strategy_short, self.dataset)
+            self.short_df = self.prepare_indicators(self.strategy_short) #df containing ochl + indicators
 
-
-    def prepare_indicators(self, strategy, dataset):
-        indicator_df = Indicators()
+    # get the ohlc df and add the indicators columns to it
+    def prepare_indicators(self, strategy):
+        indicator_df = Dataset()
         indicator_df.strategy.ta.remove({})
         indicators_list = []
 
@@ -106,10 +115,11 @@ class NoShirt():
         for indicator in indicators_list:
             indicator_df.add_indicator_to_strategy(indicator)
             
-        indicator_df.apply_strategy_to_df(dataset)
+        indicator_df.apply_strategy_to_df(self.data)
 
         return indicator_df
     
+    # Isolates every indicator in separeted attributes
     def update_indicators(self, strategy):
         try:
             self.ema_short = self.dataset[f"EMA_{strategy.ema_p_short}"].values.tolist()
@@ -143,6 +153,8 @@ class NoShirt():
 
         try:
             self.rsi = self.dataset[f"RSI_{strategy.rsi_period}"].values.tolist()
+            self.rsi_layer_cheap = strategy.rsi_layer_cheap
+            self.rsi_layer_expensive = strategy.rsi_layer_expensive
         except AttributeError:
             pass
 
