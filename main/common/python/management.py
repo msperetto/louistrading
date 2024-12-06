@@ -9,6 +9,16 @@ def readJson(file):
     with open(file, 'r') as f:
         return json.load(f)
 
+def time_intervals_to_seconds(interval):
+    interval_map = {
+        "h": 3600,
+        "2h": 7200,
+        "6h": 21600,
+        "12h": 43200,
+        "D": 86400
+    }
+    return interval_map[interval]
+
 def dict_to_params(dict):
     params = json.dumps(dict)
     params = params.replace(":","=")

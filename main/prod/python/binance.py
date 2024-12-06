@@ -201,7 +201,8 @@ class Binance():
         endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
 
         time_intervals = [startTime] # array to store all the time intervals to call the api
-        startTime_offset = self.time_intervals_to_seconds(interval)*1000
+        startTime_offset = management.time_intervals_to_seconds(interval)
+        # startTime_offset = self.time_intervals_to_seconds(interval)*1000
 
         while ((startTime) + (startTime_offset) * 1499) < endTime:
             startTime += startTime_offset * 1499

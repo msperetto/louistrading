@@ -36,6 +36,8 @@ class Strategy_B1(StrategyLong):
             self.max_candles_buy = 4
             self.max_candles_sell = 5
 
+        self.intraday_interval = "h"
+        self.trend_interval = "D"
         self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
@@ -73,7 +75,9 @@ class Strategy_B2():
             self.rsi_period = 4
             self.max_candles_buy = 4
             self.max_candles_sell = 5
-
+        
+        self.intraday_interval = "h"
+        self.trend_interval = "D"
         self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
@@ -113,6 +117,8 @@ class Strategy_B3():
             self.max_candles_buy = 4
             self.max_candles_sell = 5
 
+        self.intraday_interval = "h"
+        self.trend_interval = "D"
         self.filter_buy_class=db.get_class_code("FilterBuy_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
@@ -152,6 +158,8 @@ class Strategy_C1():
             self.max_candles_buy = 5
             self.max_candles_sell = 5
 
+        self.intraday_interval = "h"
+        self.trend_interval = "D"
         self.filter_buy_class=db.get_class_code("FilterBuy_RSI")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_EMAshort_gt_SMAmedium")
