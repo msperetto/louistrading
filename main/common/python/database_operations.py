@@ -47,7 +47,7 @@ def get_pairs():
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT pair_code, active from pair where active is true;
+                SELECT pair_code from pair where active is true;
                 """)
             return cur.fetchall()
 
@@ -82,9 +82,9 @@ def get_open_orders():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT * FROM order_control WHERE status = %s;
-                """,("open"))
-            return cur.fetchone()
+                SELECT pair FROM trade WHERE open is true;
+                """)
+            return [pair["pair"] for pair in cur.fetchall()]
 
 def export_to_csv():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
