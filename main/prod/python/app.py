@@ -3,6 +3,7 @@ from noshirt import NoShirt
 from env_setup import Env_setup
 from ohcl import Ohcl
 from common.python.strategy import *
+from prod.python.login import Login
 
 
 #todo calculate logic to get start date to ohcl_df (get now - biggest interval for trend indicators times strategy candle interval)
@@ -10,6 +11,8 @@ class Main():
     def __init__(self):
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperating"])
+        self.exchange_session = Login("binance")
+        self.exchange_session.login_database()
 
     # def initialize_dataset(self):
         # pass
@@ -19,6 +22,7 @@ class Main():
         self.open_order_pairs = db.get_open_orders()
         for pair in self.setup.active_pairs:
             if pair not in self.open_order_pairs:
+                # checar aqui se está ativo para novas entradas
                 strategy = Strategy_B1()
                 df = Ohcl(pair, strategy.intraday_interval, "01.11.2024")
                 df.populate_ohlc()

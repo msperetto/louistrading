@@ -48,8 +48,3 @@ class Login():
         else:
             f_key = self.save_sign_pair()
             self.e_id, self.e_sk = self.get_sign_pair(f_key)
-
-sessionexchange = Login("binance")
-sessionexchange.login_database()
-print(sessionexchange.e_id)
-print(sessionexchange.e_sk)
