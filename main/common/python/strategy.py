@@ -5,7 +5,7 @@ class Strategy_Test():
     def __init__(self, optimize: bool = False):
         pass
 
-class Strategy_B1(StrategyLong):
+class Strategy_B1():
     def __init__(self, optimize: bool = False):
         if not optimize:
             self.ema_trend_short = 8

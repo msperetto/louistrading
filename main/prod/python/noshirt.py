@@ -17,12 +17,15 @@ from common.python.strategy import *
 # strategy manager 
 class NoShirt():
 
-    def __init__(self, pair, ohcl_df, strategy_long=None, strategy_short=None):
+    #modificar aqui para ser somente uma estratégia
+    def __init__(self, pair, ohcl_df, strategy_long=None, strategy_short=None, stop_loss = None, take_profit = None):
 
         self.pair = pair
         self.data = ohcl_df #dataframe containing only ohcl data, with no indicators
         self.strategy_long = strategy_long
         self.strategy_short = strategy_short
+        self.stop_loss = stop_loss
+        self.take_profit = take_profit
         
         self.classes = {}
 
@@ -33,6 +36,12 @@ class NoShirt():
             self.update_indicators(self.strategy_long)
         if self.strategy_short:
             self.update_indicators(self.strategy_short)
+
+
+        #modificar aqui para ser apenas 1 estratégia
+        self.set_support_objects(self.strategy_long)
+
+        self.evaluate_last_candle()
 
     # instantiating objects for filter, trigger, trade e trend classes
     def set_support_objects(self, strategy):
@@ -168,10 +177,12 @@ class NoShirt():
         else: take_profit = None
 
         if self.trendAnalysis.is_upTrend():
-            if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
+            if self.strategyBuy.shouldBuy(): self.open_position(side=side, sl=stop_loss, tp=take_profit)
+            #continuar daqui, iniciei a criar chamada da binance para pegar o valor atual do orderbook do par e
+            #utilizar esse valor de topo para abrir uma ordem. Testar no arquivo negociate.py
         else:
             #keeps updating trigger status even if not on trend
             self.strategyBuy.triggeredState.isStillValid()
 
-        if self.strategySell.shouldSell(): self.position.close()
+        if self.strategySell.shouldSell(): self.position.close(side=side)
 
