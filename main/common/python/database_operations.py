@@ -85,6 +85,42 @@ def get_open_orders():
                 SELECT pair FROM trade WHERE open is true;
                 """)
             return [pair["pair"] for pair in cur.fetchall()]
+    
+def insert_order_transaction(order_response, operation_type, fees = 0.001):
+    with psycopg.connect(dev_env_con) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO order_control(order_id, date, pair, operation_type, side, entry_price, quantity,
+                                              status, fees)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);
+            """, (order_response['orderId'], order_response['updateTime'], order_response['symbol'], operation_type,
+                   order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
+                   order_response['status'], fees))
+            conn.commit()
+
+def insert_trade_transaction(strategy_id, open, order_response, profit = None, spread=None, roi=None):
+    with psycopg.connect(dev_env_con) as conn:
+        if open:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO trade(open, open_time, side, pair, strategy_id)
+                    VALUES(%s, %s, %s, %s, %s);
+                """, (open, order_response['updateTime'], order_response['positionSide'], order_response['symbol'], strategy_id))
+                conn.commit()
+        else:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO trade(open, open_time, side, pair, strategy_id)
+                    UPDATE trade
+                    SET open = %s,
+                        close_time = %s,
+                        profit = %s,
+                        spread = %s,
+                        roi = %s
+                    WHERE pair = %s and open = %s;
+                """, (0, order_response['updateTime'], profit, spread, roi))
+                conn.commit()
+
 
 def export_to_csv():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
