@@ -99,7 +99,7 @@ class Binance():
         
         return result
 
-
+    
     async def get_orderbook(self, pairs_to_filter: list[str], pair: str = None):
         endpoint = "/fapi/v1/ticker/bookTicker"
 
@@ -178,6 +178,26 @@ class Binance():
         df['Volume'] = pd.to_numeric(df['Volume'], errors='coerce')
         df.set_index('Date', inplace=True)
         return df
+
+    def get_orderbook(self, pair, limit):
+        endpoint = "/fapi/v1/depth"
+
+        binance_out = 1
+
+        params = {
+            "symbol": pair,
+            "limit": limit
+        }
+
+        while binance_out:
+            try:
+                orderbook = requests.get(
+                    self.BASE_ENDPOINT + endpoint, params=params).json()
+                binance_out = 0
+            except Exception as e:
+                print(e)
+        
+        return orderbook
 
 
     def time_intervals_to_seconds(self, interval: str) -> int:
