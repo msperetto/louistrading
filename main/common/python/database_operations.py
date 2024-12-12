@@ -31,7 +31,7 @@ def insert_class(class_name, class_code):
                 INSERT INTO classes_map(class_name, class_code)
                 VALUES(%s, %s);
             """, (class_name, class_code))
-        conn.commit()
+            conn.commit()
 
 
 def get_class_code(class_name):
@@ -43,7 +43,7 @@ def get_class_code(class_name):
             return cur.fetchone()[0]
 
 
-def get_pairs():
+def get_active_pairs():
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -86,40 +86,44 @@ def get_open_orders():
                 """)
             return [pair["pair"] for pair in cur.fetchall()]
     
-def insert_order_transaction(order_response, operation_type, fees = 0.001):
+def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO order_control(order_id, date, pair, operation_type, side, entry_price, quantity,
-                                              status, fees)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);
+                                              status, fees, trade_id)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, (order_response['orderId'], order_response['updateTime'], order_response['symbol'], operation_type,
                    order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
-                   order_response['status'], fees))
+                   order_response['status'], fees, trade_id))
             conn.commit()
+
 
 def insert_trade_transaction(strategy_id, open, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(dev_env_con) as conn:
-        if open:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    INSERT INTO trade(open, open_time, side, pair, strategy_id)
-                    VALUES(%s, %s, %s, %s, %s);
-                """, (open, order_response['updateTime'], order_response['positionSide'], order_response['symbol'], strategy_id))
-                conn.commit()
-        else:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    INSERT INTO trade(open, open_time, side, pair, strategy_id)
-                    UPDATE trade
-                    SET open = %s,
-                        close_time = %s,
-                        profit = %s,
-                        spread = %s,
-                        roi = %s
-                    WHERE pair = %s and open = %s;
-                """, (0, order_response['updateTime'], profit, spread, roi))
-                conn.commit()
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO trade(open, open_time, side, pair, strategy_id)
+                VALUES(%s, %s, %s, %s, %s)
+                RETURNING id, pair;
+            """, (open, order_response['updateTime'], order_response['positionSide'], order_response['symbol'], strategy_id))
+            conn.commit()
+            return cur.fetchone()[0]
+
+
+def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
+    with psycopg.connect(dev_env_con) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE trade
+                SET open = %s,
+                    close_time = %s,
+                    profit = %s,
+                    spread = %s,
+                    roi = %s
+                WHERE id = %s;
+            """, (False, order_response['updateTime'], profit, spread, roi, trade_id))
+            conn.commit()
 
 
 def export_to_csv():
@@ -134,9 +138,3 @@ def export_to_csv():
                 writer.writeheader()
                 writer.writerows(cur.fetchall())
 
-
-# export_to_csv()
-# insert_class("FilterBuy_alwaysTrue", "self.filterBuy = Filter_alwaysTrue()")
-# insert_class("FilterSell_alwaysTrue", "self.filterSell = Filter_alwaysTrue()")
-# insert_class("TriggeredStateBuy_alwaysTrue", "self.triggerBuy = TriggeredState_alwaysTrue()")
-# insert_class("TriggeredStateSell_alwaysTrue", "self.triggerSell = TriggeredState_alwaysTrue()")
