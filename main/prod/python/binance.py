@@ -149,7 +149,7 @@ class Binance():
         # 3d
         # 1w
         # 1M
-    def get_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000), limit: int = 1500):
+    def get_kline(self, pair: str, interval: str, startTime, endTime = round(time.time() * 1000), limit: int = 1500):
         # current time code = round(time.time() * 1000)
         endpoint = "/fapi/v1/klines"
         params = {
@@ -221,14 +221,16 @@ class Binance():
         endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
 
         time_intervals = [startTime] # array to store all the time intervals to call the api
-        startTime_offset = management.time_intervals_to_seconds(interval)
-        # startTime_offset = self.time_intervals_to_seconds(interval)*1000
+        
+        # time in miliseconds for an specified candle interval
+        startTime_offset = management.time_intervals_to_seconds(interval)*1000
 
-        while ((startTime) + (startTime_offset) * 1499) < endTime:
+        while (startTime + (startTime_offset * 1499)) < endTime:
             startTime += startTime_offset * 1499
             time_intervals.append(startTime) 
         
         time_intervals.append(endTime)
+        print(time_intervals)
 
         for i, time_interval in enumerate(time_intervals):
             if i < len(time_intervals) -1:
