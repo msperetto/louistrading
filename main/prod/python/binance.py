@@ -9,10 +9,8 @@ import hmac
 import sys
 import configparser
 import requests
-# import aiohttp
 from datetime import datetime
 import json
-# import websockets
 
 class Binance():
 
@@ -44,10 +42,6 @@ class Binance():
             (string): API ID of binance account
             (hmac): signature for binance request
         """
-        # apagar comentarios abaixo
-        # config_parser = configparser.ConfigParser()
-        # config_parser.read("main/resources/data/config.ini")
-        # b_key = bytes(config_parser["binance"]["segredo"], "utf-8")
         params_binance_sign = bytes(urlencode(params), 'utf-8')
         params['signature'] = hmac.new(
             b_sk, params_binance_sign, digestmod=hashlib.sha256).hexdigest()
@@ -131,8 +125,6 @@ class Binance():
         return ordered_result
         # return [float(result["bidPrice"]), float(result["askPrice"])]
 
-
-
         # Possible intervals for klines
         # 1m
         # 3m
@@ -150,12 +142,10 @@ class Binance():
         # 1w
         # 1M
     def get_kline(self, pair: str, interval: str, startTime, endTime = round(time.time() * 1000), limit: int = 1500):
-        # current time code = round(time.time() * 1000)
         endpoint = "/fapi/v1/klines"
         params = {
             "symbol": pair,
             "interval": interval,
-            # "startTime": management.date_to_ms(startTime),
             'startTime': startTime,
             "endTime": endTime,
             "limit": limit
@@ -199,19 +189,6 @@ class Binance():
         
         return orderbook
 
-
-    def time_intervals_to_seconds(self, interval: str) -> int:
-        match interval[-1]:
-            case 'm':
-                return int(interval[:-1])*60
-            case 'h':
-                return int(interval[:-1])*3600
-            case 'd':
-                return int(interval[:-1])*86400
-            case 'w':
-                return int(interval[:-1])*604800
-
-
     def get_extended_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000)):
         # Binance only allow 1500 max candles per request, so for longer periods of time, its necessary
         # to concatenate each request call.
@@ -230,7 +207,6 @@ class Binance():
             time_intervals.append(startTime) 
         
         time_intervals.append(endTime)
-        print(time_intervals)
 
         for i, time_interval in enumerate(time_intervals):
             if i < len(time_intervals) -1:
@@ -246,13 +222,6 @@ class Binance():
 
     def get_ask(self, pair_info: dict):
         return pair_info["askPrice"]
-
-
-    # async def get_bid_ask(pair: str) -> list:
-    #     print(get_orderbook(pair))
-    #     bid = await get_orderbook(pair)["bidPrice"]
-    #     ask = await get_orderbook(pair)["askPrice"]
-    #     return await [bid, ask]
 
 
     async def get_mark_funding(self):
