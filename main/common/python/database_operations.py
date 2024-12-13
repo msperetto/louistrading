@@ -85,7 +85,15 @@ def get_open_orders():
                 SELECT pair FROM trade WHERE open is true;
                 """)
             return [pair["pair"] for pair in cur.fetchall()]
-    
+
+def get_strategy_id(strategy_name: str):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id FROM strategy WHERE name = %s;
+                """,(strategy_name,))
+            return cur.fetchone()['id']
+   
 def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
     with psycopg.connect(dev_env_con) as conn:
         with conn.cursor() as cur:
@@ -97,7 +105,6 @@ def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.
                    order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
-
 
 def insert_trade_transaction(strategy_id, open, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(dev_env_con) as conn:
@@ -137,4 +144,3 @@ def export_to_csv():
                 writer = csv.DictWriter(csvfile, cur.fetchone().keys())
                 writer.writeheader()
                 writer.writerows(cur.fetchall())
-
