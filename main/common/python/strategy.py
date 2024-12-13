@@ -11,7 +11,6 @@ class Strategy_B1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adx_trend_layer = 25
             self.sma_p_short = 7
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -25,7 +24,6 @@ class Strategy_B1():
             self.ema_trend_short = 8
             self.sma_trend_medium = 18
             self.sma_trend_long = 44
-            self.adx_trend_layer = 25
             self.sma_p_short = range(7, 9, 1)
             self.sma_p_medium = 19
             self.sma_p_long = 48
@@ -38,6 +36,7 @@ class Strategy_B1():
 
         self.intraday_interval = "1h"
         self.trend_interval = "1d"
+        self.trend_longest_indicator_value = 44
         self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
