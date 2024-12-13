@@ -36,8 +36,8 @@ class Strategy_B1():
             self.max_candles_buy = 4
             self.max_candles_sell = 5
 
-        self.intraday_interval = "h"
-        self.trend_interval = "D"
+        self.intraday_interval = "1h"
+        self.trend_interval = "1d"
         self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")

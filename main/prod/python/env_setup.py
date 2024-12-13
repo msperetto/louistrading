@@ -12,7 +12,7 @@ class Env_setup():
 
     def get_active_pairs(self):
         # listar aqui para todas as moedas ativas, as que estão com orderns abertas ou não
-        self.active_pairs = db.get_pairs()
+        self.active_pairs = db.get_active_pairs()
 
     def get_current_balance(self) -> float:
         #after mvp
