@@ -43,3 +43,25 @@ class StrategyLong:
             trigger_class=trigger_class,
             trade_class=trade_class,
         )
+    
+    
+    def get_biggest_trend_interval(self):
+        """
+        Finds the largest value among all attributes that start with 'trend'.
+
+        Returns:
+            int: The largest value among 'trend' attributes.
+        """
+
+        # array with all values related to trend indicators.
+        trend_values = [
+            # vars(self): gets a dict with all attributes of the class.
+            # the loop below iterates all keys (name) and values of those attributes.
+            # isinstance: checks if the attribute value is an int or float.
+            value for name, value in vars(self).items()
+            if name.startswith("trend") and isinstance(value, (int, float))
+        ]
+
+        if not trend_values:
+            raise ValueError("No 'trend' attributes defined in this strategy.")
+        return max(trend_values)
