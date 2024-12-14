@@ -21,6 +21,16 @@ def time_intervals_to_seconds(interval):
     }
     return interval_map[interval]
 
+def time_intervals_to_minutes(interval):
+    interval_map = {
+        "1h": 60,
+        "2h": 120,
+        "4h": 240,
+        "8h": 480,
+        "1d": 1440
+    }
+    return interval_map[interval]
+
 def dict_to_params(dict):
     params = json.dumps(dict)
     params = params.replace(":","=")
