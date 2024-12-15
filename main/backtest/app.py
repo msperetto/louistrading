@@ -82,7 +82,6 @@ class Main():
 
                                 cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
                                 db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
-
     
     def run_trend_strat(self, bt, filename, strategy, trend_class="UpTrend_AlwaysTrend", should_plot = True):
         for trend_class in self.trend_classes:
@@ -96,7 +95,6 @@ class Main():
 
             if should_plot: bt.plot(filename=self.path_plot+filename+trend_class)
 
-
     def run_trend_optimization(self, bt, strategy):
         for trend_class in self.trend_classes:
             stats, heatmap = bt.optimize(
@@ -108,9 +106,9 @@ class Main():
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
             db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy.__class__.__name__)
 
-
     def run_backtest(self):
-
+        # TODO: Ideally, Backtest package should not access any class from Prod. 
+        # I would suggest moving Binance class to common package.
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, NoShirt, cash=150_000, commission=0.0015)
 
