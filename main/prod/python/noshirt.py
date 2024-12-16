@@ -14,7 +14,7 @@ import pandas_ta as ta
 import pandas as pd
 from time import sleep
 from common.python.strategy import *
-
+from common.python.indicators_catalog import indicators_catalog
 
 # strategy manager 
 class NoShirt():
@@ -32,6 +32,7 @@ class NoShirt():
         self.stop_loss = stop_loss
         self.take_profit = take_profit
         self.negociate = Negociate(self.pair, self.api_id, self.api_key)
+        self.set_support_objects(strategy)
         
         self.classes = {}
 
@@ -44,17 +45,30 @@ class NoShirt():
         self.update_indicators(self.strategy)
 
 
-        #modificar aqui para ser apenas 1 estratégia
-        self.set_support_objects(self.strategy)
 
         self.evaluate_last_candle()
 
-    # instantiating objects for filter, trigger, trade e trend classes
-    def set_support_objects(self, strategy):
-        exec(strategy.filter_buy_class)
-        exec(strategy.trigger_buy_class)
-        exec(strategy.trade_buy_class)
-        exec(strategy.trend_class)
+    def set_support_objects(self):
+        # setting all attributes necessary depending on indicators utilized by the strategy
+        for attr, config in indicators_catalog.items():
+            try:
+                column_name = f"{config['prefix'].upper()}_{getattr(self.strategy, attr)}"
+                setattr(self, attr, complete_dataset[column_name])
+
+                # creating attributes when the indicator has more information, like rsi, for example
+                # number 3 here is the position in config dictionary where new attributes starts
+                if len(config) > 3:
+                    new_attrs = list(config.items())[3:]
+                    for new_attr, attr_value in new_attributes:
+                        setattr(self, attr_value, getattr(self.strategy, attr_value))
+            except AttributeError:
+                pass
+
+        # instantiating objects for filter, trigger, trade e trend classes
+        exec(self.strategy.filter_buy_class)
+        exec(self.strategy.trigger_buy_class)
+        exec(self.strategy.trade_buy_class)
+        exec(self.strategy.trend_class)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_buy'] = self.filterBuy.__class__.__name__
@@ -63,9 +77,9 @@ class NoShirt():
         self.classes['trend'] = self.trend.__class__.__name__
 
         #instantiating selling support objects
-        exec(strategy.filter_sell_class)
-        exec(strategy.trigger_sell_class)
-        exec(strategy.trade_sell_class)
+        exec(self.strategy.filter_sell_class)
+        exec(self.strategy.trigger_sell_class)
+        exec(self.strategy.trade_sell_class)
         
         #adding classes name to stats list to populate DB
         self.classes['filter_sell'] = self.filterSell.__class__.__name__
@@ -76,137 +90,6 @@ class NoShirt():
         self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
         self.trendAnalysis = TrendAnalysis(self.trend)
-
-
-    def update_dataset(self, dataset, period_type):
-        #dataset with indicators
-        #period type can be intraday or trend
-        self.prepare_indicators(dataset, self.strategy, period_type) #df containing ochl + indicators
-                    
-
-    # get the ohlc df and add the indicators columns to it
-    def prepare_indicators(self, dataset, strategy, period_type):
-        indicator_df = Dataset()
-        indicator_df.strategy.ta.remove({})
-        indicators_list = []
-
-        if period_type == 'intraday':
-            try:
-                indicators_list.append({"kind": "ema", "length": strategy.ema_p_short}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "ema", "length": strategy.ema_p_medium}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "ema", "length": strategy.ema_p_long}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "sma", "length": strategy.sma_p_short}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "sma", "length": strategy.sma_p_medium}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "sma", "length": strategy.sma_p_long}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "rsi", "length": strategy.rsi_period}) 
-            except AttributeError:
-                pass
-
-        elif period_type == 'trend':
-            try:
-                indicators_list.append({"kind": "ema", "length": strategy.ema_trend_short}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "sma", "length": strategy.sma_trend_medium}) 
-            except AttributeError:
-                pass
-
-            try:
-                indicators_list.append({"kind": "sma", "length": strategy.sma_trend_long}) 
-            except AttributeError:
-                pass
-
-        for indicator in indicators_list:
-            indicator_df.add_indicator_to_strategy(indicator)
-            
-        #here the dataset will be updated
-        indicator_df.apply_strategy_to_df(dataset)
-
-        return [indicator['kind']+'_'+str(indicator['length']) for indicator in indicators_list]
-    
-    # Isolates every indicator in separeted attributes
-    # period_type can be intraday or trend
-    def update_indicators(self, strategy, period_type):
-
-        if period_type == 'intraday': 
-            try:
-                self.ema_short = self.complete_dataset[f"EMA_{strategy.ema_p_short}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.ema_medium = self.complete_dataset[f"EMA_{strategy.ema_p_medium}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.ema_long = self.complete_dataset[f"EMA_{strategy.ema_p_long}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.sma_short = self.complete_dataset[f"SMA_{strategy.sma_p_short}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.sma_medium = self.complete_dataset[f"SMA_{strategy.sma_p_medium}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.sma_long = self.complete_dataset[f"SMA_{strategy.sma_p_long}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.rsi = self.complete_dataset[f"RSI_{strategy.rsi_period}"].values.tolist()
-                self.rsi_layer_cheap = strategy.rsi_layer_cheap
-                self.rsi_layer_expensive = strategy.rsi_layer_expensive
-            except AttributeError:
-                pass
-        
-        elif period_type == 'trend':
-            try:
-                self.ema_trend_short = self.complete_dataset[f"EMA_{strategy.ema_trend_short}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.sma_trend_medium = self.complete_dataset[f"SMA_{strategy.sma_trend_medium}"].values.tolist()
-            except AttributeError:
-                pass
-
-            try:
-                self.sma_trend_long = self.complete_dataset[f"SMA_{strategy.sma_trend_long}"].values.tolist()
-            except AttributeError:
-                pass
 
 
     # check if can open position
