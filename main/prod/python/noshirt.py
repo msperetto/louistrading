@@ -20,11 +20,10 @@ from common.python.indicators_catalog import indicators_catalog
 class NoShirt():
 
     #modificar aqui para ser somente uma estratégia
-    def __init__(self, pair, intraday_ohcl_df, trend_ohcl_df, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
+    def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
 
         self.pair = pair
-        self.intraday_dataset = intraday_ohcl_df #dataframe containing only ohcl data, with no indicators
-        self.trend_dataset = trend_ohcl_df
+        self.dataset = dataset
         self.api_id = api_id
         self.api_key = api_key
         self.order_value = order_value
@@ -32,20 +31,12 @@ class NoShirt():
         self.stop_loss = stop_loss
         self.take_profit = take_profit
         self.negociate = Negociate(self.pair, self.api_id, self.api_key)
-        self.set_support_objects(strategy)
+        self.set_support_objects()
         
         self.classes = {}
 
-            # run everything necessary to the strategy evaluation for the last candle.
+    # run everything necessary to the strategy evaluation for the last candle.
     def run(self):
-        self.update_dataset(self.intraday_dataset, "intraday")
-        trend_indicator_list = self.update_dataset(self.trend_dataset, "trend")
-
-        self.complete_dataset = management.merge_dataframes(self.intraday_dataset, self.trend_dataset, *trend_indicator_list)
-        self.update_indicators(self.strategy)
-
-
-
         self.evaluate_last_candle()
 
     def set_support_objects(self):
@@ -53,7 +44,7 @@ class NoShirt():
         for attr, config in indicators_catalog.items():
             try:
                 column_name = f"{config['prefix'].upper()}_{getattr(self.strategy, attr)}"
-                setattr(self, attr, complete_dataset[column_name])
+                setattr(self, attr, self.dataset[column_name])
 
                 # creating attributes when the indicator has more information, like rsi, for example
                 # number 3 here is the position in config dictionary where new attributes starts

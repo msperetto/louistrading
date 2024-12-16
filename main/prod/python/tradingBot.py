@@ -2,7 +2,8 @@ import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
 from common.python import database_operations as db
-from main.common.python import management
+from common.python import management
+from dataset import Dataset
 from noshirt import NoShirt
 from env_setup import Env_setup
 from ohcl import Ohcl
@@ -53,17 +54,28 @@ class TradingBot:
 
                 # Main logic of the strategy
                 start_date = management.calc_start_date(strategy)
+
+                #getting intraday candle dataset from binance
                 intraday_candle_df = Ohcl(pair, strategy.intraday_interval, start_date)
                 intraday_candle_df.populate_ohlc()
+                
+                #adding strategy indicators to intraday dataset
+                intraday_dataset = Dataset(intraday_candle_df.ohcl_df,strategy)
+                intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
+                #getting trend candle dataset from binance
                 trend_candle_df = Ohcl(pair, strategy.trend_interval, start_date)
                 trend_candle_df.populate_ohlc()
 
-                # TODO: Build the main dataset (combining intraday_candle_df + trend_candle_df) and pass it into StrategyManager.
+                #adding strategy indicators to trend dataset
+                trend_dataset = Dataset(trend_candle_df.ohcl_df, strategy)
+                trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
+
+                #merging intraday and trend datasets in one final dataset
+                final_dataset = intraday_dataset.merge_dataframes(trend_dataset, *trend_indicators_list)
                 manager = StrategyManager(
                     pair,
-                    intraday_candle_df.ohcl_df,
-                    trend_candle_df.ohcl_df,
+                    final_dataset,
                     self.exchange_session.e_id,
                     self.exchange_session.e_sk,
                     self.setup.order_value,
