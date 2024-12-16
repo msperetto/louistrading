@@ -22,11 +22,12 @@ class Main():
         # pass
     
     def run(self):
-        # Handle opened trades. Check if we is ready to sell.
-        # self.handleOpenedTrades()
-    
-        # Handle new positions to open.
-        self.handleNewTrades()
+        while true:
+            # Handle opened trades. Check if we is ready to sell.
+            self.handleOpenedTrades()
+        
+            # Handle new positions to open.
+            self.handleNewTrades()
 
     def handleNewTrades(self):
         # Check if the bot is in the state to open the position. 
@@ -43,6 +44,7 @@ class Main():
 
         for pair in self.pairs:
             for strategy in self.strategies:
+                # self.run_control = {'pair': 'BTCUSDT', 'lastrun' : 'horario', 'period': '1h'}
                 start_date = management.calc_start_date(strategy)
                 #igualar datas de inicio
                 intraday_candle_df = Ohcl(pair, strategy.intraday_interval, start_date)
@@ -67,7 +69,6 @@ class Main():
 
             manager = StrategyManager(..., strategy)
             manager.checkClosePosition()
-
 
 Main().run()
 
