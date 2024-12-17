@@ -6,7 +6,7 @@ indicators_catalog = {
     "intraday_sma_short": {"period_type": "intraday", "prefix": "sma", "length_attr": "intraday_sma_short"},
     "intraday_sma_medium": {"period_type": "intraday", "prefix": "sma", "length_attr": "intraday_sma_medium"},
     "intraday_sma_long": {"period_type": "intraday", "prefix": "sma", "length_attr": "intraday_sma_long"},
-    "intraday_rsi": {"period_type": "intraday", "prefix": "rsi", "length_attr": "intraday_rsi_period", "layer_cheap": "intraday_rsi_layer_cheap","layer_expensive": "intraday_rsi_layer_expensive"},
+    "intraday_rsi": {"period_type": "intraday", "prefix": "rsi", "length_attr": "intraday_rsi", "layer_cheap": "intraday_rsi_layer_cheap","layer_expensive": "intraday_rsi_layer_expensive"},
     "trend_ema_short": {"period_type": "trend", "prefix": "ema", "length_attr": "trend_ema_short"},
     "trend_ema_medium": {"period_type": "trend", "prefix": "ema", "length_attr": "trend_ema_medium"},
     "trend_ema_long": {"period_type": "trend", "prefix": "ema", "length_attr": "trend_ema_long"},

@@ -1,6 +1,6 @@
 from collections import OrderedDict
+from tradingBot import TradingBot
 from common.python import database_operations as db
-from noshirt import NoShirt
 from env_setup import Env_setup
 from candle_data import CandleData
 from common.python.strategy import *
@@ -20,10 +20,9 @@ class Main():
     # def initialize_dataset(self):
         # pass
     
-    def run(self):
-        # call TradingBot here
-        pass
+    def start(self):
+        TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
 
 
-    Main().run()
+Main().start()
 

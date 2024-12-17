@@ -17,7 +17,7 @@ class Strategy_B1():
             self.intraday_ema_short = 9
             self.intraday_rsi_layer_cheap = 19
             self.intraday_rsi_layer_expensive = 79
-            self.intraday_rsi_period = 4
+            self.intraday_rsi = 4
             self.intraday_max_candles_buy = 4
             self.intraday_max_candles_sell = 5
         else:
@@ -40,6 +40,7 @@ class Strategy_B1():
         self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
+        self.trend_class=db.get_class_code("UpTrend_AlwaysTrend")
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")

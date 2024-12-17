@@ -72,7 +72,7 @@ class TradingBot:
                 trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
 
                 #merging intraday and trend datasets in one final dataset
-                final_dataset = intraday_dataset.merge_dataframes(trend_dataset, *trend_indicators_list)
+                final_dataset = intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
                 manager = StrategyManager(
                     pair,
                     final_dataset,
