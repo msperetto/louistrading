@@ -4,9 +4,9 @@ from collections import OrderedDict
 from common.python import database_operations as db
 from common.python import management
 from dataset import Dataset
-from noshirt import NoShirt
+from strategy_manager import StrategyManager
 from env_setup import Env_setup
-from ohcl import Ohcl
+from candle_data import CandleData
 from common.python.strategy import *
 from prod.python.login import Login
 
@@ -56,19 +56,19 @@ class TradingBot:
                 start_date = management.calc_start_date(strategy)
 
                 #getting intraday candle dataset from binance
-                intraday_candle_df = Ohcl(pair, strategy.intraday_interval, start_date)
-                intraday_candle_df.populate_ohlc()
+                intraday_data = CandleData(pair, strategy.intraday_interval, start_date)
+                intraday_data.populate_data()
                 
                 #adding strategy indicators to intraday dataset
-                intraday_dataset = Dataset(intraday_candle_df.ohcl_df,strategy)
+                intraday_dataset = Dataset(intraday_data.candle_df, strategy)
                 intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
                 #getting trend candle dataset from binance
-                trend_candle_df = Ohcl(pair, strategy.trend_interval, start_date)
-                trend_candle_df.populate_ohlc()
+                trend_data = CandleData(pair, strategy.trend_interval, start_date)
+                trend_data.populate_data()
 
                 #adding strategy indicators to trend dataset
-                trend_dataset = Dataset(trend_candle_df.ohcl_df, strategy)
+                trend_dataset = Dataset(trend_data.candle_df, strategy)
                 trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
 
                 #merging intraday and trend datasets in one final dataset
@@ -82,6 +82,22 @@ class TradingBot:
                     strategy
                 )
                 manager.run()
+
+
+    def handleOpenedTrades(self):
+        # Handle opened trades. Check if we is ready to sell.
+        self.opened_trades = db.get_open_orders()
+        for trade in self.opened_trades:
+            # get necessary information from the trade object.
+            strategy = trade.strategy
+            pair = trade.pair
+
+            candleData = CandleData(pair, strategy.intraday_interval, ...)
+            candleData.populate_values()
+
+            manager = StrategyManager(..., strategy)
+            manager.checkClosePosition()
+
 
     def should_run_strategy(self, pair, strategy):
         """

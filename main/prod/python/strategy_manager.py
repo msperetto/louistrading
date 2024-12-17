@@ -17,7 +17,7 @@ from common.python.strategy import *
 from common.python.indicators_catalog import indicators_catalog
 
 # strategy manager 
-class NoShirt():
+class StrategyManager():
 
     #modificar aqui para ser somente uma estratégia
     def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
