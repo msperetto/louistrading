@@ -1,4 +1,5 @@
 import pandas_ta as ta
+import pandas as pd
 from common.python.indicators_catalog import indicators_catalog
 
 class Dataset():
@@ -37,26 +38,35 @@ class Dataset():
             if config['period_type'] == period_type:
                 try:
                     indicators_list.append({"kind": config['prefix'], "length": getattr(self.strategy, attr)})
+                    if period_type == 'trend':
+                        indicators_list[-1]['prefix'] = 'TREND'
                 except AttributeError:
                     pass
 
         for indicator in indicators_list:
-            indicator_df.add_indicator_to_manager(indicator)
+            self.add_indicator_to_manager(indicator)
             
         #here the dataset will be updated
-        indicator_df.apply_indicators_to_df(self.dataset)
+        self.apply_indicators_to_df()
 
-        return [indicator['kind'].upper()+'_'+str(indicator['length']) for indicator in indicators_list]
+        # when trend dataset, return a list of the column names to be merged later
+        # TODO: maybe later create a method only for that
+        if period_type == 'trend':
+            return ['TREND_'+indicator['kind'].upper()+'_'+str(indicator['length']) for indicator in indicators_list]
 
 
     # method to merge only the indicators from one dataframe to other
-    def merge_dataframes(df_to_merge, *to_merge_indicators):
+    def merge_dataframes(self, df_to_merge, *to_merge_indicators):
         self.dataset['date'] = self.dataset.index.date
         df_to_merge['date'] = df_to_merge.index.date
+        
+        # adding calculated column 'date' to the indicators to merge
+        indicators_to_merge = list(to_merge_indicators)
+        indicators_to_merge.append('date')
 
         df_merged = pd.merge(
             self.dataset,
-            df_to_merge[list(trend_indicators)],
+            df_to_merge[list(indicators_to_merge)],
             on='date',
             how='left'
         )

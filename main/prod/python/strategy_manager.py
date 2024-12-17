@@ -11,7 +11,6 @@ from prod.python.dataset import Dataset
 from prod.python.negociate import Negociate
 from backtesting.lib import resample_apply
 import pandas_ta as ta
-import pandas as pd
 from time import sleep
 from common.python.strategy import *
 from common.python.indicators_catalog import indicators_catalog
@@ -23,7 +22,7 @@ class StrategyManager():
     def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
 
         self.pair = pair
-        self.dataset = dataset
+        self.data = dataset
         self.api_id = api_id
         self.api_key = api_key
         self.order_value = order_value
@@ -31,29 +30,38 @@ class StrategyManager():
         self.stop_loss = stop_loss
         self.take_profit = take_profit
         self.negociate = Negociate(self.pair, self.api_id, self.api_key)
-        self.set_support_objects()
-        
         self.classes = {}
+        self.set_support_objects()
 
     # run everything necessary to the strategy evaluation for the last candle.
     def run(self):
-        self.evaluate_last_candle()
+        self.try_open_position()
 
     def set_support_objects(self):
         # setting all attributes necessary depending on indicators utilized by the strategy
         for attr, config in indicators_catalog.items():
             try:
                 column_name = f"{config['prefix'].upper()}_{getattr(self.strategy, attr)}"
-                setattr(self, attr, self.dataset[column_name])
+                #adding prefix trend when looping the trend columns
+                if config['period_type'] == 'trend':
+                    column_name = f"TREND_{column_name}"
+                setattr(self, attr, self.data[column_name])
 
                 # creating attributes when the indicator has more information, like rsi, for example
                 # number 3 here is the position in config dictionary where new attributes starts
                 if len(config) > 3:
                     new_attrs = list(config.items())[3:]
-                    for new_attr, attr_value in new_attributes:
+                    for new_attr, attr_value in new_attrs:
                         setattr(self, attr_value, getattr(self.strategy, attr_value))
             except AttributeError:
                 pass
+
+        #setting max candles attributes:
+        if getattr(self.strategy, 'intraday_max_candles_buy'):
+            self.intraday_max_candles_buy = getattr(self.strategy, 'intraday_max_candles_buy')
+        if getattr(self.strategy, 'intraday_max_candles_sell'):
+            self.intraday_max_candles_sell = getattr(self.strategy, 'intraday_max_candles_sell')
+
 
         # instantiating objects for filter, trigger, trade e trend classes
         exec(self.strategy.filter_buy_class)
