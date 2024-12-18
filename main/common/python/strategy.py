@@ -3,7 +3,20 @@ from common.python.strategylong import StrategyLong
 
 class Strategy_Test():
     def __init__(self, optimize: bool = False):
-        pass
+        self.intraday_ema_short = 8
+        self.intraday_sma_long = 44
+        self.trend_sma_short = 7
+
+        self.intraday_interval = "1h"
+        self.trend_interval = "1d"
+        self.trend_longest_indicator_value = 44
+        self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_gt_SMAlong")
+        self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
+        self.trade_buy_class=db.get_class_code("TradeBuy_Price_gt_EMAshort")
+        self.trend_class=db.get_class_code("UpTrend_AlwaysTrend")
+        self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
+        self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
+        self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
 class Strategy_B1():
     def __init__(self, optimize: bool = False):
