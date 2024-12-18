@@ -22,12 +22,36 @@ class TradingBot:
     def run(self):
         while True:
             # Handle opened trades. Check if it's ready to close postion.
-            # self.handle_opened_trades()
+            self.handle_opened_trades()
 
             self.handle_new_trades()
 
             # Pause the loop for 1 minute before trying again
             time.sleep(60)
+
+    def create_combined_dataset(self, pair, strategy):
+        #calculating de date for the first candle of the dataset
+        start_date = management.calc_start_date(strategy)
+
+        #getting intraday candle dataset from binance
+        intraday_data = CandleData(pair, strategy.intraday_interval, start_date)
+        intraday_data.populate_data()
+        
+        #adding strategy indicators to intraday dataset
+        intraday_dataset = Dataset(intraday_data.candle_df, strategy)
+        intraday_dataset.add_indicators_to_candle_dataset("intraday")
+
+        #getting trend candle dataset from binance
+        trend_data = CandleData(pair, strategy.trend_interval, start_date)
+        trend_data.populate_data()
+
+        #adding strategy indicators to trend dataset
+        trend_dataset = Dataset(trend_data.candle_df, strategy)
+        trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
+
+        #merging intraday and trend datasets in one final dataset
+        return intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
+
 
     def handle_new_trades(self):
         # Check if the bot is active
