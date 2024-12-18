@@ -78,7 +78,7 @@ def get_initial_config():
                 """)
             return cur.fetchone()
 
-def get_open_orders():
+def get_open_trade_pairs():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -86,6 +86,14 @@ def get_open_orders():
                 """)
             return [pair["pair"] for pair in cur.fetchall()]
 
+def get_strategy_name(strategy_id: int):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT name FROM strategy WHERE id = %s;
+                """,(strategy_id,))
+            return cur.fetchone()['name']
+ 
 def get_strategy_id(strategy_name: str):
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
@@ -117,6 +125,13 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
             conn.commit()
             return cur.fetchone()[0]
 
+def get_open_trade_strategy(pair):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT strategy_id FROM trade WHERE pair = %s and open = true;
+                """,(pair,))
+            return cur.fetchone()['strategy_id']
 
 def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(dev_env_con) as conn:
