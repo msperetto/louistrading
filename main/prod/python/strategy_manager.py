@@ -20,7 +20,6 @@ class StrategyManager():
 
     #modificar aqui para ser somente uma estratégia
     def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
-
         self.pair = pair
         self.data = dataset
         self.api_id = api_id
@@ -54,9 +53,9 @@ class StrategyManager():
                 pass
 
         #setting max candles attributes:
-        if getattr(self.strategy, 'intraday_max_candles_buy'):
+        if hasattr(self.strategy, 'intraday_max_candles_buy'):
             self.intraday_max_candles_buy = getattr(self.strategy, 'intraday_max_candles_buy')
-        if getattr(self.strategy, 'intraday_max_candles_sell'):
+        if hasattr(self.strategy, 'intraday_max_candles_sell'):
             self.intraday_max_candles_sell = getattr(self.strategy, 'intraday_max_candles_sell')
 
 
@@ -92,7 +91,7 @@ class StrategyManager():
     def try_open_position(self):
         if self.trendAnalysis.is_upTrend():
             if self.strategyBuy.shouldBuy():
-                self.open_position_strategy = db.get_strategy_id(strategy.__class__.__name__)
+                self.open_position_strategy = db.get_strategy_id(self.strategy.__class__.__name__)
                 self.negociate.open_position("long", self.order_value, self.open_position_strategy)
         else:
             #keeps updating trigger status even if not on trend
@@ -100,9 +99,9 @@ class StrategyManager():
             self.strategyBuy.triggeredState.isStillValid()
         
 
-    def try_close_position(self):
+    def try_close_position(self, strategy, trade_id):
         if self.strategySell.shouldSell(): 
             #checar aqui possibilidade de fechar a ordem completamente, ao invés de passar um valor
-            self.negociate.close_position("long", self.order_value, self.open_position_strategy)
+            self.negociate.close_position("long", self.order_value, strategy, trade_id)
 
 

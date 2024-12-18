@@ -29,7 +29,7 @@ class Negociate():
         self.register_open_transaction(order_response, strategy_id)
         return order_response
 
-    def close_position(self, side, total_value, strategy_id):
+    def close_position(self, side, total_value, strategy_id, trade_id):
         if self.environment == "TEST":
             order_response = {}
             order_response['orderId'] = random.randint(11111, 99999)
@@ -46,22 +46,22 @@ class Negociate():
                 order_response['origQty'] = total_value/order_response['avgPrice']
                 order_response['status'] = 'filled'
         
-        self.register_close_transaction(order_response, strategy_id)
+        self.register_close_transaction(order_response, strategy_id, trade_id)
         return order_response
 
 
     def register_open_transaction(self, order_response, strategy_id):
 
-        self.trade_id = db.insert_trade_transaction(strategy_id, True, order_response)
-        db.insert_order_transaction(order_response, "Entry", self.trade_id)
+        trade_id = db.insert_trade_transaction(strategy_id, True, order_response)
+        db.insert_order_transaction(order_response, "Entry", trade_id)
         
-    def register_close_transaction(self, order_response, strategy_id):
+    def register_close_transaction(self, order_response, strategy_id, trade_id):
         #need to calculate profit, roi ,spread
         profit = 1
         roi = 1
         spread = 1
-        db.update_trade_transaction(self.trade_id, strategy_id, order_response, profit, spread, roi)
-        db.insert_order_transaction(order_response, "Close", self.trade_id)
+        db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
+        db.insert_order_transaction(order_response, "Close", trade_id)
         
     def alert_open_transaction():
         pass

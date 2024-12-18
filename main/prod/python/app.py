@@ -15,7 +15,7 @@ class Main():
         self.setup = Env_setup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperating"])
         self.exchange_session = Login("binance")
         self.exchange_session.login_database()
-        self.strategies = [Strategy_B1()]
+        self.strategies = [Strategy_Test()]
 
     # def initialize_dataset(self):
         # pass

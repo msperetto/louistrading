@@ -9,8 +9,22 @@ from env_setup import Env_setup
 from candle_data import CandleData
 from common.python.strategy import *
 from prod.python.login import Login
+import pandas as pd
 
 class TradingBot:
+    test_fake_candle = {
+        'Open': 105000,
+        'High': 110000,
+        'Low': 100000,
+        'Close': 107900,
+        'Volume': 4000,
+        'EMA_8': 108000,
+        'SMA_44': 107000,
+        'TREND_SMA_7': 103000
+    }
+    new_fake_index = pd.Timestamp('2024-12-18 14:00:00')
+    new_fake_row = pd.DataFrame([test_fake_candle], index=[new_fake_index])
+
     def __init__(self, strategies, db, setup, exchange_session):
         self.strategies = strategies
         self.db = db
@@ -59,12 +73,15 @@ class TradingBot:
             return
 
         self.active_pairs = self.db.get_active_pairs()
-        open_orders = self.db.get_open_orders()
+
+        #as the get_open_trade_pairs returns 2 values, just get the first one(pair)
+        opened_trade_pairs = [pair[0] for pair in self.db.get_open_trade_pairs()]
+
         # TODO: get pairs with opened alerts
 
         # Select eligible pairs.
         # Pairs that are active, do not have any opened position and do not have any opened alert.
-        self.pairs = [pair for pair in self.active_pairs if pair not in open_orders]
+        self.pairs = [pair for pair in self.active_pairs if pair not in opened_trade_pairs]
 
         for pair in self.pairs:
             for strategy in self.strategies:
@@ -76,6 +93,11 @@ class TradingBot:
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
+
+                #creating FAKE ROW HERE:
+                # DELETE after testing
+                final_dataset = pd.concat([final_dataset, self.new_fake_row])
+
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -87,14 +109,21 @@ class TradingBot:
                 manager.try_open_position()
 
 
-    def handleOpenedTrades(self):
+    def handle_opened_trades(self):
         # Handle opened trades. Check if we is ready to sell.
         self.opened_trade_pairs = db.get_open_trade_pairs()
-        for pair in self.opened_trade_pairs:
-            # get necessary information from the trade object.
-            strategy = db.get_strategy_name(db.get_open_trade_strategy(pair))
+        for pair, trade_id in self.opened_trade_pairs:
+            # get the strategy class object (not only the name as string)
+            strategy = globals().get(db.get_strategy_name(db.get_open_trade_strategy(pair)))
+            #instantiate the strategy class:
+            strategy = strategy()
             
             final_dataset = self.create_combined_dataset(pair, strategy)
+
+            #creating FAKE ROW HERE:
+            # DELETE after testing
+            final_dataset = pd.concat([final_dataset, self.new_fake_row])
+
             manager = StrategyManager(
                 pair,
                 final_dataset,
@@ -103,7 +132,7 @@ class TradingBot:
                 self.setup.order_value,
                 strategy
             )
-            manager.try_close_position()
+            manager.try_close_position(strategy, trade_id)
 
 
     def should_run_strategy(self, pair, strategy):
