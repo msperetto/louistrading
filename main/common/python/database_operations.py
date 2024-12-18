@@ -49,7 +49,9 @@ def get_active_pairs():
             cur.execute("""
                 SELECT pair_code from pair where active is true;
                 """)
-            return cur.fetchall()
+            # code to return a list of strings instead a list of tuples
+            result = [symbol[0] for symbol in cur.fetchall()]    
+            return result
 
 
 def insert_exchange_config(id, key, exchange: str):
@@ -82,9 +84,9 @@ def get_open_trade_pairs():
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT pair FROM trade WHERE open is true;
+                SELECT pair, id FROM trade WHERE open is true;
                 """)
-            return [pair["pair"] for pair in cur.fetchall()]
+            return [[pair["pair"], pair["id"]] for pair in cur.fetchall()]
 
 def get_strategy_name(strategy_id: int):
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
