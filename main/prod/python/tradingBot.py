@@ -75,28 +75,7 @@ class TradingBot:
 
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
-
-                # Main logic of the strategy
-                start_date = management.calc_start_date(strategy)
-
-                #getting intraday candle dataset from binance
-                intraday_data = CandleData(pair, strategy.intraday_interval, start_date)
-                intraday_data.populate_data()
-                
-                #adding strategy indicators to intraday dataset
-                intraday_dataset = Dataset(intraday_data.candle_df, strategy)
-                intraday_dataset.add_indicators_to_candle_dataset("intraday")
-
-                #getting trend candle dataset from binance
-                trend_data = CandleData(pair, strategy.trend_interval, start_date)
-                trend_data.populate_data()
-
-                #adding strategy indicators to trend dataset
-                trend_dataset = Dataset(trend_data.candle_df, strategy)
-                trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
-
-                #merging intraday and trend datasets in one final dataset
-                final_dataset = intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
+                final_dataset = self.create_combined_dataset(pair, strategy)
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -105,22 +84,26 @@ class TradingBot:
                     self.setup.order_value,
                     strategy
                 )
-                manager.run()
+                manager.try_open_position()
 
 
     def handleOpenedTrades(self):
         # Handle opened trades. Check if we is ready to sell.
-        self.opened_trades = db.get_open_orders()
-        for trade in self.opened_trades:
+        self.opened_trade_pairs = db.get_open_trade_pairs()
+        for pair in self.opened_trade_pairs:
             # get necessary information from the trade object.
-            strategy = trade.strategy
-            pair = trade.pair
-
-            candleData = CandleData(pair, strategy.intraday_interval, ...)
-            candleData.populate_values()
-
-            manager = StrategyManager(..., strategy)
-            manager.checkClosePosition()
+            strategy = db.get_strategy_name(db.get_open_trade_strategy(pair))
+            
+            final_dataset = self.create_combined_dataset(pair, strategy)
+            manager = StrategyManager(
+                pair,
+                final_dataset,
+                self.exchange_session.e_id,
+                self.exchange_session.e_sk,
+                self.setup.order_value,
+                strategy
+            )
+            manager.try_close_position()
 
 
     def should_run_strategy(self, pair, strategy):
