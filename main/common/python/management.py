@@ -31,6 +31,7 @@ def time_intervals_to_minutes(interval):
     }
     return interval_map[interval]
 
+
 def dict_to_params(dict):
     params = json.dumps(dict)
     params = params.replace(":","=")
@@ -63,3 +64,4 @@ def merge_dataframes(intraday_df, trend_df, *trend_indicators):
     df_merged.drop(columns=['date'], inplace=True)
 
     return df_merged
+

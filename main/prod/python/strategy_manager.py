@@ -33,9 +33,6 @@ class StrategyManager():
         self.classes = {}
         self.set_support_objects()
 
-    # run everything necessary to the strategy evaluation for the last candle.
-    def run(self):
-        self.try_open_position()
 
     def set_support_objects(self):
         # setting all attributes necessary depending on indicators utilized by the strategy
