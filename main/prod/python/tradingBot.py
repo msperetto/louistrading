@@ -120,11 +120,12 @@ class TradingBot:
 
         # First convert "strategy.intraday_interval" and "strategy.trend_interval" to the same base period. In this case, minutes.
         intraday_interval = management.time_intervals_to_minutes(strategy.intraday_interval)
-        trend_interval = management.time_intervals_to_minutes(strategy.trend_interval)
-        interval = max(intraday_interval, trend_interval)
 
         # The next time the strategy can be executed.
-        next_execution_time = last_execution + timedelta(minutes=interval)
+        next_execution_time = last_execution + timedelta(minutes=intraday_interval)
+
+        # TODO: Analyze another solution for this. 
+        # Maybe compare only the hour from the last_execution (+ timedelta...) against the time now. 
 
         # Only executes if the required time has already passed.
         return now >= next_execution_time
