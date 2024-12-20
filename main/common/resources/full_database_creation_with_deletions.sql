@@ -29,8 +29,6 @@ DROP TABLE IF EXISTS public.classes_map CASCADE;
 DROP SEQUENCE IF EXISTS public.classes_map_class_id_seq CASCADE;
 DROP TABLE IF EXISTS public.exchange_config CASCADE;
 DROP TABLE IF EXISTS public.initial_config CASCADE;
-DROP TABLE IF EXISTS public.optmization_tests CASCADE;
-DROP SEQUENCE IF EXISTS public.optmization_tests_test_id_seq CASCADE;
 DROP TABLE IF EXISTS public.order_control CASCADE;
 DROP TABLE IF EXISTS public.pair CASCADE;
 DROP TABLE IF EXISTS public.strategy CASCADE;
@@ -42,7 +40,6 @@ CREATE TABLE public.classes_map (
     class_name character varying(200) NOT NULL,
     class_code character varying(3000)
 );
-
 
 
 --
@@ -64,66 +61,10 @@ CREATE TABLE public.initial_config (
     max_open_orders integer,
     order_value real NOT NULL,
     max_risk real,
-    opperating boolean,
+    opperation_active boolean,
     leverage_long_value real,
     leverage_short_value real
 );
-
-
---
--- Name: optmization_tests; Type: TABLE; Schema: public;
---
-
-CREATE TABLE public.optmization_tests (
-    test_id integer NOT NULL,
-    start_time timestamp with time zone NOT NULL,
-    end_time timestamp with time zone NOT NULL,
-    pair character varying(15) NOT NULL,
-    period character varying(10) NOT NULL,
-    return_percent real,
-    return_buy_hold real,
-    win_rate real,
-    sharpe_ratio real,
-    max_drawdown real,
-    best_indicators_combination character varying(6000) NOT NULL,
-    filter_buy character varying(255) NOT NULL,
-    trigger_buy character varying(255) NOT NULL,
-    trade_buy character varying(255) NOT NULL,
-    filter_sell character varying(255) NOT NULL,
-    trigger_sell character varying(255) NOT NULL,
-    trade_sell character varying(255) NOT NULL,
-    total_trades integer,
-    best_trade real,
-    worst_trade real,
-    average_trade real,
-    profit_factor real,
-    created_at timestamp without time zone DEFAULT now(),
-    label_period character varying(300),
-    period_trend character varying(5),
-    trend_class character varying(255),
-    strategy_class character varying(255)
-);
-
-
---
--- Name: optmization_tests_test_id_seq; Type: SEQUENCE; Schema: public;
---
-
-CREATE SEQUENCE public.optmization_tests_test_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: optmization_tests_test_id_seq; Type: SEQUENCE OWNED BY; Schema: public;
---
-
-ALTER SEQUENCE public.optmization_tests_test_id_seq OWNED BY public.optmization_tests.test_id;
-
 
 --
 -- Name: order_control; Type: TABLE; Schema: public;
@@ -223,13 +164,6 @@ ALTER SEQUENCE public.trade_id_seq OWNED BY public.trade.id;
 
 
 --
--- Name: optmization_tests test_id; Type: DEFAULT; Schema: public;
---
-
-ALTER TABLE ONLY public.optmization_tests ALTER COLUMN test_id SET DEFAULT nextval('public.optmization_tests_test_id_seq'::regclass);
-
-
---
 -- Name: strategy id; Type: DEFAULT; Schema: public;
 --
 
@@ -249,14 +183,6 @@ ALTER TABLE ONLY public.trade ALTER COLUMN id SET DEFAULT nextval('public.trade_
 
 ALTER TABLE ONLY public.classes_map
     ADD CONSTRAINT classes_map_pkey PRIMARY KEY (class_name);
-
-
---
--- Name: optmization_tests optmization_tests_pkey; Type: CONSTRAINT; Schema: public;
---
-
-ALTER TABLE ONLY public.optmization_tests
-    ADD CONSTRAINT optmization_tests_pkey PRIMARY KEY (test_id);
 
 
 --
@@ -359,8 +285,8 @@ UpTrend_Price_gt_EMAshort	self.trend = UpTrend_Price_gt_EMAshort(self.data, lamb
 -- Data for Name: initial_config; Type: TABLE DATA; Schema: public;
 --
 
-COPY public.initial_config (max_open_orders, order_value, max_risk, opperating) FROM stdin;
-5	200	10	t 1 1
+COPY public.initial_config (max_open_orders, order_value, max_risk, opperation_active, leverage_long_value, leverage_short_value) FROM stdin;
+5	200	10	t	1	1
 \.
 
 --
@@ -369,8 +295,16 @@ COPY public.initial_config (max_open_orders, order_value, max_risk, opperating) 
 
 COPY public.pair (pair_code, active) FROM stdin;
 BTCUSDT	t
-XRPUSDT	f
+XRPUSDT	t
 ETHUSDT	t
+LTCUSDT	t
+XTZUSDT	t
+BCHUSDT	t
+LINKUSDT	t
+CHZUSDT	t
+EOSUSDT	t
+ADAUSDT	t
+TRXUSDT	t
 \.
 
 --
