@@ -69,7 +69,7 @@ class TradingBot:
 
     def handle_new_trades(self):
         # Check if the bot is active
-        if not self.setup.opperating:
+        if not self.setup.opperation_active:
             return
 
         self.active_pairs = self.db.get_active_pairs()
