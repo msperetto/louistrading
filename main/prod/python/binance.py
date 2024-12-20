@@ -94,36 +94,6 @@ class Binance():
         return result
 
     
-    async def get_orderbook(self, pairs_to_filter: list[str], pair: str = None):
-        endpoint = "/fapi/v1/ticker/bookTicker"
-
-        binance_out = 1
-
-        if pair:
-            params = {
-                "symbol": pair,
-            }
-        else:
-            params = None
-
-        while binance_out:
-            try:
-                async with aiohttp.ClientSession() as session:
-                    exchange_info = await session.get(self.BASE_ENDPOINT + endpoint, params=params, ssl=False)
-                    result = await exchange_info.json()
-                binance_out = 0
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-        
-        # filtering results for only pairs in intersections between the two exchanges:
-        filtered_result = [pair for pair in result if pair["symbol"] in pairs_to_filter]
-
-        # ordering results based on symbol name:
-        ordered_result = sorted(filtered_result, key=lambda i: i["symbol"])
-
-        return ordered_result
-        # return [float(result["bidPrice"]), float(result["askPrice"])]
 
         # Possible intervals for klines
         # 1m
@@ -214,68 +184,12 @@ class Binance():
         
         return df
 
-
-    
     def get_bid(self, pair_info: dict):
         return pair_info["bidPrice"]
 
 
     def get_ask(self, pair_info: dict):
         return pair_info["askPrice"]
-
-
-    async def get_mark_funding(self):
-        endpoint = '/fapi/v1/premiumIndex'
-
-        binance_out = 1
-
-        while binance_out:
-            try:
-                async with aiohttp.ClientSession() as session:
-                    exchange_info = await session.get(self.BASE_ENDPOINT + endpoint, ssl=False)
-                    result = await exchange_info.json()
-                binance_out = 0
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-
-        return result
-
-
-    def get_funding_rate_history(self, symbol, limit=100):
-        endpoint = '/dapi/v1/fundingRate'
-        params = {
-            'symbol': symbol,
-            'limit': limit
-        }
-        binance_out = 1
-        funding_rates = []
-
-        while binance_out:
-            try:
-                funding_rates = requests.get(
-                    self.BASE_ENDPOINT + endpoint, params=params).json()
-                binance_out = 0
-            except Exception as e:
-                time.sleep(3)
-
-        funding_rates = self.transformUnixTimeInDatetime(funding_rates, "fundingTime")
-        funding_rates = self.transformStrToFloat(funding_rates, "fundingRate")
-
-        return funding_rates
-
-
-    def transformUnixTimeInDatetime(self, entry_dict, field):
-        for entry in entry_dict:
-            entry[field] = str(datetime.fromtimestamp(int(entry[field]/1000)))
-        return entry_dict
-
-
-    def transformStrToFloat(self, entry_dict, field):
-        for entry in entry_dict:
-            entry[field] = float(entry[field])
-        return entry_dict
-
 
     def open_position(self, symbol, amount, side, price, b_id, b_sk):
         endpoint = '/fapi/v1/order'
@@ -291,14 +205,9 @@ class Binance():
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
-        print(f"qtt {management.truncate(amount, 0)}")
-        print(f"price {management.truncate(price, 5)}")
-
-
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys(): # erro no servidor binance
             print(position)
-            print(f'Tentativa arbitragem com erro na Binance')
         else:
             return position
 
@@ -334,7 +243,6 @@ class Binance():
             else:
                 return order_info
 
-
     def account_info(self, b_id, b_sk):
         endpoint = '/fapi/v2/account'
 
@@ -342,37 +250,3 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
         return self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
-
-    def get_bid_ask_from_ws(self, ws_response: str):
-        return [ws_response["b"], ws_response["a"]]
-
-    async def ws_get_orderbook_stream(self, symbol, m_queue):
-            # /fapi/v1/ticker/bookTicker
-            endpoint = symbol+'@bookTicker'
-            # print(endpoint)
-            try:
-                async with websockets.connect(self.WS_ENDPOINT+endpoint) as ws:
-                    while True:
-                        new_message = await ws.recv()
-                        await m_queue.put(new_message)
-                        await asyncio.sleep(0)
-            except websockets.exceptions.ConnectionClosedError as e:
-                print(f"exception binance {e}")
-
-    async def process_messages(self, m_queue):
-        # await asyncio.sleep(2)
-        while True:
-            # await m_queue.get()
-            print(await m_queue.get())
-            # m_queue
-            print("consumer")
-            # print(last_message)
-            await asyncio.sleep(1)
-
-    async def combine(self):
-        message_q = asyncio.LifoQueue()
-        tasks = [
-            self.ws_get_orderbook_stream('btcusdt', message_q),
-            process_messages(message_q)
-        ]
-        await asyncio.gather(*tasks)
