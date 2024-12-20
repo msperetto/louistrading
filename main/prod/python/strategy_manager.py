@@ -15,7 +15,6 @@ from time import sleep
 from common.python.strategy import *
 from common.python.indicators_catalog import indicators_catalog
 
-# strategy manager 
 class StrategyManager():
 
     #modificar aqui para ser somente uma estratégia

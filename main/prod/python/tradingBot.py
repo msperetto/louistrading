@@ -12,19 +12,6 @@ from prod.python.login import Login
 import pandas as pd
 
 class TradingBot:
-    test_fake_candle = {
-        'Open': 105000,
-        'High': 110000,
-        'Low': 100000,
-        'Close': 107900,
-        'Volume': 4000,
-        'EMA_8': 108000,
-        'SMA_44': 107000,
-        'TREND_SMA_7': 103000
-    }
-    new_fake_index = pd.Timestamp('2024-12-18 14:00:00')
-    new_fake_row = pd.DataFrame([test_fake_candle], index=[new_fake_index])
-
     def __init__(self, strategies, db, setup, exchange_session):
         self.strategies = strategies
         self.db = db
@@ -94,10 +81,6 @@ class TradingBot:
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
 
-                #creating FAKE ROW HERE:
-                # DELETE after testing
-                final_dataset = pd.concat([final_dataset, self.new_fake_row])
-
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -119,10 +102,6 @@ class TradingBot:
             strategy = strategy()
             
             final_dataset = self.create_combined_dataset(pair, strategy)
-
-            #creating FAKE ROW HERE:
-            # DELETE after testing
-            final_dataset = pd.concat([final_dataset, self.new_fake_row])
 
             manager = StrategyManager(
                 pair,

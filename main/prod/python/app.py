@@ -12,17 +12,13 @@ import pandas as pd
 class Main():
     def __init__(self):
         base_config = db.get_initial_config()
-        self.setup = Env_sfetup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperation_active"], base_config["leverage_long_value"], base_config["leverage_short_value"])
+        self.setup = Env_setup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperation_active"], base_config["leverage_long_value"], base_config["leverage_short_value"])
         self.exchange_session = Login("binance")
         self.exchange_session.login_database()
         self.strategies = [Strategy_Test()]
 
-    # def initialize_dataset(self):
-        # pass
-    
     def start(self):
         TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
-
-
+    
 Main().start()
 
