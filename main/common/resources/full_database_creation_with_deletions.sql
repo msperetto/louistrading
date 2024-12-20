@@ -65,7 +65,9 @@ CREATE TABLE public.initial_config (
     max_open_orders integer,
     order_value real NOT NULL,
     max_risk real,
-    opperating boolean
+    opperating boolean,
+    leverage_long_value real,
+    leverage_short_value real
 );
 
 
@@ -387,7 +389,7 @@ UpTrend_Price_gt_EMAshort	self.trend = UpTrend_Price_gt_EMAshort(self.data, lamb
 --
 
 COPY public.initial_config (max_open_orders, order_value, max_risk, opperating) FROM stdin;
-5	200	10	t
+5	200	10	t 1 1
 \.
 
 --
