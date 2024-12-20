@@ -33,7 +33,6 @@ DROP TABLE IF EXISTS public.optmization_tests CASCADE;
 DROP SEQUENCE IF EXISTS public.optmization_tests_test_id_seq CASCADE;
 DROP TABLE IF EXISTS public.order_control CASCADE;
 DROP TABLE IF EXISTS public.pair CASCADE;
-DROP SEQUENCE IF EXISTS public.pair_pair_id_seq CASCADE;
 DROP TABLE IF EXISTS public.strategy CASCADE;
 DROP SEQUENCE IF EXISTS public.strategy_id_seq CASCADE;
 DROP TABLE IF EXISTS public.trade CASCADE;
@@ -149,30 +148,9 @@ CREATE TABLE public.order_control (
 --
 
 CREATE TABLE public.pair (
-    pair_id integer NOT NULL,
     pair_code character varying(25) NOT NULL,
     active boolean DEFAULT false NOT NULL
 );
-
-
---
--- Name: pair_pair_id_seq; Type: SEQUENCE; Schema: public;
---
-
-CREATE SEQUENCE public.pair_pair_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pair_pair_id_seq; Type: SEQUENCE OWNED BY; Schema: public;
---
-
-ALTER SEQUENCE public.pair_pair_id_seq OWNED BY public.pair.pair_id;
 
 
 --
@@ -252,13 +230,6 @@ ALTER TABLE ONLY public.optmization_tests ALTER COLUMN test_id SET DEFAULT nextv
 
 
 --
--- Name: pair pair_id; Type: DEFAULT; Schema: public;
---
-
-ALTER TABLE ONLY public.pair ALTER COLUMN pair_id SET DEFAULT nextval('public.pair_pair_id_seq'::regclass);
-
-
---
 -- Name: strategy id; Type: DEFAULT; Schema: public;
 --
 
@@ -301,7 +272,7 @@ ALTER TABLE ONLY public.order_control
 --
 
 ALTER TABLE ONLY public.pair
-    ADD CONSTRAINT pair_pkey PRIMARY KEY (pair_id);
+    ADD CONSTRAINT pair_pkey PRIMARY KEY (pair_code);
 
 
 --
@@ -396,10 +367,10 @@ COPY public.initial_config (max_open_orders, order_value, max_risk, opperating) 
 -- Data for Name: pair; Type: TABLE DATA; Schema: public;
 --
 
-COPY public.pair (pair_id, pair_code, active) FROM stdin;
-1	BTCUSDT	t
-5	XRPUSDT	f
-4	ETHUSDT	t
+COPY public.pair (pair_code, active) FROM stdin;
+BTCUSDT	t
+XRPUSDT	f
+ETHUSDT	t
 \.
 
 --
@@ -410,13 +381,6 @@ COPY public.strategy (id, name, enabled) FROM stdin;
 1	Strategy_B1	t
 2	Strategy_Test	t
 \.
-
-
---
--- Name: pair_pair_id_seq; Type: SEQUENCE SET; Schema: public;
---
-
-SELECT pg_catalog.setval('public.pair_pair_id_seq', 6, true);
 
 
 --
