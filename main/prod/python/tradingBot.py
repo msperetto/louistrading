@@ -10,6 +10,7 @@ from candle_data import CandleData
 from common.python.strategy import *
 from prod.python.login import Login
 import pandas as pd
+from prod.python.tests.negociation_main_tests import TestNegociationMain
 
 class TradingBot:
     def __init__(self, strategies, db, setup, exchange_session):
@@ -81,6 +82,8 @@ class TradingBot:
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
 
+                final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -102,6 +105,9 @@ class TradingBot:
             strategy = strategy()
             
             final_dataset = self.create_combined_dataset(pair, strategy)
+
+            final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+
 
             manager = StrategyManager(
                 pair,
