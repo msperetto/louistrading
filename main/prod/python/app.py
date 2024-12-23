@@ -1,8 +1,8 @@
 from collections import OrderedDict
-from tradingBot import TradingBot
+from prod.python.tradingBot import TradingBot
 from common.python import database_operations as db
-from env_setup import Env_setup
-from candle_data import CandleData
+from prod.python.env_setup import Env_setup
+from prod.python.candle_data import CandleData
 from common.python.strategy import *
 from prod.python.login import Login
 from backtesting.lib import resample_apply

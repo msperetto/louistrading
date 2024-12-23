@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from collections import OrderedDict
 from common.python import database_operations as db
 from common.python import management
-from dataset import Dataset
-from strategy_manager import StrategyManager
-from env_setup import Env_setup
-from candle_data import CandleData
+from prod.python.dataset import Dataset
+from prod.python.strategy_manager import StrategyManager
+from prod.python.env_setup import Env_setup
+from prod.python.candle_data import CandleData
 from common.python.strategy import *
 from prod.python.login import Login
 import pandas as pd
