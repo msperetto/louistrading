@@ -82,8 +82,6 @@ class TradingBot:
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
 
-                final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -105,9 +103,6 @@ class TradingBot:
             strategy = strategy()
             
             final_dataset = self.create_combined_dataset(pair, strategy)
-
-            final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-
 
             manager = StrategyManager(
                 pair,
