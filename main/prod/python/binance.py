@@ -165,12 +165,15 @@ class Binance():
 
         df = pd.DataFrame({})
         startTime = management.date_to_ms(startTime)
+        # time in miliseconds for an specified candle interval
+        startTime_offset = management.time_intervals_to_seconds(interval)*1000
+
+        #endtime to get all candles but the last one
         endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
+        endTime -= startTime_offset
 
         time_intervals = [startTime] # array to store all the time intervals to call the api
         
-        # time in miliseconds for an specified candle interval
-        startTime_offset = management.time_intervals_to_seconds(interval)*1000
 
         while (startTime + (startTime_offset * 1499)) < endTime:
             startTime += startTime_offset * 1499
