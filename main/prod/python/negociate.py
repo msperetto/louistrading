@@ -60,7 +60,7 @@ class Negociate():
         entry_price = db.get_order(trade_id)['entry_price']
         entry_quantity = db.get_order(trade_id)['quantity']
         profit = (float(order_response['avgPrice'])*order_response['origQty']) - (entry_price*entry_quantity)
-        spread = float(order_response['avgPrice']) - entry_price
+        spread = (float(order_response['avgPrice']) / entry_price) - 1
         #need to calculate roi
         roi = 1
         db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
