@@ -127,6 +127,22 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
             conn.commit()
             return cur.fetchone()[0]
 
+def get_order(trade_id):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM order_control WHERE trade_id = %s;
+                """,(trade_id,))
+            return cur.fetchone()
+
+def get_trade(trade_id):
+    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM trade WHERE id = %s;
+                """,(trade_id,))
+            return cur.fetchone()
+
 def get_open_trade_strategy(pair):
     with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
