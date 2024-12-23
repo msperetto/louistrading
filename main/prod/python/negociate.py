@@ -2,6 +2,7 @@ from prod.python.binance import Binance
 from common.python import database_operations as db
 import random
 from datetime import datetime
+
 class Negociate():
     environment = "TEST"
     def __init__(self, pair, api_id, api_key):
@@ -58,8 +59,8 @@ class Negociate():
     def register_close_transaction(self, order_response, strategy_id, trade_id):
         entry_price = db.get_order(trade_id)['entry_price']
         entry_quantity = db.get_order(trade_id)['quantity']
-        profit = order_response['avgPrice']*order_response['origQty'] - entry_price*entry_quantity
-        spread = order_response['avgPrice'] - entry_price
+        profit = (float(order_response['avgPrice'])*order_response['origQty']) - (entry_price*entry_quantity)
+        spread = float(order_response['avgPrice']) - entry_price
         #need to calculate roi
         roi = 1
         db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
