@@ -40,11 +40,11 @@ class Negociate():
             cur_price = Binance().get_orderbook(self.pair, 5) 
             if side == "long":
                 order_response['avgPrice'] = cur_price['bids'][0][0]
-                order_response['origQty'] =  total_value/float(order_response['avgPrice'])
+                order_response['origQty'] = db.get_order(trade_id)['quantity']
                 order_response['status'] = 'filled'
             else:
                 order_response['avgPrice'] = cur_price['asks'][0][0]
-                order_response['origQty'] = total_value/order_response['avgPrice']
+                order_response['origQty'] = db.get_order(trade_id)['quantity']
                 order_response['status'] = 'filled'
         
         self.register_close_transaction(order_response, strategy_id, trade_id)
