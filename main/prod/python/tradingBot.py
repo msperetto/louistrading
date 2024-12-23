@@ -136,10 +136,9 @@ class TradingBot:
         intraday_interval = management.time_intervals_to_minutes(strategy.intraday_interval)
 
         # The next time the strategy can be executed.
+        # The solution below it works only when intraday_interval is at least 1h. If the interval is minutes, then it won't work.
         next_execution_time = last_execution + timedelta(minutes=intraday_interval)
-
-        # TODO: Analyze another solution for this. 
-        # Maybe compare only the hour from the last_execution (+ timedelta...) against the time now. 
+        next_execution_time = next_execution_time.replace(minute=0, second=0)
 
         # Only executes if the required time has already passed.
-        return now >= next_execution_time
+        return now > next_execution_time
