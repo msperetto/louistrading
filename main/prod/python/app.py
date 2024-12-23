@@ -20,5 +20,6 @@ class Main():
     def start(self):
         TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
     
-Main().start()
+if __name__ == "__main__":
+    Main().start()
 
