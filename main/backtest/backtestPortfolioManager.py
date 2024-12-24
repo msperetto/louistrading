@@ -30,9 +30,14 @@ class BacktestPortfolioManager(Strategy):
     # try open position
     def try_open_position(self):
         for strategy in self.strategies:
-            if strategy.ShouldBuy():
-                self.buy()
-                return
+            if isinstance(strategy, StrategyLong):
+                if strategy.shouldOpen():
+                    self.buy()
+                    return
+            elif isinstance(strategy, StrategyShort):
+                if strategy.shouldOpen():
+                    self.sell()
+                    return
 
     # try close position
     def try_close_position(self):
@@ -41,8 +46,13 @@ class BacktestPortfolioManager(Strategy):
             return
 
         for strategy in self.strategies:
-            if strategy.ShouldSell():
-                # We could potentially track which strategy close the position.
-                # print(f"Position closed by strategy: {strategy.__class__.__name__}")
-                self.position.close()
+            if strategy.shouldClose():
+                if isinstance(strategy, StrategyLong):
+                    # We could potentially track which strategy close the position.
+                    # print(f"Closing a LONG position with {strategy.__class__.__name__}")
+                    self.sell()
+                elif isinstance(strategy, StrategyShort):
+                    # We could potentially track which strategy close the position.
+                    # print(f"Closing a SHORT position with {strategy.__class__.__name__}")
+                    self.buy()
                 return
