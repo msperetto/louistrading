@@ -8,6 +8,7 @@ from common.strategy import *
 from prod.binance import Binance as binance
 from enum import Enum
 from backtest.python import Json_type
+from itertools import product
 
 # Useful constants
 CASH = 150_000
@@ -88,26 +89,29 @@ class Main():
         }
 
     def run_intraday_optimization(self, bt):
-        for filter_buy_class in self.filter_buy_classes:
-            for trigger_buy_class in self.trigger_buy_classes:
-                for trade_buy_class in self.trade_buy_classes:
-                    for filter_sell_class in self.filter_sell_classes:
-                        for trigger_sell_class in self.trigger_sell_classes:
-                            for trade_sell_class in self.trade_sell_classes:
-                                stats, heatmap = bt.optimize(
-                                            **self.get_optimization_params(),
-                                            # stop_loss = range(2,5,1), # percentage of maximum loss - float number (i.e. 3 or 2.5 etc)
-                                            # take_profit = range() # percentage of maximum profit - float number
-                                            filter_buy_class=db.get_class_code(filter_buy_class),
-                                            trigger_buy_class=db.get_class_code(trigger_buy_class),
-                                            trade_buy_class=db.get_class_code(trade_buy_class),
-                                            filter_sell_class=db.get_class_code(filter_sell_class),
-                                            trigger_sell_class=db.get_class_code(trigger_sell_class),
-                                            trade_sell_class=db.get_class_code(trade_sell_class),
-                                            maximize = 'Equity Final [$]',
-                                            return_heatmap = True)
+        combinations = product(
+            self.filter_buy_classes,
+            self.trigger_buy_classes,
+            self.trade_buy_classes,
+            self.filter_sell_classes,
+            self.trigger_sell_classes,
+            self.trade_sell_classes
+        )
 
-                                self.save_report(stats)
+        for combination in combinations:
+            filter_buy_class, trigger_buy_class, trade_buy_class, filter_sell_class, trigger_sell_class, trade_sell_class = combination
+            stats, heatmap = bt.optimize(
+                **self.get_optimization_params(),
+                filter_buy_class=db.get_class_code(filter_buy_class),
+                trigger_buy_class=db.get_class_code(trigger_buy_class),
+                trade_buy_class=db.get_class_code(trade_buy_class),
+                filter_sell_class=db.get_class_code(filter_sell_class),
+                trigger_sell_class=db.get_class_code(trigger_sell_class),
+                trade_sell_class=db.get_class_code(trade_sell_class),
+                maximize='Equity Final [$]',
+                return_heatmap=True
+            )
+            self.save_report(stats)
 
     # Basically the main method.
     def start(self):
