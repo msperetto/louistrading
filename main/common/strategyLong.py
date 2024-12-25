@@ -15,12 +15,12 @@ class StrategyLong:
         self.strategy_sell = None
         self.trend_analysis = None
 
-    def ShouldBuy(self):
+    def ShouldOpen(self):
         if self.trend_analysis.is_upTrend():
             return self.strategy_buy.shouldBuy()
         return False
 
-    def ShouldSell(self):
+    def ShouldClose(self):
         return self.strategy_sell.shouldSell()
 
 
