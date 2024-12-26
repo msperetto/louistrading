@@ -18,7 +18,7 @@ class FilterBuy_RSI(Filter):
         self.rsi_layer_cheap = rsi_layer_cheap
 
     def isValid(self) -> bool:
-        return self.get_rsi()[-1] < self.rsi_layer_cheap
+        return self.get_rsi().iloc[-1] < self.rsi_layer_cheap
 
 class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_long_fn):
@@ -28,7 +28,7 @@ class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_long()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_EMAshort_gt_SMAlong(Filter):
     def __init__(self, ema_short_fn, sma_long_fn):
@@ -36,7 +36,7 @@ class FilterBuy_EMAshort_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return self.get_ema_short()[-1] > self.get_sma_long()[-1]
+        return self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1]
 
 class FilterBuy_EMAshort_gt_SMAmedium(Filter):
     def __init__(self, ema_short_fn, sma_medium_fn):
@@ -44,7 +44,7 @@ class FilterBuy_EMAshort_gt_SMAmedium(Filter):
         self.get_sma_medium = sma_medium_fn
 
     def isValid(self) -> bool:
-        return self.get_ema_short()[-1] > self.get_sma_medium()[-1]
+        return self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1]
 
 class FilterBuy_RSI_EMAshort_gt_SMAmedium(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_medium_fn):
@@ -54,7 +54,7 @@ class FilterBuy_RSI_EMAshort_gt_SMAmedium(Filter):
         self.get_sma_medium = sma_medium_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_medium()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1])
 
 class FilterBuy_RSI_EMAshort_gt_SMAmedium_EMAshort_gt_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_medium_fn, sma_long_fn):
@@ -65,8 +65,8 @@ class FilterBuy_RSI_EMAshort_gt_SMAmedium_EMAshort_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_medium()[-1]) \
-                and (self.get_ema_short()[-1] > self.get_sma_long()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1]) \
+                and (self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_RSI_EMAshort_gt_SMAmedium_gt_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, ema_short_fn, sma_medium_fn, sma_long_fn):
@@ -77,8 +77,8 @@ class FilterBuy_RSI_EMAshort_gt_SMAmedium_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.get_ema_short()[-1] > self.get_sma_medium()[-1]) \
-                and (self.get_sma_medium()[-1] > self.get_sma_long()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1]) \
+                and (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong(Filter):
     def __init__(self, ema_short_fn, sma_medium_fn, sma_long_fn):
@@ -87,8 +87,8 @@ class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_ema_short()[-1] < self.get_sma_medium()[-1]) \
-                and (self.get_sma_medium()[-1] > self.get_sma_long()[-1])
+        return (self.get_ema_short().iloc[-1] < self.get_sma_medium().iloc[-1]) \
+                and (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium(Filter):
     def __init__(self, ema_short_fn, sma_medium_fn, sma_long_fn, data):
@@ -98,9 +98,9 @@ class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_ema_short()[-1] < self.get_sma_medium()[-1]) \
-                and (self.get_sma_medium()[-1] > self.get_sma_long()[-1]) \
-                and (self.data.Close[-1] > self.get_sma_medium()[-1])
+        return (self.get_ema_short().iloc[-1] < self.get_sma_medium().iloc[-1]) \
+                and (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1]) \
+                and (self.data.Close.iloc[-1] > self.get_sma_medium().iloc[-1])
 
 
 class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAlong(Filter):
@@ -111,9 +111,9 @@ class FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_ema_short()[-1] < self.get_sma_medium()[-1]) \
-                and (self.get_sma_medium()[-1] > self.get_sma_long()[-1]) \
-                and (self.data.Close[-1] > self.get_sma_long()[-1])
+        return (self.get_ema_short().iloc[-1] < self.get_sma_medium().iloc[-1]) \
+                and (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1]) \
+                and (self.data.Close.iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_RSI_price_x_SMAmedium(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, data, sma_medium_fn):
@@ -123,7 +123,7 @@ class FilterBuy_RSI_price_x_SMAmedium(Filter):
         self.get_sma_medium = sma_medium_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.data.Close[-1] > self.get_sma_medium()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.data.Close.iloc[-1] > self.get_sma_medium().iloc[-1])
 
 
 class FilterBuy_RSI_price_x_SMAlong(Filter):
@@ -134,7 +134,7 @@ class FilterBuy_RSI_price_x_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and (self.data.Close[-1] > self.get_sma_long()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and (self.data.Close.iloc[-1] > self.get_sma_long().iloc[-1])
 
 class FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAmedium(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, data, sma_medium_fn, ema_short_fn, sma_long_fn):
@@ -146,9 +146,9 @@ class FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAmedium(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and \
-                (self.get_ema_short()[-1] > self.get_sma_long()[-1]) and \
-                (self.data.Close[-1] > self.get_sma_medium()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and \
+                (self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1]) and \
+                (self.data.Close.iloc[-1] > self.get_sma_medium().iloc[-1])
 
 class FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAlong(Filter):
     def __init__(self, rsi_fn, rsi_layer_cheap, data, sma_long_fn, ema_short_fn):
@@ -159,9 +159,9 @@ class FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAlong(Filter):
         self.get_ema_short = ema_short_fn
 
     def isValid(self) -> bool:
-        return (self.get_rsi()[-1] < self.rsi_layer_cheap) and \
-                (self.get_ema_short()[-1] > self.get_sma_long()[-1]) and \
-                (self.data.Close[-1] > self.get_sma_long()[-1])
+        return (self.get_rsi().iloc[-1] < self.rsi_layer_cheap) and \
+                (self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1]) and \
+                (self.data.Close.iloc[-1] > self.get_sma_long().iloc[-1])
 
 
 class FilterBuy_SMAmedium_gt_SMAlong(Filter):
@@ -170,7 +170,7 @@ class FilterBuy_SMAmedium_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_sma_medium()[-1] > self.get_sma_long()[-1])
+        return (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1])
 
 
 class FilterBuy_SMAmedium_gt_SMAlong_or_price_x_SMAlong_price_x_SMAmedium(Filter):
@@ -180,8 +180,8 @@ class FilterBuy_SMAmedium_gt_SMAlong_or_price_x_SMAlong_price_x_SMAmedium(Filter
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_sma_medium()[-1] > self.get_sma_long()[-1] or \
-            ((self.data.Close[-1] > self.get_sma_long()[-1]) and (self.data.Close[-1] > self.get_sma_medium()[-1])))
+        return (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1] or \
+            ((self.data.Close.iloc[-1] > self.get_sma_long().iloc[-1]) and (self.data.Close.iloc[-1] > self.get_sma_medium().iloc[-1])))
 
 
 class FilterSell_RSI(Filter):
@@ -190,4 +190,4 @@ class FilterSell_RSI(Filter):
         self.rsi_layer_expensive = rsi_layer_expensive
 
     def isValid(self) -> bool:
-        return self.get_rsi()[-1] > self.rsi_layer_expensive
+        return self.get_rsi().iloc[-1] > self.rsi_layer_expensive
