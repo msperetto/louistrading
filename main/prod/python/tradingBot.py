@@ -11,6 +11,18 @@ from common.python.strategy import *
 from prod.python.login import Login
 import pandas as pd
 from prod.python.tests.negociation_main_tests import TestNegociationMain
+import os
+import logging
+
+# Configure logging
+log_file_path = os.path.join(os.path.dirname(__file__), '..', 'logs', 'trading_bot.log')
+logging.basicConfig(
+    filename=log_file_path,
+    filemode='a',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class TradingBot:
     def __init__(self, strategies, db, setup, exchange_session):
@@ -20,8 +32,12 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
+        self.active_pairs = []
+        self.pairs = []
+        self.opened_trade_pairs = []
 
     def run(self):
+
         while True:
             # Handle opened trades. Check if it's ready to close postion.
             self.handle_opened_trades()
@@ -82,6 +98,10 @@ class TradingBot:
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
 
+                #logging for debugging
+                logger.info(f"TRYING TO OPEN POSITION")
+                logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
+
                 manager = StrategyManager(
                     pair,
                     final_dataset,
@@ -103,6 +123,10 @@ class TradingBot:
             strategy = strategy()
             
             final_dataset = self.create_combined_dataset(pair, strategy)
+
+            #logging for debugging
+            logger.info(f"TRYING TO CLOSE POSITION")
+            logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
             manager = StrategyManager(
                 pair,
