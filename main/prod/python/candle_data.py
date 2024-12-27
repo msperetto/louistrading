@@ -8,8 +8,8 @@ class CandleData():
         self.interval = interval
         self.startTime = startTime
     
-    def populate_data(self):
-        self.candle_df = binance().get_extended_kline(self.pair, self.interval, self.startTime)
+    def populate_data(self, endTime):
+        self.candle_df = binance().get_extended_kline(self.pair, self.interval, self.startTime, endTime)
 
     def get_new_row(self):
         # get 2 last candles provided and uses the second one (the first one is the current changing candle)

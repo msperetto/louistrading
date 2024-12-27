@@ -13,6 +13,7 @@ import pandas as pd
 from prod.python.tests.negociation_main_tests import TestNegociationMain
 import os
 import logging
+import time
 
 # Configure logging
 log_file_path = os.path.join(os.path.dirname(__file__), '..', 'logs', 'trading_bot.log')
@@ -53,7 +54,7 @@ class TradingBot:
 
         #getting intraday candle dataset from binance
         intraday_data = CandleData(pair, strategy.intraday_interval, start_date)
-        intraday_data.populate_data()
+        intraday_data.populate_data(round(time.time()*1000))
         
         #adding strategy indicators to intraday dataset
         intraday_dataset = Dataset(intraday_data.candle_df, strategy)
@@ -61,7 +62,7 @@ class TradingBot:
 
         #getting trend candle dataset from binance
         trend_data = CandleData(pair, strategy.trend_interval, start_date)
-        trend_data.populate_data()
+        trend_data.populate_data(round(time.time()*1000))
 
         #adding strategy indicators to trend dataset
         trend_dataset = Dataset(trend_data.candle_df, strategy)
