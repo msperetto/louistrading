@@ -1,19 +1,19 @@
 import time
-from common.python.filter import *
-from common.python.trigger import *
-from common.python.trade import *
-from common.python.trend import *
-from common.python.strategybuy import StrategyBuy
-from common.python.strategysell import StrategySell
-from common.python.trendanalysis import TrendAnalysis
-from common.python import management
-from prod.python.dataset import Dataset
-from prod.python.negociate import Negociate
+from common.filter import *
+from common.trigger import *
+from common.trade import *
+from common.trend import *
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
+from common import management
+from prod.dataset import Dataset
+from prod.negociate import Negociate
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 from time import sleep
-from common.python.strategy import *
-from common.python.indicators_catalog import indicators_catalog
+from common.strategy import *
+from common.indicators_catalog import indicators_catalog
 
 class StrategyManager():
 

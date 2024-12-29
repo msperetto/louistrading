@@ -1,10 +1,10 @@
 from collections import OrderedDict
-from prod.python.tradingBot import TradingBot
-from common.python import database_operations as db
-from prod.python.env_setup import Env_setup
-from prod.python.candle_data import CandleData
-from common.python.strategy import *
-from prod.python.login import Login
+from prod.tradingBot import TradingBot
+from common.dao import database_operations as db
+from prod.env_setup import Env_setup
+from prod.candle_data import CandleData
+from common.strategy import *
+from prod.login import Login
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 import pandas as pd

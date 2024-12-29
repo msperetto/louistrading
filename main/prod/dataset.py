@@ -1,6 +1,6 @@
 import pandas_ta as ta
 import pandas as pd
-from common.python.indicators_catalog import indicators_catalog
+from common.indicators_catalog import indicators_catalog
 
 class Dataset():
     def __init__(self, dataset, strategy):

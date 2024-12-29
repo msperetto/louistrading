@@ -1,5 +1,5 @@
-from prod.python.binance import Binance
-from common.python import database_operations as db
+from prod.binance import Binance
+from common.dao import database_operations as db
 import random
 from datetime import datetime
 

@@ -1,5 +1,4 @@
-from common.python import database_operations as db
-from common.python.strategylong import StrategyLong
+from common.dao import database_operations as db
 
 class Strategy_Test():
     def __init__(self, optimize: bool = False):

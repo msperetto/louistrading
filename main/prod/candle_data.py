@@ -1,6 +1,6 @@
 import pandas as pd
-from prod.python.binance import Binance as binance
-from common.python import database_operations as db
+from prod.binance import Binance as binance
+from common.dao import database_operations as db
 
 class CandleData():
     def __init__(self, pair, interval, startTime):

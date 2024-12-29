@@ -1,6 +1,6 @@
-from common.python.strategybuy import StrategyBuy
-from common.python.strategysell import StrategySell
-from common.python.trendanalysis import TrendAnalysis
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
 
 class StrategyLong:
     """

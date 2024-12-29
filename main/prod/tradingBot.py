@@ -1,16 +1,16 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
-from common.python import database_operations as db
-from common.python import management
-from prod.python.dataset import Dataset
-from prod.python.strategy_manager import StrategyManager
-from prod.python.env_setup import Env_setup
-from prod.python.candle_data import CandleData
-from common.python.strategy import *
-from prod.python.login import Login
+from common.dao import database_operations as db
+from common import management
+from prod.dataset import Dataset
+from prod.strategy_manager import StrategyManager
+from prod.env_setup import Env_setup
+from prod.candle_data import CandleData
+from common.strategy import *
+from prod.login import Login
 import pandas as pd
-from prod.python.tests.negociation_main_tests import TestNegociationMain
+from tests.negociation_main_tests import TestNegociationMain
 import os
 import logging
 import time
