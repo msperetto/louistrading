@@ -17,7 +17,7 @@ import logging
 import time
 
 # Configure logging
-log_file_path = os.path.join(os.path.dirname(__file__), '..', 'logs', 'trading_bot.log')
+log_file_path = os.path.join(os.path.dirname(__file__), 'logs', 'trading_bot.log')
 logging.basicConfig(
     filename=log_file_path,
     filemode='a',
