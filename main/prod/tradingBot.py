@@ -38,13 +38,18 @@ class TradingBot:
     def run(self):
 
         while True:
-            # Handle opened trades. Check if it's ready to close postion.
-            self.handle_opened_trades()
+            try:
+                # Handle opened trades. Check if it's ready to close postion.
+                self.handle_opened_trades()
 
-            self.handle_new_trades()
+                self.handle_new_trades()
 
-            # Pause the loop for 1 minute before trying again
-            time.sleep(60)
+                # Pause the loop for 1 minute before trying again
+                time.sleep(60)
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+                logger.info("Retrying in 2 minutes...")
+                time.sleep(120) 
 
     def create_combined_dataset(self, pair, strategy):
         #calculating de date for the first candle of the dataset
