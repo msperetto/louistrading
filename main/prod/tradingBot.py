@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
+from common.dao import strategy_dao, trade_dao
 from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
@@ -79,8 +80,8 @@ class TradingBot:
 
         self.active_pairs = self.db.get_active_pairs()
 
-        #as the get_open_trade_pairs returns 2 values, just get the first one(pair)
-        opened_trade_pairs = [pair[0] for pair in self.db.get_open_trade_pairs()]
+        opened_trades = trade_dao.get_open_trade_pairs()
+        opened_trade_pairs = [trade.pair for trade in opened_trades]
 
         # TODO: get pairs with opened alerts
 
@@ -116,28 +117,29 @@ class TradingBot:
 
     def handle_opened_trades(self):
         # Handle opened trades. Check if we is ready to sell.
-        self.opened_trade_pairs = db.get_open_trade_pairs()
-        for pair, trade_id in self.opened_trade_pairs:
-            # get the strategy class object (not only the name as string)
-            strategy = globals().get(db.get_strategy_name(db.get_open_trade_strategy(pair)))
+
+        opened_trades = trade_dao.get_open_trade_pairs()
+        for trade in opened_trades:
+            strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
+            strategyClassName = globals().get(strategyObject.name)
             #instantiate the strategy class:
-            strategy = strategy()
-            
-            final_dataset = self.create_combined_dataset(pair, strategy)
+            strategy = strategyClassName()
+
+            final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
             logger.info(f"TRYING TO CLOSE POSITION")
-            logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
+            logger.debug(f"Pair: {trade.pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
             manager = StrategyManager(
-                pair,
+                trade.pair,
                 final_dataset,
                 self.exchange_session.e_id,
                 self.exchange_session.e_sk,
                 self.setup.order_value,
                 strategy
             )
-            manager.try_close_position(strategy, trade_id)
+            manager.try_close_position(strategy, trade.id)
 
 
     def should_run_strategy(self, pair, strategy):

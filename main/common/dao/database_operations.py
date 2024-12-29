@@ -77,30 +77,6 @@ def get_initial_config():
                 SELECT * FROM initial_config;
                 """)
             return cur.fetchone()
-
-def get_open_trade_pairs():
-    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT pair, id FROM trade WHERE open is true;
-                """)
-            return [[pair["pair"], pair["id"]] for pair in cur.fetchall()]
-
-def get_strategy_name(strategy_id: int):
-    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT name FROM strategy WHERE id = %s;
-                """,(strategy_id,))
-            return cur.fetchone()['name']
- 
-def get_strategy_id(strategy_name: str):
-    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id FROM strategy WHERE name = %s;
-                """,(strategy_name,))
-            return cur.fetchone()['id']
    
 def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
     with psycopg.connect(DEV_ENV_CON) as conn:
@@ -132,22 +108,6 @@ def get_order(trade_id):
                 SELECT * FROM order_control WHERE trade_id = %s;
                 """,(trade_id,))
             return cur.fetchone()
-
-def get_trade(trade_id):
-    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT * FROM trade WHERE id = %s;
-                """,(trade_id,))
-            return cur.fetchone()
-
-def get_open_trade_strategy(pair):
-    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT strategy_id FROM trade WHERE pair = %s and open = true;
-                """,(pair,))
-            return cur.fetchone()['strategy_id']
 
 def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(DEV_ENV_CON) as conn:

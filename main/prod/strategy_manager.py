@@ -7,6 +7,7 @@ from common.strategybuy import StrategyBuy
 from common.strategysell import StrategySell
 from common.trendanalysis import TrendAnalysis
 from common import management
+from common.dao import strategy_dao
 from prod.dataset import Dataset
 from prod.negociate import Negociate
 from backtesting.lib import resample_apply
@@ -90,8 +91,8 @@ class StrategyManager():
     def try_open_position(self):
         if self.trendAnalysis.is_upTrend():
             if self.strategyBuy.shouldBuy():
-                self.open_position_strategy = db.get_strategy_id(self.strategy.__class__.__name__)
-                self.negociate.open_position("long", self.order_value, self.open_position_strategy)
+                strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
+                self.negociate.open_position("long", self.order_value, strategy.id)
         else:
             #keeps updating trigger status even if not on trend
             #verificar necessidade dessa atualização
