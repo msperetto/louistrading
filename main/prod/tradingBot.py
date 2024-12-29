@@ -34,9 +34,6 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
-        self.active_pairs = []
-        self.pairs = []
-        self.opened_trade_pairs = []
 
     def run(self):
 
@@ -78,7 +75,7 @@ class TradingBot:
         if not self.setup.opperation_active:
             return
 
-        self.active_pairs = self.db.get_active_pairs()
+        active_pairs = self.db.get_active_pairs()
 
         opened_trades = trade_dao.get_open_trade_pairs()
         opened_trade_pairs = [trade.pair for trade in opened_trades]
@@ -87,9 +84,9 @@ class TradingBot:
 
         # Select eligible pairs.
         # Pairs that are active, do not have any opened position and do not have any opened alert.
-        self.pairs = [pair for pair in self.active_pairs if pair not in opened_trade_pairs]
+        pairs = [pair for pair in active_pairs if pair not in opened_trade_pairs]
 
-        for pair in self.pairs:
+        for pair in pairs:
             for strategy in self.strategies:
                 # Check if the strategy has been executed recently
                 if not self.should_run_strategy(pair, strategy):
