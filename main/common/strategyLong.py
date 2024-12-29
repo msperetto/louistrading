@@ -43,7 +43,14 @@ class StrategyLong:
             trigger_class=trigger_class,
             trade_class=trade_class,
         )
-    
+
+    def build_trend_analysis(self, trend_class):
+        """
+        Constructs the trend analysis logic using the provided class and parameters.
+        """
+        return TrendAnalysis(
+            trend_class=trend_class
+        )
     
     def get_biggest_trend_interval(self):
         """

@@ -42,4 +42,5 @@ class StrategyB2(StrategyLong):
         )
 
         # Define other strategy components
-        self.trend_analysis = db.get_class_code("UpTrend_Price_gt_SMAlong")
+        self.trend_class = db.get_class_code("UpTrend_Price_gt_SMAlong")
+        self.trend_analysis = self.build_trend_analysis(self.trend_class)
