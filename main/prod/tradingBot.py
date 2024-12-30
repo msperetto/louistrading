@@ -91,6 +91,8 @@ class TradingBot:
         # Pairs that are active, do not have any opened position and do not have any opened alert.
         pairs = [pair for pair in active_pairs if pair not in opened_trade_pairs]
 
+        # TODO: What if an exception occurs inside on one of the for loops?
+        # Do we want to continue the next pair and strategy?
         for pair in pairs:
             for strategy in self.strategies:
                 # Check if the strategy has been executed recently
@@ -121,6 +123,9 @@ class TradingBot:
         # Handle opened trades. Check if we is ready to sell.
 
         opened_trades = trade_dao.get_open_trade_pairs()
+
+        # TODO: What if an exception occurs in a specific trade?
+        # We might want to continue processing the for loop and try to close the next trade. 
         for trade in opened_trades:
             strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
             strategyClassName = globals().get(strategyObject.name)
