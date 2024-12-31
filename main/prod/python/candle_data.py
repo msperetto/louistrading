@@ -3,13 +3,14 @@ from prod.python.binance import Binance as binance
 from common.python import database_operations as db
 
 class CandleData():
-    def __init__(self, pair, interval, startTime):
+    def __init__(self, pair, interval, startTime, period_type):
         self.pair = pair
         self.interval = interval
         self.startTime = startTime
+        self.period_type = period_type
     
     def populate_data(self, endTime):
-        self.candle_df = binance().get_extended_kline(self.pair, self.interval, self.startTime, endTime)
+        self.candle_df = binance().get_extended_kline(self.pair, self.interval, self.startTime, endTime, self.period_type)
 
     def get_new_row(self):
         # get 2 last candles provided and uses the second one (the first one is the current changing candle)

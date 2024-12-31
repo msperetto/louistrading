@@ -53,7 +53,7 @@ class TradingBot:
         start_date = management.calc_start_date(strategy)
 
         #getting intraday candle dataset from binance
-        intraday_data = CandleData(pair, strategy.intraday_interval, start_date)
+        intraday_data = CandleData(pair, strategy.intraday_interval, start_date, "intraday")
         intraday_data.populate_data(round(time.time()*1000))
         
         #adding strategy indicators to intraday dataset
@@ -61,7 +61,7 @@ class TradingBot:
         intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
         #getting trend candle dataset from binance
-        trend_data = CandleData(pair, strategy.trend_interval, start_date)
+        trend_data = CandleData(pair, strategy.trend_interval, start_date, "trend")
         trend_data.populate_data(round(time.time()*1000))
 
         #adding strategy indicators to trend dataset
