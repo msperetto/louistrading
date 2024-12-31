@@ -159,7 +159,7 @@ class Binance():
         
         return orderbook
 
-    def get_extended_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000)):
+    def get_extended_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000), period_type: str = "intraday"):
         # Binance only allow 1500 max candles per request, so for longer periods of time, its necessary
         # to concatenate each request call.
 
@@ -170,7 +170,8 @@ class Binance():
 
         #endtime to get all candles but the last one
         endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
-        endTime -= startTime_offset
+        if period_type == "intraday":
+            endTime -= startTime_offset
 
         time_intervals = [startTime] # array to store all the time intervals to call the api
         
