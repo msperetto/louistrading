@@ -2,6 +2,7 @@ from prod.binance import Binance
 from common.dao import database_operations as db
 import random
 from datetime import datetime
+from config.config import NEGOCIATION_ENV
 
 class Negociate():
     environment = "TEST"
@@ -11,7 +12,7 @@ class Negociate():
         self.api_key = api_key
     
     def open_position(self, side, total_value, strategy_id):
-        if self.environment == "TEST":
+        if NEGOCIATION_ENV == "TEST":
             order_response = {}
             cur_price = Binance().get_orderbook(self.pair, 5) 
             order_response['orderId'] = random.randint(11111, 99999)
