@@ -195,23 +195,53 @@ class Binance():
     def get_ask(self, pair_info: dict):
         return pair_info["askPrice"]
 
-    def open_position(self, symbol, amount, side, price, b_id, b_sk):
-        endpoint = '/fapi/v1/order'
+    def get_symbol_price(self, symbol):
+        endpoint = '/fapi/v1/ticker/price'
+
+        params = {
+            'symbol': symbol
+        }
+        binance_out = 1
+
+        # todo: verify if it's not going to create an infinite loop here
+        while binance_out:
+            try:
+                return requests.get(self.BASE_ENDPOINT + endpoint, params=params).json()['price']
+            except Exception as e:
+                # todo log here the error
+                time.sleep(0.5)
+
+    def open_position(self, symbol, quantity, side, b_id, b_sk):
+        endpoint = '/fapi/v1/order/test'
 
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
-            'type': 'LIMIT',
-            'quantity': management.truncate(amount, 0),
-            'price': management.truncate(price, 5),
-            # IOC execute all quantity possible and cancel any remaining qtt;
-            'timeInForce': 'IOC',
+            'type': 'MARKET',
+            'quantity': quantity,
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys(): # erro no servidor binance
-            print(position)
+            print(position) # log here the error or send to the alert system
+        else:
+            return position
+
+    def close_position(self, symbol, side, b_id, b_sk):
+        endpoint = '/fapi/v1/order/test'
+
+        params = {
+            'symbol': symbol,
+            'side': side, #"BUY" or "SELL"
+            'type': 'MARKET',
+            'closePosition': True,
+            'timestamp': str(self.get_servertime()),
+            'recvWindow': 3000
+        }
+        position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
+        if 'code' in position.keys():
+            print(position) # log here the error or send to the alert system
         else:
             return position
 
