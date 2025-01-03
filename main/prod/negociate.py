@@ -27,6 +27,10 @@ class Negociate():
                 order_response['avgPrice'] = cur_price['bids'][0][0]
                 order_response['origQty'] = total_value/float(order_response['avgPrice'])
                 order_response['status'] = 'filled'
+        
+        else:
+            order_quantity = total_value/float(Binance().get_symbol_price(self.pair))
+            order_response = Binance().open_position(self.pair, order_quantity, side, self.api_id, self.api_key)
 
         self.register_open_transaction(order_response, strategy_id)
         return order_response
@@ -47,6 +51,9 @@ class Negociate():
                 order_response['avgPrice'] = cur_price['asks'][0][0]
                 order_response['origQty'] = db.get_order(trade_id)['quantity']
                 order_response['status'] = 'filled'
+
+        else:
+            order_response = Binance().close_position(self.pair, side, self.api_id, self.api_key)
         
         self.register_close_transaction(order_response, strategy_id, trade_id)
         return order_response
