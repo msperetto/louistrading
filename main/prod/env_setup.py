@@ -1,5 +1,5 @@
 from typing import Dict, List
-from common.python import database_operations as db
+from common.dao import database_operations as db
 
 class Env_setup():
     def __init__(self, max_open_orders: int, order_value: float, max_risk: float, opperation_active: bool, leverage_long_value: float, leverage_short_value: float):

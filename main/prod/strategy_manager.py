@@ -1,19 +1,20 @@
 import time
-from common.python.filter import *
-from common.python.trigger import *
-from common.python.trade import *
-from common.python.trend import *
-from common.python.strategybuy import StrategyBuy
-from common.python.strategysell import StrategySell
-from common.python.trendanalysis import TrendAnalysis
-from common.python import management
-from prod.python.dataset import Dataset
-from prod.python.negociate import Negociate
+from common.filter import *
+from common.trigger import *
+from common.trade import *
+from common.trend import *
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
+from common import management
+from common.dao import strategy_dao
+from prod.dataset import Dataset
+from prod.negociate import Negociate
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 from time import sleep
-from common.python.strategy import *
-from common.python.indicators_catalog import indicators_catalog
+from common.strategy import *
+from common.indicators_catalog import indicators_catalog
 
 class StrategyManager():
 
@@ -90,8 +91,8 @@ class StrategyManager():
     def try_open_position(self):
         if self.trendAnalysis.is_upTrend():
             if self.strategyBuy.shouldBuy():
-                self.open_position_strategy = db.get_strategy_id(self.strategy.__class__.__name__)
-                self.negociate.open_position("long", self.order_value, self.open_position_strategy)
+                strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
+                self.negociate.open_position("long", self.order_value, strategy.id)
         else:
             #keeps updating trigger status even if not on trend
             #verificar necessidade dessa atualização

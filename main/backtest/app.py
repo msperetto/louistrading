@@ -1,11 +1,11 @@
 import pandas_ta as ta
 import pandas as pd
 from backtesting import Backtest
-from common.python import management
-from common.python import database_operations as db
+from common import management
+from common.dao import database_operations as db
 from backtest import NoShirt
-from common.python.strategy import *
-from prod.python.binance import Binance as binance
+from common.strategy import *
+from prod.binance import Binance as binance
 
 class Main():
     def __init__(self):

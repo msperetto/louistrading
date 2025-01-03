@@ -1,12 +1,10 @@
 import psycopg
 import csv
-
-dev_env_con = "dbname=noshirt user=peretto"
-# dev_env_con = "dbname=noshirt user=postgres password=@tkTYB9i"
+from config.config import DEV_ENV_CON
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
 def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = ""):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO optmization_tests(start_time, end_time, pair, period, return_percent,
@@ -25,7 +23,7 @@ def insert_report(pair, period, stats, best_indicators_combination, period_label
             conn.commit()
 
 def insert_class(class_name, class_code):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO classes_map(class_name, class_code)
@@ -35,7 +33,7 @@ def insert_class(class_name, class_code):
 
 
 def get_class_code(class_name):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT class_code FROM classes_map WHERE class_name = %(value)s;
@@ -44,7 +42,7 @@ def get_class_code(class_name):
 
 
 def get_active_pairs():
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT pair_code from pair where active is true;
@@ -55,7 +53,7 @@ def get_active_pairs():
 
 
 def insert_exchange_config(id, key, exchange: str):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO exchange_config (id, sk, exchange) VALUES(%s, %s, %s); 
@@ -65,7 +63,7 @@ def insert_exchange_config(id, key, exchange: str):
 
 
 def get_exchange_config(exchange: str):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT id, sk FROM exchange_config WHERE exchange = %s;
@@ -73,39 +71,15 @@ def get_exchange_config(exchange: str):
             return cur.fetchone()
 
 def get_initial_config():
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT * FROM initial_config;
                 """)
             return cur.fetchone()
-
-def get_open_trade_pairs():
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT pair, id FROM trade WHERE open is true;
-                """)
-            return [[pair["pair"], pair["id"]] for pair in cur.fetchall()]
-
-def get_strategy_name(strategy_id: int):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT name FROM strategy WHERE id = %s;
-                """,(strategy_id,))
-            return cur.fetchone()['name']
- 
-def get_strategy_id(strategy_name: str):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id FROM strategy WHERE name = %s;
-                """,(strategy_name,))
-            return cur.fetchone()['id']
    
 def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO order_control(order_id, date, pair, operation_type, side, entry_price, quantity,
@@ -117,7 +91,7 @@ def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.
             conn.commit()
 
 def insert_trade_transaction(strategy_id, open, order_response, profit = None, spread=None, roi=None):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO trade(open, open_time, side, pair, strategy_id)
@@ -128,31 +102,15 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
             return cur.fetchone()[0]
 
 def get_order(trade_id):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT * FROM order_control WHERE trade_id = %s;
                 """,(trade_id,))
             return cur.fetchone()
 
-def get_trade(trade_id):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT * FROM trade WHERE id = %s;
-                """,(trade_id,))
-            return cur.fetchone()
-
-def get_open_trade_strategy(pair):
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT strategy_id FROM trade WHERE pair = %s and open = true;
-                """,(pair,))
-            return cur.fetchone()['strategy_id']
-
 def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
-    with psycopg.connect(dev_env_con) as conn:
+    with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE trade
@@ -167,7 +125,7 @@ def update_trade_transaction(trade_id, strategy_id, order_response, profit = Non
 
 
 def export_to_csv():
-    with psycopg.connect(dev_env_con, row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT * FROM optmization_tests;

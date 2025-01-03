@@ -1,5 +1,5 @@
 import pandas as pd
-from common.python import management
+from common import management
 import time
 import asyncio
 from typing import List, Dict

@@ -1,6 +1,6 @@
-from common.python.strategybuy import StrategyBuy
-from common.python.strategysell import StrategySell
-from common.python.trendanalysis import TrendAnalysis
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
 
 class StrategyLong:
     """
@@ -43,7 +43,14 @@ class StrategyLong:
             trigger_class=trigger_class,
             trade_class=trade_class,
         )
-    
+
+    def build_trend_analysis(self, trend_class):
+        """
+        Constructs the trend analysis logic using the provided class and parameters.
+        """
+        return TrendAnalysis(
+            trend_class=trend_class
+        )
     
     def get_biggest_trend_interval(self):
         """

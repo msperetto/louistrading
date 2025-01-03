@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import json
 import pandas as pd
-from common.python.strategy import *
+from common.strategy import *
 
 def date_to_ms(date_value: str):
     date_value = datetime.strptime(date_value, '%d.%m.%Y')

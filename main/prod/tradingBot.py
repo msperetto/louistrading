@@ -1,22 +1,23 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
-from common.python import database_operations as db
-from common.python import management
-from prod.python.dataset import Dataset
-from prod.python.strategy_manager import StrategyManager
-from prod.python.env_setup import Env_setup
-from prod.python.candle_data import CandleData
-from common.python.strategy import *
-from prod.python.login import Login
+from common.dao import strategy_dao, trade_dao
+from common.dao import database_operations as db
+from common import management
+from prod.dataset import Dataset
+from prod.strategy_manager import StrategyManager
+from prod.env_setup import Env_setup
+from prod.candle_data import CandleData
+from common.strategy import *
+from prod.login import Login
 import pandas as pd
-from prod.python.tests.negociation_main_tests import TestNegociationMain
+from tests.negociation_main_tests import TestNegociationMain
 import os
 import logging
 import time
 
 # Configure logging
-log_file_path = os.path.join(os.path.dirname(__file__), '..', 'logs', 'trading_bot.log')
+log_file_path = os.path.join(os.path.dirname(__file__), 'logs', 'trading_bot.log')
 logging.basicConfig(
     filename=log_file_path,
     filemode='a',
@@ -33,20 +34,22 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
-        self.active_pairs = []
-        self.pairs = []
-        self.opened_trade_pairs = []
 
     def run(self):
 
         while True:
-            # Handle opened trades. Check if it's ready to close postion.
-            self.handle_opened_trades()
+            try:
+                # Handle opened trades. Check if it's ready to close postion.
+                self.handle_opened_trades()
 
-            self.handle_new_trades()
+                self.handle_new_trades()
 
-            # Pause the loop for 1 minute before trying again
-            time.sleep(60)
+                # Pause the loop for 1 minute before trying again
+                time.sleep(60)
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+                logger.info("Retrying in 2 minutes...")
+                time.sleep(120) 
 
     def create_combined_dataset(self, pair, strategy):
         #calculating de date for the first candle of the dataset
@@ -77,18 +80,20 @@ class TradingBot:
         if not self.setup.opperation_active:
             return
 
-        self.active_pairs = self.db.get_active_pairs()
+        active_pairs = self.db.get_active_pairs()
 
-        #as the get_open_trade_pairs returns 2 values, just get the first one(pair)
-        opened_trade_pairs = [pair[0] for pair in self.db.get_open_trade_pairs()]
+        opened_trades = trade_dao.get_open_trade_pairs()
+        opened_trade_pairs = [trade.pair for trade in opened_trades]
 
         # TODO: get pairs with opened alerts
 
         # Select eligible pairs.
         # Pairs that are active, do not have any opened position and do not have any opened alert.
-        self.pairs = [pair for pair in self.active_pairs if pair not in opened_trade_pairs]
+        pairs = [pair for pair in active_pairs if pair not in opened_trade_pairs]
 
-        for pair in self.pairs:
+        # TODO: What if an exception occurs inside on one of the for loops?
+        # Do we want to continue the next pair and strategy?
+        for pair in pairs:
             for strategy in self.strategies:
                 # Check if the strategy has been executed recently
                 if not self.should_run_strategy(pair, strategy):
@@ -116,28 +121,32 @@ class TradingBot:
 
     def handle_opened_trades(self):
         # Handle opened trades. Check if we is ready to sell.
-        self.opened_trade_pairs = db.get_open_trade_pairs()
-        for pair, trade_id in self.opened_trade_pairs:
-            # get the strategy class object (not only the name as string)
-            strategy = globals().get(db.get_strategy_name(db.get_open_trade_strategy(pair)))
+
+        opened_trades = trade_dao.get_open_trade_pairs()
+
+        # TODO: What if an exception occurs in a specific trade?
+        # We might want to continue processing the for loop and try to close the next trade. 
+        for trade in opened_trades:
+            strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
+            strategyClassName = globals().get(strategyObject.name)
             #instantiate the strategy class:
-            strategy = strategy()
-            
-            final_dataset = self.create_combined_dataset(pair, strategy)
+            strategy = strategyClassName()
+
+            final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
             logger.info(f"TRYING TO CLOSE POSITION")
-            logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
+            logger.debug(f"Pair: {trade.pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
             manager = StrategyManager(
-                pair,
+                trade.pair,
                 final_dataset,
                 self.exchange_session.e_id,
                 self.exchange_session.e_sk,
                 self.setup.order_value,
                 strategy
             )
-            manager.try_close_position(strategy, trade_id)
+            manager.try_close_position(strategy, trade.id)
 
 
     def should_run_strategy(self, pair, strategy):
