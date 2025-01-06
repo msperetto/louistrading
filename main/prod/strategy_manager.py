@@ -1,4 +1,5 @@
 import time
+from common.enums import *
 from common.filter import *
 from common.trigger import *
 from common.trade import *
@@ -92,7 +93,7 @@ class StrategyManager():
         if self.trendAnalysis.is_upTrend():
             if self.strategyBuy.shouldBuy():
                 strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
-                self.negociate.open_position("long", self.order_value, strategy.id)
+                self.negociate.open_position(Side_Type.LONG, self.order_value, strategy.id)
         else:
             #keeps updating trigger status even if not on trend
             #verificar necessidade dessa atualização
@@ -102,6 +103,6 @@ class StrategyManager():
     def try_close_position(self, strategy, trade_id):
         if self.strategySell.shouldSell(): 
             #checar aqui possibilidade de fechar a ordem completamente, ao invés de passar um valor
-            self.negociate.close_position("long", self.order_value, strategy, trade_id)
+            self.negociate.close_position(Side_Type.LONG, self.order_value, strategy, trade_id)
 
 

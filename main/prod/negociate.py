@@ -1,4 +1,4 @@
-from common.enums import Environment_Type
+from common.enums import *
 from prod.binance import Binance
 from common.dao import database_operations as db
 import random
@@ -30,7 +30,7 @@ class Negociate():
             'status': 'filled'
         }
         cur_price = Binance().get_orderbook(self.pair, 5)
-        if side == "long":
+        if side == Side_Type.LONG:
             order_response['avgPrice'] = cur_price['asks'][0][0]
         else:
             order_response['avgPrice'] = cur_price['bids'][0][0]
@@ -57,7 +57,7 @@ class Negociate():
         }
         cur_price = Binance().get_orderbook(self.pair, 5)
         trade_quantity = db.get_order(trade_id)['quantity']
-        if side == "long":
+        if side == Side_Type.LONG:
             order_response['avgPrice'] = cur_price['bids'][0][0]
         else:
             order_response['avgPrice'] = cur_price['asks'][0][0]
@@ -67,7 +67,7 @@ class Negociate():
 
     def _register_open_transaction(self, order_response, strategy_id):
         trade_id = db.insert_trade_transaction(strategy_id, True, order_response)
-        db.insert_order_transaction(order_response, "Entry", trade_id)
+        db.insert_order_transaction(order_response, Operation_Type.ENTRY, trade_id)
         
     def _register_close_transaction(self, order_response, strategy_id, trade_id):
         # TODO: Refactor to call order_dao.get_order_by_trade_id. Ideally, it should return an "order" object.
@@ -84,7 +84,7 @@ class Negociate():
 
         # Updates DB tables.
         db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
-        db.insert_order_transaction(order_response, "Close", trade_id)
+        db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id)
         
     # Calculates the correct ROI.    
     def _calculate_roi(self):
@@ -98,5 +98,5 @@ class Negociate():
         pass
 
 # negoc = Negociate("XTZUSDT", "a", "b")
-# negoc.open_position("long", 7200, 1)
-# negoc.close_position("long", 7200, 1)
+# negoc.open_position(Side_Type.LONG, 7200, 1)
+# negoc.close_position(Side_Type.LONG, 7200, 1)
