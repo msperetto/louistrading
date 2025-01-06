@@ -108,7 +108,7 @@ ALTER SEQUENCE public.optmization_tests_test_id_seq OWNED BY public.optmization_
 CREATE TABLE public.pair (
     pair_id integer NOT NULL,
     pair_code character varying(25) NOT NULL,
-    active boolean DEFAULT false NOT NULL,
+    active boolean DEFAULT false NOT NULL
 );
 
 
@@ -138,6 +138,14 @@ ALTER SEQUENCE public.pair_pair_id_seq OWNED BY public.pair.pair_id;
 -- Name: pair_status; Type: TABLE; Schema: public; Owner: 
 --
 
+CREATE TABLE public.alert (
+    id serial primary key,
+    date timestamp with time zone DEFAULT now(),
+    pair varchar(20) NOT NULL,
+    alert_type varchar(30) NOT NULL,
+    active boolean NOT NULL,
+    message varchar(300) NOT NULL
+);
 
 
 
