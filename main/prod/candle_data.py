@@ -8,6 +8,7 @@ class CandleData():
         self.interval = interval
         self.startTime = startTime
         self.period_type = period_type
+        self.candle_df = None
     
     def populate_data(self, endTime):
         self.candle_df = binance().get_extended_kline(self.pair, self.interval, self.startTime, endTime, self.period_type)
