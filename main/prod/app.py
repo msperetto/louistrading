@@ -8,6 +8,9 @@ from prod.login import Login
 from backtesting.lib import resample_apply
 import pandas_ta as ta
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Main():
     def __init__(self):
@@ -18,6 +21,7 @@ class Main():
         self.strategies = [Strategy_B2()]
 
     def start(self):
+        logger.info(f"Start method - begin")
         TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
     
 if __name__ == "__main__":

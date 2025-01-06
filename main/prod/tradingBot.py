@@ -16,14 +16,6 @@ import os
 import logging
 import time
 
-# Configure logging
-log_file_path = os.path.join(os.path.dirname(__file__), 'logs', 'trading_bot.log')
-logging.basicConfig(
-    filename=log_file_path,
-    filemode='a',
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 logger = logging.getLogger(__name__)
 
 class TradingBot:
@@ -105,7 +97,7 @@ class TradingBot:
                 final_dataset = self.create_combined_dataset(pair, strategy)
 
                 #logging for debugging
-                logger.info(f"TRYING TO OPEN POSITION")
+                logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
                 logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
                 manager = StrategyManager(
@@ -135,7 +127,7 @@ class TradingBot:
             final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
-            logger.info(f"TRYING TO CLOSE POSITION")
+            logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")
             logger.debug(f"Pair: {trade.pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
             manager = StrategyManager(
