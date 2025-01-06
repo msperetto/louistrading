@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
 
-class Negociate():
+class Negotiate():
     def __init__(self, pair, api_id, api_key):
         self.pair = pair
         self.api_id = api_id
@@ -97,6 +97,6 @@ class Negociate():
     def alert_close_transaction():
         pass
 
-# negoc = Negociate("XTZUSDT", "a", "b")
+# negoc = Negotiate("XTZUSDT", "a", "b")
 # negoc.open_position(Side_Type.LONG, 7200, 1)
 # negoc.close_position(Side_Type.LONG, 7200, 1)
