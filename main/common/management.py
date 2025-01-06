@@ -48,20 +48,3 @@ def calc_start_date(strategy):
     start_date = datetime.now() - timedelta(seconds=diff_size)
     return start_date.strftime('%d.%m.%Y')
 
-def merge_dataframes(intraday_df, trend_df, *trend_indicators):
-    intraday_df['date'] = intraday_df.index.date
-    trend_df['date'] = trend_df.index.date
-
-    df_merged = pd.merge(
-        intraday_candle_df.ohcl_df,
-        trend_candle_df.ohcl_df[list(trend_indicators)],
-        on='date',
-        how='left'
-    )
-
-    df_merged.set_index(intraday_df.index, inplace=True)
-
-    df_merged.drop(columns=['date'], inplace=True)
-
-    return df_merged
-
