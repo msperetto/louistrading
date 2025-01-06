@@ -4,6 +4,9 @@ from common.dao import database_operations as db
 import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Negotiate():
     def __init__(self, pair, api_id, api_key):
@@ -12,6 +15,8 @@ class Negotiate():
         self.api_key = api_key
     
     def open_position(self, side, total_value, strategy_id):
+        logger.info(f"Opening position: side={side}, total_value={total_value}, strategy_id={strategy_id}")
+
         if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = self._simulate_test_order(side, total_value)        
         else:
@@ -19,6 +24,7 @@ class Negotiate():
             order_response = Binance().open_position(self.pair, order_quantity, side, self.api_id, self.api_key)
 
         self._register_open_transaction(order_response, strategy_id)
+        logger.info(f"Position successfully opened: {order_response}")
         return order_response
 
     def _simulate_test_order(self, side, total_value):
@@ -39,12 +45,15 @@ class Negotiate():
         return order_response
 
     def close_position(self, side, total_value, strategy_id, trade_id):
+        logger.info(f"Closing position: trade_id={trade_id}")
+        
         if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = self._simulate_close_position(side, trade_id)
         else:
             order_response = Binance().close_position(self.pair, side, self.api_id, self.api_key)
         
         self._register_close_transaction(order_response, strategy_id, trade_id)
+        logger.info(f"Position successfully closed: {order_response}")
         return order_response
 
     def _simulate_close_position(self, side, trade_id):
