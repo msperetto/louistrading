@@ -1,3 +1,4 @@
+from common.enums import Environment_Type
 from prod.binance import Binance
 from common.dao import database_operations as db
 import random
@@ -12,7 +13,7 @@ class Negociate():
         self.api_key = api_key
     
     def open_position(self, side, total_value, strategy_id):
-        if NEGOCIATION_ENV == "TEST":
+        if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = {}
             cur_price = Binance().get_orderbook(self.pair, 5) 
             order_response['orderId'] = random.randint(11111, 99999)
