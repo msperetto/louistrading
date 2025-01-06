@@ -6,7 +6,6 @@ from datetime import datetime
 from config.config import NEGOCIATION_ENV
 
 class Negociate():
-    environment = "TEST"
     def __init__(self, pair, api_id, api_key):
         self.pair = pair
         self.api_id = api_id
@@ -37,7 +36,7 @@ class Negociate():
         return order_response
 
     def close_position(self, side, total_value, strategy_id, trade_id):
-        if self.environment == "TEST":
+        if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = {}
             order_response['orderId'] = random.randint(11111, 99999)
             order_response['updateTime'] = datetime.now()
