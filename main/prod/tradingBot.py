@@ -124,6 +124,11 @@ class TradingBot:
             #instantiate the strategy class:
             strategy = strategyClassName()
 
+            # Check if the strategy has been opened in the last candle
+            if not self.should_run_strategy(trade.pair, strategy):
+                # Jump to the next opened trade.
+                continue
+
             final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
