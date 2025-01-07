@@ -87,6 +87,20 @@ class TradingBot:
         # Do we want to continue the next pair and strategy?
         for pair in pairs:
             for strategy in self.strategies:
+
+                # TODO: Checar "saldo" (talvez collateral) numa tabela interna?.
+                # Prevenir novas operações caso não tenha saldo suficiente.
+
+                # TODO: Checar se a qtd de trades ativos está dentro do limite permite (setup.max_open_orders).
+                # Acredito que o jeito mais simples é fazer uma nova chamada na tabela de "trade" pra retornar a quantidade de trades ativos.
+                # E aí comparar com o "setup.max_open_orders".
+                # Não é o ideal fazer chamadas ao DB dentro do forloop, mas dado nosso contexto, me parece o correto mesmo. 
+                # Até mais seguro do que ficar tentando tratarmos isso numa variável ou contador global.
+
+                # TODO: Como previnir do robô entrar em mais de uma estratégia ao mesmo tempo?
+                # Talvez mudar a logica do método manager.try_open_position pra retornar "true" caso a operação foi aberta?
+                # Se foi aberta, então dar um comando para sair do forloop (talvez o "break"), e automaticamente ir para o próximo pair.  
+
                 # Check if the strategy has been executed recently
                 if not self.should_run_strategy(pair, strategy):
                     # Jump to the next strategy for this pair.
