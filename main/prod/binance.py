@@ -212,7 +212,7 @@ class Binance():
                 time.sleep(0.5)
 
     def open_position(self, symbol, quantity, side, b_id, b_sk):
-        endpoint = '/fapi/v1/order/test'
+        endpoint = '/fapi/v1/order'
 
         params = {
             'symbol': symbol,
@@ -229,7 +229,7 @@ class Binance():
             return position
 
     def close_position(self, symbol, side, b_id, b_sk):
-        endpoint = '/fapi/v1/order/test'
+        endpoint = '/fapi/v1/order'
 
         params = {
             'symbol': symbol,
