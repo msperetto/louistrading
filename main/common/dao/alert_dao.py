@@ -21,4 +21,21 @@ def insert_alert(pair, alert_type, active, message):
                         active=insertion["active"],
                         message=insertion["message"]
                    )
+
+def get_active_alerts():
+    with connect(DEV_ENV_CON, row_factory=rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, date, pair, alert_type, active, message
+                FROM alert
+                WHERE active = True;
+            """)
+            return [Alert(
+                        id=alert["id"],
+                        date=alert["date"],
+                        pair=alert["pair"],
+                        alert_type=alert["alert_type"],
+                        active=alert["active"],
+                        message=alert["message"]
+                   ) for alert in cur.fetchall()]
             

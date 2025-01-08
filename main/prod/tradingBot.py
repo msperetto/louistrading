@@ -12,6 +12,7 @@ from common.strategy import *
 from prod.login import Login
 import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
+from common.dao import alert_dao as alert_db
 import os
 import logging
 import time
@@ -77,11 +78,11 @@ class TradingBot:
         opened_trades = trade_dao.get_open_trade_pairs()
         opened_trade_pairs = [trade.pair for trade in opened_trades]
 
-        # TODO: get pairs with opened alerts
+        active_alerts_pairs = [alert.pair for alert in alert_db.get_active_alerts()]
 
         # Select eligible pairs.
         # Pairs that are active, do not have any opened position and do not have any opened alert.
-        pairs = [pair for pair in active_pairs if pair not in opened_trade_pairs]
+        pairs = [pair for pair in active_pairs if pair not in opened_trade_pairs and pair not in active_alerts_pairs]
 
         # TODO: What if an exception occurs inside on one of the for loops?
         # Do we want to continue the next pair and strategy?
