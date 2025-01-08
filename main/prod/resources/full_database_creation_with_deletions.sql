@@ -47,9 +47,9 @@ CREATE TABLE public.classes_map (
 --
 
 CREATE TABLE public.exchange_config (
-    id character varying(120) NOT NULL,
-    sk character varying(120) NOT NULL,
-    exchange character varying(25) NOT NULL
+    id character varying NOT NULL,
+    sk character varying NOT NULL,
+    exchange character varying(100) NOT NULL
 );
 
 

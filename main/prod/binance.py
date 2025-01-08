@@ -212,7 +212,9 @@ class Binance():
                 time.sleep(0.5)
 
     def open_position(self, symbol, quantity, side, b_id, b_sk):
-        endpoint = '/fapi/v1/order'
+        # TODO: Use the global NEGOCIATION_ENV to determine if it should use one or the other.
+        # endpoint = '/fapi/v1/order/test' 
+        endpoint = '/fapi/v1/order' 
 
         params = {
             'symbol': symbol,
@@ -229,7 +231,7 @@ class Binance():
             return position
 
     def close_position(self, symbol, side, b_id, b_sk):
-        endpoint = '/fapi/v1/order'
+        endpoint = '/fapi/v1/order/test'
 
         params = {
             'symbol': symbol,
