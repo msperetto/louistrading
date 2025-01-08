@@ -11,6 +11,10 @@ import configparser
 import requests
 from datetime import datetime
 import json
+import logging
+from common.dao import alert_dao
+
+logger = logging.getLogger(__name__)
 
 class Binance():
 
@@ -19,17 +23,12 @@ class Binance():
 
     def get_servertime(self):
         request_path = '/fapi/v1/time'
-        binance_out = 1
-        while binance_out:
-            try:
-                return requests.get(self.BASE_ENDPOINT + request_path).json()['serverTime']
-            except requests.exceptions.SSLError:
-                print(f'Max retries exceeded with url: /api/v3/time')
-                time.sleep(4)
-            except Exception as e:
-                print(
-                    f'Binance trade server time out - sleeps 3 secs - {sys.exc_info()}')
-                time.sleep(3)
+        try:
+            return requests.get(self.BASE_ENDPOINT + request_path).json()['serverTime']
+        except requests.exceptions.SSLError:
+            logger.error(f'Error getting server time: Max retries exceeded with url: /fapi/v1/time')
+        except Exception as e:
+            logger.error(f'Binance trade server - {sys.exc_info()} - error message {e}')
 
 
     def sign_request(self, params, b_id, b_sk):
@@ -51,42 +50,36 @@ class Binance():
     def run_signed_request(self, path, params, type_req, b_id, b_sk):
         api_id = self.sign_request(params, b_id, b_sk)
         if type_req == 'get':
-            binance_out = 1
-            while binance_out:
-                try:
-                    return requests.get(self.BASE_ENDPOINT + path, params=params,
-                                        headers={"X-MBX-APIKEY": api_id}).json()
-                except Exception as e:
-                    time.sleep(3)
-                    serverTime = self.get_servertime()
-                    params['timestamp'] = str(serverTime)
-                    params.pop('signature')
-                    self.sign_request(params, b_id, b_sk)
+            try:
+                return requests.get(self.BASE_ENDPOINT + path, params=params,
+                                    headers={"X-MBX-APIKEY": api_id}).json()
+            except Exception as e:
+                logger.error(f'Signed request error: {e}')
+                # serverTime = self.get_servertime()
+                # params['timestamp'] = str(serverTime)
+                # params.pop('signature')
+                # self.sign_request(params, b_id, b_sk)
         else:
-            binance_out = 1
-            while binance_out:
-                try:
-                    return requests.post(self.BASE_ENDPOINT + path, params=params,
-                                        headers={"X-MBX-APIKEY": api_id}).json()
-                except Exception as e:
-                    time.sleep(3)
-                    serverTime = self.get_servertime()
-                    params['timestamp'] = str(serverTime)
-                    params.pop('signature')
-                    self.sign_request(params, b_id, b_sk)
+            try:
+                return requests.post(self.BASE_ENDPOINT + path, params=params,
+                                    headers={"X-MBX-APIKEY": api_id}).json()
+            except Exception as e:
+                logger.error(f'Signed request error: {e}')
+                # serverTime = self.get_servertime()
+                # params['timestamp'] = str(serverTime)
+                # params.pop('signature')
+                # self.sign_request(params, b_id, b_sk)
 
 
     def get_all_symbols(self):
         endpoint = '/fapi/v1/exchangeInfo'
-        binance_out = 1
 
-        while binance_out:
-            try:
-                exchange_info = requests.get(
-                    self.BASE_ENDPOINT + endpoint).json()['symbols']
-                binance_out = 0
-            except Exception as e:
-                time.sleep(1)
+        try:
+            exchange_info = requests.get(
+                self.BASE_ENDPOINT + endpoint).json()['symbols']
+            binance_out = 0
+        except Exception as e:
+            logger.error(f'Error getting all symbols: {e}')
 
         result = [symbols['symbol'] for symbols in exchange_info if symbols['status'] == "TRADING"]
 
@@ -126,7 +119,7 @@ class Binance():
                 self.BASE_ENDPOINT + endpoint, params=params).json()
             binance_out = 0
         except Exception as e:
-            print(e)
+            logger.error(f'Error getting kline: {e}')
         
         df = pd.DataFrame(kline, columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close_time', 'Quote_asset_volume', 'Number_of_trades', 'Tbbav', 'Tbqav', 'Ignore'])
         df['Date'] = pd.to_datetime(df['Date'], unit='ms')
@@ -142,20 +135,17 @@ class Binance():
     def get_orderbook(self, pair, limit):
         endpoint = "/fapi/v1/depth"
 
-        binance_out = 1
-
         params = {
             "symbol": pair,
             "limit": limit
         }
 
-        while binance_out:
-            try:
-                orderbook = requests.get(
-                    self.BASE_ENDPOINT + endpoint, params=params).json()
-                binance_out = 0
-            except Exception as e:
-                print(e)
+        try:
+            orderbook = requests.get(
+                self.BASE_ENDPOINT + endpoint, params=params).json()
+            binance_out = 0
+        except Exception as e:
+            logger.error(f'Error getting orderbook: {e}')
         
         return orderbook
 
@@ -201,15 +191,11 @@ class Binance():
         params = {
             'symbol': symbol
         }
-        binance_out = 1
 
-        # todo: verify if it's not going to create an infinite loop here
-        while binance_out:
-            try:
-                return requests.get(self.BASE_ENDPOINT + endpoint, params=params).json()['price']
-            except Exception as e:
-                # todo log here the error
-                time.sleep(0.5)
+        try:
+            return requests.get(self.BASE_ENDPOINT + endpoint, params=params).json()['price']
+        except Exception as e:
+            logger.error(f'Error getting symbol price: {e}')
 
     def open_position(self, symbol, quantity, side, b_id, b_sk):
         # TODO: Use the global NEGOCIATION_ENV to determine if it should use one or the other.
@@ -226,7 +212,8 @@ class Binance():
         }
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys(): # erro no servidor binance
-            print(position) # log here the error or send to the alert system
+            logger.error(f'Error opening position: {position}')
+            alert_dao.insert_alert(symbol, "Warning", True, f"Error opening position: {position}")
         else:
             return position
 
@@ -245,7 +232,8 @@ class Binance():
         }
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys():
-            print(position) # log here the error or send to the alert system
+            logger.error(f'Error closing position: {position}')
+            alert_dao.insert_alert(symbol, "Warning", True, f"Error closing position: {position}")
         else:
             return position
 
@@ -255,13 +243,11 @@ class Binance():
         params = {
             'timestamp': str(self.get_servertime())
         }
-        binance_out = 1
-        while binance_out:
-            open_orders = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
-            if 'code' in open_orders.keys():
-                print(f'erro get open orders {open_orders}')
-            else:
-                return open_orders
+        open_orders = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        if 'code' in open_orders.keys():
+            logger.error(f'Error getting open orders: {open_orders}')
+        else:
+            return open_orders
 
 
     def query_order(self, symbol, orderId, b_id, b_sk):
@@ -273,13 +259,11 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
 
-        binance_out = 1
-        while binance_out:
-            order_info = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
-            if 'code' in order_info.keys():
-                print(f'erro query_order {order_info} coin: {symbol}')
-            else:
-                return order_info
+        order_info = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        if 'code' in order_info.keys():
+            logger.error(f'erro query_order {order_info} coin: {symbol}')
+        else:
+            return order_info
 
     def account_info(self, b_id, b_sk):
         endpoint = '/fapi/v2/account'
