@@ -141,3 +141,14 @@ BEGIN
     END IF;
 END
 $$;
+
+-- Tabela initial_config
+CREATE TABLE IF NOT EXISTS public.alert (
+    id serial,
+    date timestamp with time zone DEFAULT now(),
+    pair varchar(20) NOT NULL,
+    alert_type varchar(100) NOT NULL,
+    active boolean NOT NULL,
+    message text NOT NULL,
+    PRIMARY KEY (id)
+);

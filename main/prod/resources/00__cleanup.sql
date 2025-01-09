@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS public.strategy CASCADE;
 DROP TABLE IF EXISTS public.order_control CASCADE;
 DROP TABLE IF EXISTS public.trade CASCADE;
 DROP TABLE IF EXISTS public.pair CASCADE;
+DROP TABLE IF EXISTS public.alert CASCADE;
 
 -- Deleta sequences.
 DROP SEQUENCE IF EXISTS public.strategy_id_seq CASCADE;
