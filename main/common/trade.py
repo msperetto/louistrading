@@ -71,7 +71,7 @@ class TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium(Trade):
         self.get_sma_medium = sma_medium_fn
 
     def buyConfirmation(self):
-        return (self.data.Close.iloc[-1] > self.data.High.iloc[-2]) and (self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1])
+        return (self.data.Close[-1] > self.data.High[-2]) and (self.get_ema_short()[-1] > self.get_sma_medium()[-1])
 
 
 class TradeSell_LowLastCandle(Trade):
@@ -95,4 +95,4 @@ class TradeSell_Price_EMAshort(Trade):
         self.get_ema_p_short = fn_ema_short
 
     def sellConfirmation(self) -> bool:
-        return self.data.Close.iloc[-1] < self.get_ema_p_short().iloc[-1]
+        return self.data.Close[-1] < self.get_ema_p_short()[-1]
