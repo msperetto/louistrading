@@ -170,7 +170,7 @@ class FilterBuy_SMAmedium_gt_SMAlong(Filter):
         self.get_sma_long = sma_long_fn
 
     def isValid(self) -> bool:
-        return (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1])
+        return (self.get_sma_medium()[-1] > self.get_sma_long()[-1])
 
 
 class FilterBuy_SMAmedium_gt_SMAlong_or_price_x_SMAlong_price_x_SMAmedium(Filter):
