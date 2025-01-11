@@ -12,7 +12,6 @@ class Strategy_Test():
         self.filter_buy_class=db.get_class_code("FilterBuy_alwaysTrue")
         self.trigger_buy_class=db.get_class_code("TriggeredStateBuy_alwaysTrue")
         self.trade_buy_class=db.get_class_code("TradeBuy_Price_gt_EMAshort")
-        self.trend_class=db.get_class_code("UpTrend_AlwaysTrend")
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
@@ -52,7 +51,6 @@ class Strategy_B1():
         self.filter_buy_class=db.get_class_code("FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong")
         self.trigger_buy_class=db.get_class_code("TriggeredState_MaxCandles")
         self.trade_buy_class=db.get_class_code("TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium")
-        self.trend_class=db.get_class_code("UpTrend_AlwaysTrend")
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
@@ -77,7 +75,6 @@ class Strategy_B2():
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
-        self.trend_class=db.get_class_code("UpTrend_Price_gt_SMAlong")
        
 
 class Strategy_B3():

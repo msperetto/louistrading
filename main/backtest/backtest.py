@@ -10,26 +10,28 @@ from time import sleep
 from common.strategy import *
 
 class NoShirt(Strategy):
-    ema_trend_short = 0
-    sma_trend_medium = 0
-    sma_trend_long = 0
-    adx_period = 0
+    trend_ema_short = 0
+    trend_sma_medium = 0
+    trend_sma_long = 0
+    intraday_adx = 0
     adx_trend_layer = 0
+    intraday_interval = "h"
     trend_interval = "D"
-    sma_p_short = 0
-    sma_p_medium = 0
-    sma_p_long = 0
-    ema_p_short = 0
-    ema_p_medium = 0
-    ema_p_long = 0
-    rsi_period = 0
-    rsi_layer_cheap = 0
-    rsi_layer_expensive = 0
+    intraday_sma_short = 0
+    intraday_sma_medium = 0
+    intraday_sma_long = 0
+    intraday_ema_short = 0
+    intraday_ema_medium = 0
+    intraday_ema_long = 0
+    intraday_rsi = 0
+    intraday_rsi_layer_cheap = 0
+    intraday_rsi_layer_expensive = 0
     candles_after_triggered = 0
-    max_candles_buy = 0
-    max_candles_sell = 0
+    intraday_max_candles_buy = 0
+    intraday_max_candles_sell = 0
     stop_loss = None
     take_profit = None
+    trend_longest_indicator_value = 40
     trend_class = "self.trend = UpTrend_AlwaysTrend()"
     filter_buy_class = "self.filterBuy = Filter_alwaysTrue()"
     trigger_buy_class = "self.triggerBuy = TriggeredState_alwaysTrue()"
@@ -41,19 +43,19 @@ class NoShirt(Strategy):
     def init(self):
         self.classes = {}
 
-        if self.ema_p_short != 0: self.ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_short)
-        if self.ema_p_medium != 0: self.ema_medium = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_medium)
-        if self.ema_p_long != 0: self.ema_long = self.I(ta.ema, pd.Series(self.data.Close), self.ema_p_long)
-        if self.adx_period != 0: self.adx = self.I(ta.adx, pd.Series(self.data.High), pd.Series(self.data.Low), pd.Series(self.data.Close), self.adx_period)
+        if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_short)
+        if self.intraday_ema_medium != 0: self.intraday_ema_medium = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_medium)
+        if self.intraday_ema_long != 0: self.intraday_ema_long = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_long)
+        if self.intraday_adx != 0: self.intraday_adx = self.I(ta.adx, pd.Series(self.data.High), pd.Series(self.data.Low), pd.Series(self.data.Close), self.intraday_adx)
 
-        if self.sma_p_short != 0: self.sma_short = self.I(ta.sma, pd.Series(self.data.Close), self.sma_p_short)
-        if self.sma_p_medium != 0: self.sma_medium = self.I(ta.sma, pd.Series(self.data.Close), self.sma_p_medium)
-        if self.sma_p_long != 0: self.sma_long = self.I(ta.sma, pd.Series(self.data.Close), self.sma_p_long)
-        if self.rsi_period != 0: self.rsi = self.I(ta.rsi, pd.Series(self.data.Close), self.rsi_period)
+        if self.intraday_sma_short != 0: self.intraday_sma_short = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_short)
+        if self.intraday_sma_medium != 0: self.intraday_sma_medium = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_medium)
+        if self.intraday_sma_long != 0: self.intraday_sma_long = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_long)
+        if self.intraday_rsi != 0: self.intraday_rsi = self.I(ta.rsi, pd.Series(self.data.Close), self.intraday_rsi)
 
-        if self.ema_trend_short != 0: self.ema_trend_short = resample_apply(self.trend_interval, ta.ema, self.data.Close, self.ema_trend_short)
-        if self.sma_trend_medium != 0: self.sma_trend_medium = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.sma_trend_medium)
-        if self.sma_trend_long != 0: self.sma_trend_long = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.sma_trend_long)
+        if self.trend_ema_short != 0: self.trend_ema_short = resample_apply(self.trend_interval, ta.ema, self.data.Close, self.trend_ema_short)
+        if self.trend_sma_medium != 0: self.trend_sma_medium = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_medium)
+        if self.trend_sma_long != 0: self.trend_sma_long = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_long)
 
         #instantiating buying support objects
         exec(self.filter_buy_class)
