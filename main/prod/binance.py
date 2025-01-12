@@ -13,6 +13,8 @@ from datetime import datetime
 import json
 import logging
 from common.dao import alert_dao
+from common.enums import Environment_Type
+from config.config import NEGOCIATION_ENV
 
 logger = logging.getLogger(__name__)
 
@@ -207,10 +209,7 @@ class Binance():
             logger.error(f'Error getting symbol price: {e}')
 
     def open_position(self, symbol, quantity, side, b_id, b_sk):
-        # TODO: Use the global NEGOCIATION_ENV to determine if it should use one or the other.
-        endpoint = self.ORDER_TEST_ENDPOINT
-        # endpoint = self.ORDER_ENDPOINT
-
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
@@ -227,10 +226,7 @@ class Binance():
             return position
 
     def close_position(self, symbol, side, b_id, b_sk):
-        # TODO: Use the global NEGOCIATION_ENV to determine if it should use one or the other.
-        endpoint = self.ORDER_TEST_ENDPOINT
-        # endpoint = self.ORDER_ENDPOINT
-
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
