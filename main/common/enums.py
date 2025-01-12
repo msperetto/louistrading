@@ -1,6 +1,7 @@
 from enum import Enum
 
 class Environment_Type(str, Enum):
+    BACKTEST = "BACKTEST"
     TEST = "TEST"
     PROD = "PROD"
 

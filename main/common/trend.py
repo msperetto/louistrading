@@ -1,5 +1,5 @@
 from abc import ABC
-
+from common import util
 
 class Trend(ABC):
     def ontrend(self):
@@ -11,7 +11,7 @@ class UpTrend_EMAshort_gt_SMAlong(Trend):
         self.get_sma_long = sma_long_fn
 
     def ontrend(self):
-        return self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1]
+        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_long(), -1)
 
 class UpTrend_EMAshort_gt_SMAmedium(Trend):
     def __init__(self, ema_short_fn, sma_medium_fn):
@@ -19,7 +19,7 @@ class UpTrend_EMAshort_gt_SMAmedium(Trend):
         self.get_sma_medium = sma_medium_fn
 
     def ontrend(self):
-        return self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1]
+        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1)
 
 class UpTrend_SMAmedium_gt_SMAlong(Trend):
     def __init__(self, sma_medium_fn, sma_long_fn):
@@ -27,7 +27,7 @@ class UpTrend_SMAmedium_gt_SMAlong(Trend):
         self.get_sma_long = sma_long_fn
 
     def ontrend(self):
-        return self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1]
+        return  util.get_value_by_index(self.get_sma_medium(), -1) > util.get_value_by_index(self.get_sma_long(), -1)
 
 
 class UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong(Trend):
@@ -37,8 +37,8 @@ class UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong(Trend):
         self.get_sma_long = sma_long_fn
 
     def ontrend(self):
-        return (self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1]) \
-                and (self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1])
+        return (util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1)) \
+                and (util.get_value_by_index(self.get_sma_medium(), -1) > util.get_value_by_index(self.get_sma_long(), -1))
 
 
 class UpTrend_Price_gt_SMAmedium(Trend):
@@ -47,7 +47,7 @@ class UpTrend_Price_gt_SMAmedium(Trend):
         self.get_sma_medium = sma_medium_fn
 
     def ontrend(self):
-        return self.data.Close.iloc[-1] > self.get_sma_medium().iloc[-1]
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.get_sma_medium(), -1)
 
 
 class UpTrend_Price_gt_SMAlong(Trend):
@@ -56,7 +56,7 @@ class UpTrend_Price_gt_SMAlong(Trend):
         self.get_sma_long = sma_long_fn
 
     def ontrend(self):
-        return self.data.Close.iloc[-1] > self.get_sma_long().iloc[-1]
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.get_sma_long(), -1)
 
 class UpTrend_Price_gt_EMAshort(Trend):
     def __init__(self, data, ema_short_fn):
@@ -64,7 +64,7 @@ class UpTrend_Price_gt_EMAshort(Trend):
         self.get_ema_short = ema_short_fn
 
     def ontrend(self):
-        return self.data.Close.iloc[-1] > self.get_ema_short().iloc[-1]
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.get_ema_short(), -1)
 
 
 class UpTrend_EMAshort_gt_SMAlong_ADX(Trend):
@@ -75,7 +75,8 @@ class UpTrend_EMAshort_gt_SMAlong_ADX(Trend):
         self.adx_trend_layer = adx_trend_layer
 
     def ontrend(self):
-        return self.get_ema_short().iloc[-1] > self.get_sma_long().iloc[-1] and self.get_adx().iloc[-1] > self.adx_trend_layer
+        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_long(), -1) and \
+               util.get_value_by_index(self.get_adx(), -1) > self.adx_trend_layer
 
 class UpTrend_EMAshort_gt_SMAmedium_ADX(Trend):
     def __init__(self, ema_short_fn, sma_medium_fn, adx_fn, adx_trend_layer):
@@ -85,7 +86,8 @@ class UpTrend_EMAshort_gt_SMAmedium_ADX(Trend):
         self.adx_trend_layer = adx_trend_layer
 
     def ontrend(self):
-        return self.get_ema_short().iloc[-1] > self.get_sma_medium().iloc[-1] and self.get_adx().iloc[-1] > self.adx_trend_layer
+        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1) and \
+               util.get_value_by_index(self.get_adx(), -1) > self.adx_trend_layer
 
 
 class UpTrend_SMAmedium_gt_SMAlong_ADX(Trend):
@@ -96,7 +98,8 @@ class UpTrend_SMAmedium_gt_SMAlong_ADX(Trend):
         self.adx_trend_layer = adx_trend_layer
 
     def ontrend(self):
-        return self.get_sma_medium().iloc[-1] > self.get_sma_long().iloc[-1] and self.get_adx().iloc[-1] > self.adx_trend_layer
+        return util.get_value_by_index(self.get_sma_medium(), -1) > util.get_value_by_index(self.get_sma_long(), -1) and \
+        util.get_value_by_index(self.get_adx(), -1) > self.adx_trend_layer
 
 class UpTrend_AlwaysTrend(Trend):
     def ontrend(self):
