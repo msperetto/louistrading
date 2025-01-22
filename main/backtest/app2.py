@@ -3,11 +3,11 @@ import pandas as pd
 from backtesting import Backtest
 from common import management
 from common import database_operations as db
-from backtest import NoShirt
+from backtest import NoShirt, BacktestPortfolioManager
 from common.strategy import *
 from prod.binance import Binance as binance
 from enum import Enum
-from backtest.python import Json_type
+from backtest import Json_type
 from itertools import product
 
 # Useful constants
@@ -38,6 +38,21 @@ class Main():
         self.path_plot = "backtest/output/plot/"
         self.path_csv = "backtest/output/csv/"
 
+        # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
+        self.strategy_dict = {
+            "B1": Strategy_B1(optimize=False),
+            "B2": Strategy_B2(optimize=False),
+            "B3": Strategy_B3(optimize=False),
+            "C1": Strategy_C1(optimize=False)
+        }
+
+        self.strategy_optimize_dict = {
+            "B1": Strategy_B1(),
+            "B2": Strategy_B2(),
+            "B3": Strategy_B3(),
+            "C1": Strategy_C1()
+        }
+
         # Inicializinzg some vars
         self.pair = None
         self.interval = None
@@ -45,10 +60,10 @@ class Main():
 
     # Runs the logic to save a row in the Optimization_test table.
     # It will save only if the global "should_save_report" flag is True.
-    def save_report(self, stats):
+    def save_report(self, stats, strategy_class = ""):
         if self.config["should_save_report"]:
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval)
+            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy_class)
 
     def set_common_variables(self):
         # Load the JSON based on the configured json_type 
@@ -72,6 +87,7 @@ class Main():
         self.trade_sell_classes = strategy_info["trade_sell_classes"]
         self.trend_classes = strategy_info["trend_classes"]
         self.strategy_classes = strategy_info["strategy_classes"]
+        self.intraday_strategy_classes = strategy_info["intraday_strategy_classes"]
 
     def get_optimization_params(self):
         return {
@@ -87,6 +103,20 @@ class Main():
             "intraday_interval": self.intraday_interval,
             "trend_interval": self.trend_interval
         }
+
+    def get_filename(self, strategy):
+        return self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy
+
+    def generate_CSV_trades(self, stats, strategy, trend_class = ""):
+        if self.config["should_generate_CSV_trades"]:
+            filename = self.get_filename(strategy)+"-"
+            csv_trade_filename =  f"{self.path_csv+filename+trend_class}.csv"
+            stats["_trades"].to_csv(csv_trade_filename)
+
+    def plot_chart(self, bt, strategy, trend_class = ""):
+        if self.config["should_plot_chart"]:
+            filename = self.get_filename(strategy)+"-"
+            bt.plot(filename=self.path_plot+filename+trend_class)
 
     def run_intraday_optimization(self, bt):
         combinations = product(
@@ -113,6 +143,41 @@ class Main():
             )
             self.save_report(stats)
 
+    def run_trend_strategy(self, bt, strategy):
+        for trend_class in self.trend_classes:
+            stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
+
+            self.save_report(stats, strategy.__class__.__name__)
+            self.generate_CSV_trades(stats, strategy, trend_class)
+            self.plot_chart(bt, strategy, trend_class)
+
+    def run_trend_strategy_optimization(self, bt, strategy):
+        for trend_class in self.trend_classes:
+            stats, heatmap = bt.optimize(
+                        **vars(strategy), 
+                        trend_class=db.get_class_code(trend_class),
+                        maximize = 'Equity Final [$]',
+                        return_heatmap = True)
+
+            self.save_report(stats, strategy.__class__.__name__)
+
+    def run_strategy(self, bt, strategy):
+        # This method assumes the trend_class is defined inside of the strategy class. I assume this works.
+        stats = bt.run(**vars(strategy))
+        trend = strategy.trend_analysis # I assume this works. Not sure!
+        self.save_report(stats, strategy.__class__.__name__)
+        self.generate_CSV_trades(stats, strategy, trend)
+        self.plot_chart(bt, strategy, trend)
+
+    def run_strategy_optimization(self, bt, strategy):
+        # This method assumes the trend_class is defined inside of the strategy class.
+        stats, heatmap = bt.optimize(
+                    **vars(strategy), 
+                    maximize = 'Equity Final [$]',
+                    return_heatmap = True)
+
+        self.save_report(stats, strategy.__class__.__name__)
+
     # Basically the main method.
     def start(self):
         self.set_common_variables()
@@ -126,15 +191,29 @@ class Main():
                 self.run_intraday_optimization(bt)
                 return
             case Json_type.TREND:
-                print("Otimização para tendência ainda não implementada.")
+                for strategy in self.intraday_strategy_classes:
+                        method_name = self.run_trend_strategy_optimization if self.config["strategy_optimizer_mode"] else self.run_trend_strategy
+                        strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
+                        method_name(bt, strategy_param)
                 return
             case Json_type.STRATEGY:
-                print("Otimização para estratégia ainda não implementada.")
+                # The STRATEGY mode is used when we want to run backtest for many strategies.
+                # About "should_run_portfolio_strategies":
+                #   True: means that backtest will merge all the given strategies to act as a "single strategy". This is what we mean by Portfolio of Strategies. 
+                #   False: means that backtest will run for each strategy individually.  
+                if self.config["should_run_portfolio_strategies"]:
+                    # TODO: Figure out how to run Backtest passing many strategies together. Use BacktestPortfolioManager
+                    pass
+                else:
+                    # This logic assumes the trend_class is defined inside of the strategy class.
+                    for strategy in self.strategy_classes:
+                        method_name = self.run_strategy_optimization if self.config["strategy_optimizer_mode"] else self.run_strategy
+                        strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
+                        method_name(bt, strategy_param)                  
                 return
             case _:
                 # Json_type not defined
                 return
         
-            
 if __name__ == "__main__":
     Main().start()
