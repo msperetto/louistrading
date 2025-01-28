@@ -4,11 +4,16 @@ from common.trade import *
 from common.trend import *
 from backtesting import Backtest, Strategy
 from backtesting.lib import resample_apply
+from main.common.strategybuy import StrategyBuy
+from main.common.strategysell import StrategySell
+from main.common.trendanalysis import TrendAnalysis
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
 from common.strategy import *
 
+# TODO: While StrategyManager (from Prod) deals with a single Strategy, for Backtesting purpose this class would problably need to be different.
+# Rename this class to a better name. Exemple: BacktestManager.
 class NoShirt(Strategy):
     trend_ema_short = 0
     trend_sma_medium = 0
@@ -41,6 +46,9 @@ class NoShirt(Strategy):
     trade_sell_class = "self.tradeSell = TradeSell_LowLastCandle(self.data)"
 
     def init(self):
+        # TODO: Maybe change the concept of "strategy" to use the new class design, which uses a parent StrategyLong class.
+        # Doing that, I believe all of the code of this class can be simplified.
+
         self.classes = {}
 
         if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_short)
@@ -79,21 +87,20 @@ class NoShirt(Strategy):
         self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
         self.classes['trade_sell'] = self.tradeSell.__class__.__name__
 
-
         #instantiating buying and selling strategy classes
         self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
         self.trendAnalysis = TrendAnalysis(self.trend)
 
-
     def next(self):
-        if self.stop_loss:
-            stop_loss = self.data.Close[-1] * ((100-self.stop_loss)/100)
-        else: stop_loss = None
-        if self.take_profit:
-            take_profit = self.data.Close[-1] * ((100+self.take_profit)/100)
-        else: take_profit = None
+        # TODO: We might need a new parameter to this class saying if it's LONG or SHORT position.
+        
+        stop_loss = self.calculate_stop_loss()
+        take_profit = self.calculate_take_profit()
 
+        # TODO: Ideally, this "trendAnalysis.is_upTrend" should actually be inside of the strategy class.
+        # Notice that we want to be able to run this class even when trying to "discovery an intrady strategy". 
+        # So, the concept of trend would not defined yet.
         if self.trendAnalysis.is_upTrend():
             if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
         else:
@@ -102,45 +109,18 @@ class NoShirt(Strategy):
 
         if self.strategySell.shouldSell(): self.position.close()
 
+    def calculate_stop_loss(self):
+        """
+        Calculates the stop loss based on the most recent closing price and the configured percentage.
+        """
+        if self.stop_loss:
+            return self.data.Close[-1] * ((100 - self.stop_loss) / 100)
+        return None
 
-class TrendAnalysis():
-    def __init__(self, trend):
-        self.trend = trend
-
-    def is_upTrend(self):
-        if self.trend.__class__.__name__[0:self.trend.__class__.__name__.find("_")] == "UpTrend":
-            return self.trend.ontrend()
-
-    def is_downTrend(self):
-        if self.trend.__class__.__name__[0:self.trend.__class__.__name__.find("_")] == "DownTrend":
-            return self.trend.ontrend()
-
-
-class StrategyBuy():
-    def __init__(self, filterBuy, triggeredState, trade):
-        self.filter = filterBuy
-        self.triggeredState = triggeredState
-        self.trade = trade
-
-    def shouldBuy(self):
-        if self.filter.isValid(): 
-            self.triggeredState.reset(True)
-        else: self.triggeredState.reset(False)
-
-        if self.triggeredState.isStillValid():
-            if self.trade.buyConfirmation(): return True
-        
-
-class StrategySell():
-    def __init__(self, filterSell, triggeredState, trade):
-        self.filter = filterSell
-        self.triggeredState = triggeredState
-        self.trade = trade
-
-    def shouldSell(self):
-        if self.filter.isValid():
-            self.triggeredState.reset(True)
-        else: self.triggeredState.reset(False)
-
-        if self.triggeredState.isStillValid():
-            if self.trade.sellConfirmation(): return True
+    def calculate_take_profit(self):
+        """
+        Calculates the take profit based on the most recent closing price and the configured percentage.
+        """
+        if self.take_profit:
+            return self.data.Close[-1] * ((100 + self.take_profit) / 100)
+        return None

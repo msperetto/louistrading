@@ -13,6 +13,8 @@ from datetime import datetime
 import json
 import logging
 from common.dao import alert_dao
+from common.enums import Environment_Type
+from config.config import NEGOCIATION_ENV
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +22,18 @@ class Binance():
 
     BASE_ENDPOINT = 'https://fapi.binance.com'
     WS_ENDPOINT = 'wss://fstream.binance.com/ws/'
+    TICKER_PRICE_ENDPOINT = '/fapi/v1/ticker/price'
+    EXCHANGEINFO_ENDPOINT = '/fapi/v1/exchangeInfo'
+    SERVERTIME_ENDPOINT = '/fapi/v1/time'
+    KLINES_ENDPOINT = '/fapi/v1/klines'
+    DEPTH_ENDPOINT = '/fapi/v1/depth'
+    ORDER_TEST_ENDPOINT = '/fapi/v1/order/test' 
+    ORDER_ENDPOINT = '/fapi/v1/order'
+    OPEN_ORDER_ENDPOINT = '/fapi/v1/openOrders'
+    ACCOUNT_ENDPOINT = '/fapi/v2/account'
 
     def get_servertime(self):
-        request_path = '/fapi/v1/time'
+        request_path = self.SERVERTIME_ENDPOINT
         try:
             return requests.get(self.BASE_ENDPOINT + request_path).json()['serverTime']
         except requests.exceptions.SSLError:
@@ -72,7 +83,7 @@ class Binance():
 
 
     def get_all_symbols(self):
-        endpoint = '/fapi/v1/exchangeInfo'
+        endpoint = self.EXCHANGEINFO_ENDPOINT
 
         try:
             exchange_info = requests.get(
@@ -105,7 +116,7 @@ class Binance():
         # 1w
         # 1M
     def get_kline(self, pair: str, interval: str, startTime, endTime = round(time.time() * 1000), limit: int = 1500):
-        endpoint = "/fapi/v1/klines"
+        endpoint = self.KLINES_ENDPOINT
         params = {
             "symbol": pair,
             "interval": interval,
@@ -133,7 +144,7 @@ class Binance():
         return df
 
     def get_orderbook(self, pair, limit):
-        endpoint = "/fapi/v1/depth"
+        endpoint = self.DEPTH_ENDPOINT
 
         params = {
             "symbol": pair,
@@ -186,7 +197,7 @@ class Binance():
         return pair_info["askPrice"]
 
     def get_symbol_price(self, symbol):
-        endpoint = '/fapi/v1/ticker/price'
+        endpoint = self.TICKER_PRICE_ENDPOINT
 
         params = {
             'symbol': symbol
@@ -198,10 +209,7 @@ class Binance():
             logger.error(f'Error getting symbol price: {e}')
 
     def open_position(self, symbol, quantity, side, b_id, b_sk):
-        # TODO: Use the global NEGOCIATION_ENV to determine if it should use one or the other.
-        # endpoint = '/fapi/v1/order/test' 
-        endpoint = '/fapi/v1/order' 
-
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
@@ -218,8 +226,7 @@ class Binance():
             return position
 
     def close_position(self, symbol, side, b_id, b_sk):
-        endpoint = '/fapi/v1/order/test'
-
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
@@ -236,7 +243,7 @@ class Binance():
             return position
 
     def get_open_orders(self, b_id, b_sk):
-        endpoint = '/fapi/v1/openOrders'
+        endpoint = self.OPEN_ORDER_ENDPOINT
 
         params = {
             'timestamp': str(self.get_servertime())
@@ -249,7 +256,7 @@ class Binance():
 
 
     def query_order(self, symbol, orderId, b_id, b_sk):
-        endpoint = '/fapi/v1/order'
+        endpoint = self.ORDER_ENDPOINT
         params = {
             'symbol': symbol,
             'orderId': orderId,
@@ -264,7 +271,7 @@ class Binance():
             return order_info
 
     def account_info(self, b_id, b_sk):
-        endpoint = '/fapi/v2/account'
+        endpoint = self.ACCOUNT_ENDPOINT
 
         params = {
             'timestamp': str(self.get_servertime())
