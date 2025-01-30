@@ -7,7 +7,7 @@ from backtest import NoShirt, BacktestPortfolioManager
 from common.strategy import *
 from prod.binance import Binance as binance
 from enum import Enum
-from backtest.python import Json_type
+from backtest import Json_type
 from itertools import product
 
 # Useful constants
