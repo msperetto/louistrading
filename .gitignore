@@ -9,3 +9,6 @@ main/common/python/__pycache__/
 main/prod/__pycache__/
 main/prod/python/__pycache__/
 main/prod/logs/*
+*.pyc
+.DS_Store
+.dockerignore
