@@ -15,6 +15,23 @@ services:
       - "80:80"
     depends_on:
       - db
+  
+  backtest:
+    build: .
+    container_name: noshirt_backtest
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=@tkTYB9i
+      - POSTGRES_HOST=db
+    command: python main/backtest/app.py
+    ports:
+      - "81:80"
+    depends_on:
+      - db
 
   db:
     image: postgres
@@ -25,7 +42,8 @@ services:
       - POSTGRES_PASSWORD=@tkTYB9i
     volumes:
       - noshirt_postgres_data:/var/lib/postgresql/data
-      - ./main/prod/resources:/resources
+      - ./main/prod/resources/db:/resources/prod
+      - ./main/backtest/resources/db:/resources/backtest
     ports:
       - "5431:5432"
     # entrypoint: ["bin/bash", "/resources/init-db.sh"]
