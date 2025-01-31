@@ -1,0 +1,31 @@
+-- Criação das tabelas e sequências, garantindo que só sejam criadas se não existirem
+
+CREATE TABLE IF NOT EXISTS public.optmization_tests (
+    test_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
+    pair character varying(15) NOT NULL,
+    period character varying(10) NOT NULL,
+    return_percent real,
+    return_buy_hold real,
+    win_rate real,
+    sharpe_ratio real,
+    max_drawdown real,
+    best_indicators_combination character varying(6000) NOT NULL,
+    filter_buy character varying(255) NOT NULL,
+    trigger_buy character varying(255) NOT NULL,
+    trade_buy character varying(255) NOT NULL,
+    filter_sell character varying(255) NOT NULL,
+    trigger_sell character varying(255) NOT NULL,
+    trade_sell character varying(255) NOT NULL,
+    total_trades integer,
+    best_trade real,
+    worst_trade real,
+    average_trade real,
+    profit_factor real,
+    created_at timestamp without time zone DEFAULT now(),
+    label_period character varying(300),
+    period_trend character varying(5),
+    trend_class character varying(255),
+    strategy_class character varying(255)
+);
