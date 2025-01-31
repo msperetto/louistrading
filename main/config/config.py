@@ -6,7 +6,7 @@ from common.enums import Environment_Type
 DEV_ENV_CON = "host=db dbname=noshirt user=postgres password=@tkTYB9i"
 
 # Definig environment
-NEGOCIATION_ENV =  Environment_Type.TEST
+NEGOCIATION_ENV =  Environment_Type.BACKTEST
 
 # Log level configuration
 LOG_LEVEL = logging.DEBUG  # It can be: DEBUG, INFO, WARNING, ERROR, CRITICAL
