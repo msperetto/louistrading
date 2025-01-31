@@ -14,8 +14,9 @@ if psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\dt' | gre
   echo "Database already initialized"
 else
   # Run the SQL script to initialize the database
-  psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -a -f /resources/01_create_tables.sql
-  psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -a -f /resources/02_insert_data.sql
+  psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -a -f /resources/backtest/01_create_tables.sql
+  psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -a -f /resources/prod/01_create_tables.sql
+  psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -a -f /resources/prod/02_insert_data.sql
 fi
 
 exec "$@"
