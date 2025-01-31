@@ -120,5 +120,5 @@ class Main():
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy] should_plot= False)
             self.run_trend_strat(bt, filename, self.strategy_dict[strategy], should_plot= False)
 
-Main().run_backtest()
-
+if __name__ == "__main__":
+    Main().run_backtest()
