@@ -270,7 +270,7 @@ class Binance():
         else:
             return order_info
 
-    def account_info(self, b_id, b_sk):
+    def get_account_info(self, b_id, b_sk):
         endpoint = self.ACCOUNT_ENDPOINT
 
         params = {

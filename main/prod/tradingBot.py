@@ -13,6 +13,7 @@ from prod.login import Login
 import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
 from common.dao import alert_dao as alert_db
+from prod.binance import Binance
 import os
 import logging
 import time
@@ -20,6 +21,9 @@ import time
 logger = logging.getLogger(__name__)
 
 class TradingBot:
+
+    MINIMUM_BALANCE_INCREMENT = 1.5
+
     def __init__(self, strategies, db, setup, exchange_session):
         self.strategies = strategies
         self.db = db
@@ -27,6 +31,7 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
+        self.current_balance = self._get_current_balance()
 
     def run(self):
 
@@ -73,6 +78,11 @@ class TradingBot:
         if not self.setup.opperation_active:
             return
 
+        # Check balance; Stop new trades if balance is below the minimum required.
+        if self._is_balance_below_minimum():
+            logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
+            return
+
         active_pairs = self.db.get_active_pairs()
 
         opened_trades = trade_dao.get_open_trade_pairs()
@@ -104,6 +114,11 @@ class TradingBot:
                     # Jump to the next strategy for this pair.
                     continue
 
+                #Check balance; Stop new trades if balance is below the minimum required.
+                if self._is_balance_below_minimum():
+                    logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
+                    return
+
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
                 final_dataset = self.create_combined_dataset(pair, strategy)
@@ -122,6 +137,7 @@ class TradingBot:
                 )
                 if manager.try_open_position():
                     available_orders -= 1
+                    self.current_balance = self._get_current_balance()
                     # If the position was opened, then jump to the next pair.
                     break
 
@@ -158,7 +174,9 @@ class TradingBot:
                 self.setup.order_value,
                 strategy
             )
-            manager.try_close_position(strategy, trade.id)
+            if manager.try_close_position(strategy, trade.id):
+                self.current_balance = self._get_current_balance()
+
 
 
     def should_run_strategy(self, pair, strategy):
@@ -183,3 +201,9 @@ class TradingBot:
 
         # Only executes if the required time has already passed.
         return now > next_execution_time
+    
+    def _get_current_balance(self):
+        return float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+
+    def _is_balance_below_minimum(self):
+        return self.current_balance < (self.setup.order_value * self.MINIMUM_BALANCE_INCREMENT)

@@ -106,5 +106,7 @@ class StrategyManager():
         if self.strategySell.shouldSell(): 
             #checar aqui possibilidade de fechar a ordem completamente, ao invés de passar um valor
             self.negotiate.close_position(Side_Type.LONG, self.order_value, strategy, trade_id)
+            return True
+        return False
 
 
