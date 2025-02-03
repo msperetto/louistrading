@@ -1,5 +1,6 @@
 import psycopg
 import csv
+from datetime import datetime
 from config.config import DEV_ENV_CON
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
@@ -135,3 +136,13 @@ def export_to_csv():
                 writer = csv.DictWriter(csvfile, cur.fetchone().keys())
                 writer.writeheader()
                 writer.writerows(cur.fetchall())
+
+def update_bot_execution_control():
+    with psycopg.connect(DEV_ENV_CON) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE bot_execution_control
+                SET last_execution = %s
+                WHERE line = 1;
+            """, (datetime.now(),))
+            conn.commit()

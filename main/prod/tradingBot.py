@@ -37,6 +37,9 @@ class TradingBot:
 
         while True:
             try:
+                # register execution time to monitor bot alive status:
+                db.update_bot_execution_control()
+
                 # Handle opened trades. Check if it's ready to close postion.
                 self.handle_opened_trades()
 
