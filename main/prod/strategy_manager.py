@@ -94,10 +94,12 @@ class StrategyManager():
             if self.strategyBuy.shouldBuy():
                 strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
                 self.negotiate.open_position(Side_Type.LONG, self.order_value, strategy.id)
+                return True
         else:
             #keeps updating trigger status even if not on trend
             #verificar necessidade dessa atualização
             self.strategyBuy.triggeredState.isStillValid()
+        return False
         
 
     def try_close_position(self, strategy, trade_id):

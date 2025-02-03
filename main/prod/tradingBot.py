@@ -78,6 +78,9 @@ class TradingBot:
         opened_trades = trade_dao.get_open_trade_pairs()
         opened_trade_pairs = [trade.pair for trade in opened_trades]
 
+        # Number of available orders to open
+        available_orders = self.setup.max_open_orders - len(opened_trade_pairs)
+
         active_alerts_pairs = [alert.pair for alert in alert_db.get_active_alerts()]
 
         # Select eligible pairs.
@@ -87,21 +90,15 @@ class TradingBot:
         # TODO: What if an exception occurs inside on one of the for loops?
         # Do we want to continue the next pair and strategy?
         for pair in pairs:
+            # Check if opened orders limit has been reached (using break because cannot open more orders)
+            if available_orders == 0:
+                break
+
             for strategy in self.strategies:
 
                 # TODO: Checar "saldo" (talvez collateral) numa tabela interna?.
                 # Prevenir novas operações caso não tenha saldo suficiente.
-
-                # TODO: Checar se a qtd de trades ativos está dentro do limite permite (setup.max_open_orders).
-                # Acredito que o jeito mais simples é fazer uma nova chamada na tabela de "trade" pra retornar a quantidade de trades ativos.
-                # E aí comparar com o "setup.max_open_orders".
-                # Não é o ideal fazer chamadas ao DB dentro do forloop, mas dado nosso contexto, me parece o correto mesmo. 
-                # Até mais seguro do que ficar tentando tratarmos isso numa variável ou contador global.
-
-                # TODO: Como previnir do robô entrar em mais de uma estratégia ao mesmo tempo?
-                # Talvez mudar a logica do método manager.try_open_position pra retornar "true" caso a operação foi aberta?
-                # Se foi aberta, então dar um comando para sair do forloop (talvez o "break"), e automaticamente ir para o próximo pair.  
-
+                
                 # Check if the strategy has been executed recently
                 if not self.should_run_strategy(pair, strategy):
                     # Jump to the next strategy for this pair.
@@ -123,7 +120,10 @@ class TradingBot:
                     self.setup.order_value,
                     strategy
                 )
-                manager.try_open_position()
+                if manager.try_open_position():
+                    available_orders -= 1
+                    # If the position was opened, then jump to the next pair.
+                    break
 
 
     def handle_opened_trades(self):
