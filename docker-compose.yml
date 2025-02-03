@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    container_name: noshirt_app
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/prod/app.py
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+  
+  backtest:
+    build: .
+    container_name: noshirt_backtest
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/backtest/app.py
+    ports:
+      - "8081:81"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    container_name: noshirt-postgres
+    environment:
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - noshirt_postgres_data:/var/lib/postgresql/data
+      - ./main/prod/resources/db:/resources/prod
+      - ./main/backtest/resources/db:/resources/backtest
+    ports:
+      - "5431:5432"
+    # entrypoint: ["bin/bash", "/resources/init-db.sh"]
+
+volumes:
+  noshirt_postgres_data:

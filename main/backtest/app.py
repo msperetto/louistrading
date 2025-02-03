@@ -9,7 +9,7 @@ from prod.binance import Binance as binance
 
 class Main():
     def __init__(self):
-        strategy_info = management.readJson("backtest/resources/params.json")
+        strategy_info = management.readJson("main/backtest/resources/params.json")
         self.pair = strategy_info["pair"]
         self.interval = strategy_info["period"]
         self.trend_interval = strategy_info["trend_period"]
@@ -25,8 +25,8 @@ class Main():
         self.trend_classes = strategy_info["trend_classes"]
         self.strategy_classes = strategy_info["strategy_classes"]
 
-        self.path_plot = "backtest/output/plot/"
-        self.path_csv = "backtest/output/csv/"
+        self.path_plot = "main/backtest/output/plot/"
+        self.path_csv = "main/backtest/output/csv/"
 
         self.strategy_dict = {
             "B1": Strategy_B1(optimize=False),
@@ -118,7 +118,7 @@ class Main():
             filename = self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy+"-"
             # self.run_trend_optimization(bt, self.strategy_optimize_dict[strategy])
             # self.plot_single_strat(bt, filename, self.strategy_dict[strategy] should_plot= False)
-            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], should_plot= False)
+            self.run_trend_strat(bt, filename, self.strategy_dict[strategy], should_plot= True)
 
-Main().run_backtest()
-
+if __name__ == "__main__":
+    Main().run_backtest()
