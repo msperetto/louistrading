@@ -8,7 +8,7 @@ services:
       - PYTHONPATH=/noshirt/main
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=@tkTYB9i
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     command: python main/prod/app.py
     ports:
@@ -25,7 +25,7 @@ services:
       - PYTHONPATH=/noshirt/main
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=@tkTYB9i
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     command: python main/backtest/app.py
     ports:
@@ -39,7 +39,7 @@ services:
     environment:
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=@tkTYB9i
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - noshirt_postgres_data:/var/lib/postgresql/data
       - ./main/prod/resources/db:/resources/prod
