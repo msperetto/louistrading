@@ -27,6 +27,7 @@ BEGIN
                WHERE constraint_name = 'trade_strategy_id_fkey') THEN
         ALTER TABLE ONLY public.trade DROP CONSTRAINT trade_strategy_id_fkey;
     END IF;
+
 END
 $$;
 
@@ -39,6 +40,9 @@ DROP TABLE IF EXISTS public.order_control CASCADE;
 DROP TABLE IF EXISTS public.trade CASCADE;
 DROP TABLE IF EXISTS public.pair CASCADE;
 DROP TABLE IF EXISTS public.alert CASCADE;
+DROP TABLE IF EXISTS public.account_balance CASCADE;
+DROP TABLE IF EXISTS public.bot_execution_control CASCADE;
+
 
 -- Deleta sequences.
 DROP SEQUENCE IF EXISTS public.strategy_id_seq CASCADE;

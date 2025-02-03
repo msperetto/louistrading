@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.pair (
     PRIMARY KEY (pair_code)
 );
 
+
 DO $$
 BEGIN
     -- Sequência strategy_id_seq
@@ -151,4 +152,17 @@ CREATE TABLE IF NOT EXISTS public.alert (
     active boolean NOT NULL,
     message text NOT NULL,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.account_balance (
+    account_id INT,
+    usdt_balance real NOT NULL,
+    margin_ratio real NOT NULL,
+    last_update timestamp with time zone NOT NULL DEFAULT now(),
+    PRIMARY KEY (account_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.bot_execution_control(
+    last_execution timestamp with time zone NOT NULL DEFAULT now(),
+    PRIMARY KEY (last_execution)
 );
