@@ -6,6 +6,7 @@ from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
 from prod.strategy_manager import StrategyManager
+from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
 from common.strategy import *
