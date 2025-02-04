@@ -3,7 +3,7 @@ from prod.tradingBot import TradingBot
 from common.dao import database_operations as db
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
-from prod.released_strategies.strtategy_B2 import Strategy_B2
+from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.login import Login
 from backtesting.lib import resample_apply
 import pandas_ta as ta
@@ -12,6 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+#  TODO: 
 class Main():
     def __init__(self):
         base_config = db.get_initial_config()
