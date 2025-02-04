@@ -23,9 +23,13 @@ class Negotiate():
             order_quantity = total_value/float(Binance().get_symbol_price(self.pair))
             order_response = Binance().open_position(self.pair, order_quantity, side, self.api_id, self.api_key)
 
+        if order_response is None:
+            logger.error(f"Error opening position: {order_response}")
+            return False
+
         self._register_open_transaction(order_response, strategy_id)
         logger.info(f"Position successfully opened: {order_response}")
-        return order_response
+        return True
 
     def _simulate_test_order(self, side, total_value):
         order_response = {
@@ -52,9 +56,13 @@ class Negotiate():
         else:
             order_response = Binance().close_position(self.pair, side, self.api_id, self.api_key)
         
+        if order_response is None:
+            logger.error(f"Error closing position: {order_response}")
+            return False
+
         self._register_close_transaction(order_response, strategy_id, trade_id)
         logger.info(f"Position successfully closed: {order_response}")
-        return order_response
+        return True
 
     def _simulate_close_position(self, side, trade_id):
         order_response = {
