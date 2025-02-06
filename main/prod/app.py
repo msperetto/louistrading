@@ -22,6 +22,7 @@ class Main():
         self.strategies = [Strategy_B2()]
 
     def start(self):
+        print("Running...")
         logger.info(f"Start method - begin")
         TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
     
