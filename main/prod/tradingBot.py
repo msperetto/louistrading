@@ -6,6 +6,7 @@ from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
 from prod.strategy_manager import StrategyManager
+from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
 from common.strategy import *
@@ -13,6 +14,7 @@ from prod.login import Login
 import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
 from common.dao import alert_dao as alert_db
+from prod.binance import Binance
 import os
 import logging
 import time
@@ -20,6 +22,9 @@ import time
 logger = logging.getLogger(__name__)
 
 class TradingBot:
+
+    MINIMUM_BALANCE_INCREMENT = 1.5
+
     def __init__(self, strategies, db, setup, exchange_session):
         self.strategies = strategies
         self.db = db
@@ -27,11 +32,15 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
+        self.current_balance = self._get_current_balance()
 
     def run(self):
 
         while True:
             try:
+                # register execution time to monitor bot alive status:
+                db.update_bot_execution_control()
+
                 # Handle opened trades. Check if it's ready to close postion.
                 self.handle_opened_trades()
 
@@ -69,14 +78,23 @@ class TradingBot:
 
 
     def handle_new_trades(self):
+        logger.debug(f"handle_new_trades - begin")
         # Check if the bot is active
         if not self.setup.opperation_active:
+            return
+
+        # Check balance; Stop new trades if balance is below the minimum required.
+        if self._is_balance_below_minimum():
+            logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
             return
 
         active_pairs = self.db.get_active_pairs()
 
         opened_trades = trade_dao.get_open_trade_pairs()
         opened_trade_pairs = [trade.pair for trade in opened_trades]
+
+        # Number of available orders to open
+        available_orders = self.setup.max_open_orders - len(opened_trade_pairs)
 
         active_alerts_pairs = [alert.pair for alert in alert_db.get_active_alerts()]
 
@@ -87,25 +105,27 @@ class TradingBot:
         # TODO: What if an exception occurs inside on one of the for loops?
         # Do we want to continue the next pair and strategy?
         for pair in pairs:
+            # Check if opened orders limit has been reached (using break because cannot open more orders)
+            if available_orders == 0:
+                break
+
             for strategy in self.strategies:
 
                 # TODO: Checar "saldo" (talvez collateral) numa tabela interna?.
                 # Prevenir novas operações caso não tenha saldo suficiente.
-
-                # TODO: Checar se a qtd de trades ativos está dentro do limite permite (setup.max_open_orders).
-                # Acredito que o jeito mais simples é fazer uma nova chamada na tabela de "trade" pra retornar a quantidade de trades ativos.
-                # E aí comparar com o "setup.max_open_orders".
-                # Não é o ideal fazer chamadas ao DB dentro do forloop, mas dado nosso contexto, me parece o correto mesmo. 
-                # Até mais seguro do que ficar tentando tratarmos isso numa variável ou contador global.
-
-                # TODO: Como previnir do robô entrar em mais de uma estratégia ao mesmo tempo?
-                # Talvez mudar a logica do método manager.try_open_position pra retornar "true" caso a operação foi aberta?
-                # Se foi aberta, então dar um comando para sair do forloop (talvez o "break"), e automaticamente ir para o próximo pair.  
-
+                
                 # Check if the strategy has been executed recently
                 if not self.should_run_strategy(pair, strategy):
                     # Jump to the next strategy for this pair.
                     continue
+                    
+                logger.debug(f"handle_new_trades - pair: {pair} - strategy: {strategy}")
+                logger.debug(f"current balance: {self.current_balance}")
+
+                #Check balance; Stop new trades if balance is below the minimum required.
+                if self._is_balance_below_minimum():
+                    logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
+                    return
 
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
@@ -123,11 +143,16 @@ class TradingBot:
                     self.setup.order_value,
                     strategy
                 )
-                manager.try_open_position()
+                if manager.try_open_position():
+                    available_orders -= 1
+                    self.current_balance = self._get_current_balance()
+                    # If the position was opened, then jump to the next pair.
+                    break
 
 
     def handle_opened_trades(self):
         # Handle opened trades. Check if we is ready to sell.
+        logger.debug(f"handle_opened_trades - begin")
 
         opened_trades = trade_dao.get_open_trade_pairs()
 
@@ -144,6 +169,9 @@ class TradingBot:
                 # Jump to the next opened trade.
                 continue
 
+            logger.debug(f"handle_opened_trades - pair: {trade.pair}")
+            logger.debug(f"current balance: {self.current_balance}")
+
             final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
@@ -158,7 +186,9 @@ class TradingBot:
                 self.setup.order_value,
                 strategy
             )
-            manager.try_close_position(strategy, trade.id)
+            if manager.try_close_position(strategy, trade.id):
+                self.current_balance = self._get_current_balance()
+
 
 
     def should_run_strategy(self, pair, strategy):
@@ -183,3 +213,9 @@ class TradingBot:
 
         # Only executes if the required time has already passed.
         return now > next_execution_time
+    
+    def _get_current_balance(self):
+        return float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+
+    def _is_balance_below_minimum(self):
+        return self.current_balance < (self.setup.order_value * self.MINIMUM_BALANCE_INCREMENT)
