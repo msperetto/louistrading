@@ -78,6 +78,7 @@ class TradingBot:
 
 
     def handle_new_trades(self):
+        logger.debug(f"handle_new_trades - begin")
         # Check if the bot is active
         if not self.setup.opperation_active:
             return
@@ -117,6 +118,9 @@ class TradingBot:
                 if not self.should_run_strategy(pair, strategy):
                     # Jump to the next strategy for this pair.
                     continue
+                    
+                logger.debug(f"handle_new_trades - pair: {pair} - strategy: {strategy}")
+                logger.debug(f"current balance: {self.current_balance}")
 
                 #Check balance; Stop new trades if balance is below the minimum required.
                 if self._is_balance_below_minimum():
@@ -148,6 +152,7 @@ class TradingBot:
 
     def handle_opened_trades(self):
         # Handle opened trades. Check if we is ready to sell.
+        logger.debug(f"handle_opened_trades - begin")
 
         opened_trades = trade_dao.get_open_trade_pairs()
 
@@ -163,6 +168,9 @@ class TradingBot:
             if not self.should_run_strategy(trade.pair, strategy):
                 # Jump to the next opened trade.
                 continue
+
+            logger.debug(f"handle_opened_trades - pair: {trade.pair}")
+            logger.debug(f"current balance: {self.current_balance}")
 
             final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
