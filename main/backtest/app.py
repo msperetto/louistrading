@@ -38,15 +38,18 @@ class Main():
         self.path_plot = "main/backtest/output/plot/"
         self.path_csv = "main/backtest/output/csv/"
 
+        # Check if the trend should be automatically included in the strategy.
+        self.shouldIncludeTrend = self.config["json_type"] == Json_type.STRATEGY
+
         # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
         self.strategy_dict = {
-            "B1": Strategy_B1(optimize=False),
-            "B2": Strategy_B2(optimize=False),
+            "B1": Strategy_B1(optimize=False, shouldIncludeTrend=self.shouldIncludeTrend),
+            "B2": Strategy_B2(optimize=False, shouldIncludeTrend=self.shouldIncludeTrend)
         }
 
         self.strategy_optimize_dict = {
-            "B1": Strategy_B1(optimize=True),
-            "B2": Strategy_B2(optimize=True),
+            "B1": Strategy_B1(optimize=True, shouldIncludeTrend=self.shouldIncludeTrend),
+            "B2": Strategy_B2(optimize=True, shouldIncludeTrend=self.shouldIncludeTrend)
         }
 
         # Inicializinzg some vars

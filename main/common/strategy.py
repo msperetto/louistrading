@@ -1,7 +1,7 @@
 from common.dao import database_operations as db
 
 class Strategy_Test():
-    def __init__(self, optimize: bool = False):
+    def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         self.intraday_ema_short = 2
         self.intraday_sma_long = 44
         self.trend_sma_short = 7
@@ -15,9 +15,11 @@ class Strategy_Test():
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
         self.trade_sell_class = "TradeSell_Price_EMAshort"
+        if (shouldIncludeTrend):
+            self.trend_class = "UpTrend_AlwaysTrend"
 
 class Strategy_B1():
-    def __init__(self, optimize: bool = False):
+    def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
             self.trend_ema_short = 8
             self.trend_sma_medium = 18
@@ -54,10 +56,11 @@ class Strategy_B1():
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
         self.trade_sell_class = "TradeSell_Price_EMAshort"
-        self.trend_class = "UpTrend_AlwaysTrend"
+        if (shouldIncludeTrend):
+            self.trend_class = "UpTrend_AlwaysTrend"
 
 class Strategy_B2():
-    def __init__(self, optimize: bool = False):
+    def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
             self.trend_ema_short = 6
             self.trend_sma_medium = 18
@@ -83,5 +86,5 @@ class Strategy_B2():
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
         self.trade_sell_class = "TradeSell_Price_EMAshort"
-        self.trend_class = "UpTrend_Price_gt_SMAlong"
-       
+        if (shouldIncludeTrend):
+            self.trend_class = "UpTrend_Price_gt_SMAlong"
