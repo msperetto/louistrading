@@ -212,7 +212,7 @@ class Main():
                 #   True: means that backtest will merge all the given strategies to act as a "single strategy". This is what we mean by Portfolio of Strategies. 
                 #   False: means that backtest will run for each strategy individually.  
                 if self.config["should_run_portfolio_strategies"]:
-                    # TODO: Figure out how to run Backtest passing many strategies together. Use BacktestPortfolioManager
+                    # TODO: Figure out how to run Backtest passing many strategies together. Use BacktestManagerPortfolio
                     pass
                 else:
                     # This logic assumes the trend_class is defined inside of the strategy class.
