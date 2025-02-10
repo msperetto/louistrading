@@ -20,53 +20,39 @@ class TriggeredState_alwaysTrue(TriggeredState):
 
 
 class TriggeredState_MaxCandles(TriggeredState):
-    def __init__(self, max_candles):
-        self.max_candles = max_candles
-        self.candles_after_triggered = max_candles
-        # self.triggered = False
+    def __init__(self, intraday_max_candles):
+        self.intraday_max_candles = intraday_max_candles
+        self.intraday_candles_after_triggered = intraday_max_candles
 
-    def reset(self, is_filtered):
-        if is_filtered:
-            self.candles_after_triggered = 0
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
 
     def isStillValid(self):
-        # starting to count the next candles after triggered
-        # if self.triggered and self.candles_after_triggered < self.max_candles:
-        if self.candles_after_triggered < self.max_candles:
-            self.candles_after_triggered += 1
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
             return True
-        
-        # untriggering after max_candles
-        elif self.candles_after_triggered >= self.max_candles:
-            # self.candles_after_triggered = 0
-            # self.triggered = False 
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
 
 
-#not finished, but not sure if is needed
 class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
-    def __init__(self, max_candles, ema_short_fn, sma_long_fn, data):
-        self.max_candles = max_candles
-        self.candles_after_triggered = max_candles
+    def __init__(self, intraday_max_candles, intraday_ema_short, intraday_sma_long, data):
+        self.intraday_max_candles = intraday_max_candles
+        self.intraday_candles_after_triggered = intraday_max_candles
         self.data = data
-        self.get_ema_short = ema_short_fn
-        self.get_sma_long = sma_long_fn
+        self.ema_short = intraday_ema_short
+        self.sma_long = intraday_sma_long
 
-    def reset(self, is_filtered):
-        if is_filtered:
-            self.candles_after_triggered = 0
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
 
     def isStillValid(self):
-        # starting to count the next candles after triggered
-        # if self.triggered and self.candles_after_triggered < self.max_candles:
-        if self.candles_after_triggered < self.max_candles:
-            self.candles_after_triggered += 1
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
             return True
-        
-        # untriggering after max_candles
-        elif self.candles_after_triggered >= self.max_candles:
-            # self.candles_after_triggered = 0
-            # self.triggered = False 
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
 
 
