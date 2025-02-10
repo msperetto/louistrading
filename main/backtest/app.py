@@ -166,15 +166,17 @@ class Main():
             self.save_report(stats, strategyName)
 
     def run_strategy(self, bt, strategy):
+        strategyName = self.get_strategy_class_name(strategy)
+
         if not hasattr(strategy, 'trend_class'):
             # Throw an exception in case strategy.trend_class is not defined.
-            raise AttributeError("The strategy object does not have a 'trend_class' attribute.")
+            message = f"The strategy {strategyName} object does not have a 'trend_class' attribute."
+            raise AttributeError(message)
 
         # This method assumes the trend_class is defined inside of the strategy class.
         stats = bt.run(**vars(strategy))
         trend = strategy.trend_class
 
-        strategyName = self.get_strategy_class_name(strategy)
         self.save_report(stats, strategyName)
         self.generate_CSV_trades(stats, strategyName, trend)
         self.plot_chart(bt, strategyName, trend)
