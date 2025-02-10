@@ -21,7 +21,7 @@ class Main():
         self.config = {
             "json_type": Json_type.TREND,
             "should_save_report": True,
-            "strategy_optimizer_mode": False,
+            "strategy_optimizer_mode": True,
             "should_plot_chart": False,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
@@ -47,10 +47,10 @@ class Main():
         }
 
         self.strategy_optimize_dict = {
-            "B1": Strategy_B1(),
-            "B2": Strategy_B2(),
-            "B3": Strategy_B3(),
-            "C1": Strategy_C1()
+            "B1": Strategy_B1(optimize=True),
+            "B2": Strategy_B2(optimize=True),
+            "B3": Strategy_B3(optimize=True),
+            "C1": Strategy_C1(optimize=True)
         }
 
         # Inicializinzg some vars
