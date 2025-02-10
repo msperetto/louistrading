@@ -12,7 +12,7 @@ import pandas as pd
 from time import sleep
 from common.strategy import *
 
-class BacktestManager(Strategy):
+class BacktestManagerIntraday(Strategy):
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0

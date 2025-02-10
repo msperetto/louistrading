@@ -4,7 +4,7 @@ from common import management
 from common.dao import database_operations as db
 from common.strategy import *
 from backtest import Json_type
-from backtest.BacktestManager import BacktestManager
+from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
@@ -194,7 +194,7 @@ class Main():
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, BacktestManager, cash=CASH, commission=COMISSION)
+        bt = Backtest(dataset, BacktestManagerIntraday, cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:
