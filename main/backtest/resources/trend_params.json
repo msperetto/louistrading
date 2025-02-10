@@ -8,9 +8,7 @@
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
         "B1",
-        "B2",
-        "B3",
-        "C1"
+        "B2"
     ],
     "trend_classes": [
         "UpTrend_AlwaysTrend",

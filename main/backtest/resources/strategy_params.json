@@ -7,6 +7,7 @@
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "strategy_classes": [
+        "B1",
         "B2"
     ]
 }
