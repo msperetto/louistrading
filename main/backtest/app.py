@@ -201,6 +201,8 @@ class Main():
                 self.run_intraday_optimization(bt)
                 return
             case Json_type.TREND:
+                # TODO: Define backtest using BacktestManagerStrategy.   
+                # bt = Backtest(dataset, BacktestManagerStrategy, cash=CASH, commission=COMISSION)
                 for strategy in self.intraday_strategy_classes:
                         method_name = self.run_trend_strategy_optimization if self.config["strategy_optimizer_mode"] else self.run_trend_strategy
                         strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
