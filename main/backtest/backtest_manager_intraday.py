@@ -100,6 +100,10 @@ class BacktestManagerIntraday(Strategy):
         stop_loss = self.calculate_stop_loss()
         take_profit = self.calculate_take_profit()
 
+        self.try_open_position(stop_loss, take_profit)
+        self.try_close_position()
+
+    def try_open_position(self, stop_loss, take_profit):
         # TODO: Ideally, this "trendAnalysis.is_upTrend" should actually be inside of the strategy class.
         # Notice that we want to be able to run this class even when trying to "discovery an intrady strategy". 
         # So, the concept of trend would not defined yet.
@@ -109,8 +113,9 @@ class BacktestManagerIntraday(Strategy):
             #keeps updating trigger status even if not on trend
             self.strategyBuy.triggeredState.isStillValid()
 
+    def try_close_position(self):
         if self.strategySell.shouldSell(): self.position.close()
-
+        
     def calculate_stop_loss(self):
         """
         Calculates the stop loss based on the most recent closing price and the configured percentage.
