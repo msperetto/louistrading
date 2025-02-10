@@ -35,10 +35,27 @@ class TriggeredState_alwaysTrue(TriggeredState):
         return self.is_filtered
 
 
-class TriggeredState_MaxCandles(TriggeredState):
-    def __init__(self, intraday_max_candles):
-        self.intraday_max_candles = intraday_max_candles
-        self.intraday_candles_after_triggered = intraday_max_candles
+class TriggeredState_MaxCandles_Buy(TriggeredState):
+    def __init__(self, intraday_max_candles_buy):
+        self.intraday_max_candles = intraday_max_candles_buy
+        self.intraday_candles_after_triggered = intraday_max_candles_buy
+
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
+
+    def isStillValid(self):
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
+            return True
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
+            return False
+
+
+class TriggeredState_MaxCandles_Sell(TriggeredState):
+    def __init__(self, intraday_max_candles_sell):
+        self.intraday_max_candles = intraday_max_candles_sell
+        self.intraday_candles_after_triggered = intraday_max_candles_sell
 
     def reset(self, intraday_is_filtered):
         if intraday_is_filtered:
