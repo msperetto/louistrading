@@ -18,38 +18,38 @@ class TradeBuy_HighLastCandle(Trade):
         return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.High, -2)
 
 class TradeBuy_Price_gt_EMAshort(Trade):
-    def __init__(self, data, ema_short_fn):
+    def __init__(self, data, intraday_ema_short):
         self.data = data
-        self.get_ema_short = ema_short_fn
+        self.intraday_ema_short = intraday_ema_short
 
     def buyConfirmation(self):
-        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.get_ema_short(), -1)
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.intraday_ema_short, -1)
 
 class TradeBuy_Price_gt_SMAmedium(Trade):
-    def __init__(self, data, sma_medium_fn):
+    def __init__(self, data, intraday_sma_medium):
         self.data = data
-        self.get_sma_medium = sma_medium_fn
+        self.intraday_sma_medium = intraday_sma_medium
 
     def buyConfirmation(self):
-        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.get_sma_medium(), -1)
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.intraday_sma_medium, -1)
 
 class TradeBuy_EMAshort_gt_SMAmedium(Trade):
-    def __init__(self, ema_short_fn, sma_medium_fn):
-        self.get_ema_short = ema_short_fn
-        self.get_sma_medium = sma_medium_fn
+    def __init__(self, intraday_ema_short, intraday_sma_medium):
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
 
     def buyConfirmation(self):
-        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1)
+        return util.get_value_by_index(self.intraday_ema_short, -1) > util.get_value_by_index(self.intraday_sma_medium, -1)
 
 class TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle(Trade):
-    def __init__(self, ema_short_fn, sma_medium_fn, data):
-        self.get_ema_short = ema_short_fn
-        self.get_sma_medium = sma_medium_fn
+    def __init__(self, intraday_ema_short, intraday_sma_medium, data):
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
         self.data = data
 
     def buyConfirmation(self):
-        return util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1) and \
-               util.get_value_by_index(self.data.High, -1) > util.get_value_by_index(self.data.High, -2)
+        return util.get_value_by_index(self.intraday_ema_short, -1) > util.get_value_by_index(self.intraday_sma_medium, -1) and \
+                util.get_value_by_index(self.data.High, -1) > util.get_value_by_index(self.data.High, -2)
 
 class TradeBuy_Close_gt_CloseLastCandle(Trade):
     def __init__(self, data):
@@ -66,14 +66,14 @@ class TradeBuy_High_x_HighLastCandle(Trade):
         return util.get_value_by_index(self.data.High, -1) > util.get_value_by_index(self.data.High, -2)
 
 class TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium(Trade):
-    def __init__(self, data, ema_short_fn, sma_medium_fn):
+    def __init__(self, data, intraday_ema_short, intraday_sma_medium):
         self.data = data
-        self.get_ema_short = ema_short_fn
-        self.get_sma_medium = sma_medium_fn
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
 
     def buyConfirmation(self):
         return (util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.High, -2)) and \
-               (util.get_value_by_index(self.get_ema_short(), -1) > util.get_value_by_index(self.get_sma_medium(), -1))
+                (util.get_value_by_index(self.intraday_ema_short, -1) > util.get_value_by_index(self.intraday_sma_medium, -1))
 
 class TradeSell_LowLastCandle(Trade):
     def __init__(self, data):
@@ -90,9 +90,9 @@ class TradeSell_HighLastCandle(Trade):
         return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.data.High, -2)
 
 class TradeSell_Price_EMAshort(Trade):
-    def __init__(self, data, fn_ema_short):
+    def __init__(self, data, intraday_ema_short):
         self.data = data
-        self.get_ema_p_short = fn_ema_short
+        self.intraday_ema_short = intraday_ema_short
 
     def sellConfirmation(self) -> bool:
-        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.get_ema_p_short(), -1)
+        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_ema_short, -1)
