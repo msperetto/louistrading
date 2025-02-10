@@ -21,9 +21,9 @@ class Main():
         self.config = {
             "json_type": Json_type.TREND,
             "should_save_report": True,
-            "strategy_optimizer_mode": True,
-            "should_plot_chart": False,
-            "should_generate_CSV_trades": False,
+            "strategy_optimizer_mode": False,
+            "should_plot_chart": True,
+            "should_generate_CSV_trades": True,
             "should_run_portfolio_strategies": False
         }
 
@@ -35,8 +35,8 @@ class Main():
         }
 
         # Prepare to generate output files.
-        self.path_plot = "backtest/output/plot/"
-        self.path_csv = "backtest/output/csv/"
+        self.path_plot = "main/backtest/output/plot/"
+        self.path_csv = "main/backtest/output/csv/"
 
         # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
         self.strategy_dict = {
@@ -148,8 +148,8 @@ class Main():
             stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
 
             self.save_report(stats, strategy.__class__.__name__)
-            self.generate_CSV_trades(stats, strategy, trend_class)
-            self.plot_chart(bt, strategy, trend_class)
+            self.generate_CSV_trades(stats, strategy.__class__.__name__, trend_class)
+            self.plot_chart(bt, strategy.__class__.__name__, trend_class)
 
     def run_trend_strategy_optimization(self, bt, strategy):
         for trend_class in self.trend_classes:
@@ -166,8 +166,8 @@ class Main():
         stats = bt.run(**vars(strategy))
         trend = strategy.trend_analysis # I assume this works. Not sure!
         self.save_report(stats, strategy.__class__.__name__)
-        self.generate_CSV_trades(stats, strategy, trend)
-        self.plot_chart(bt, strategy, trend)
+        self.generate_CSV_trades(stats, strategy.__class__.__name__, trend)
+        self.plot_chart(bt, strategy.__class__.__name__, trend)
 
     def run_strategy_optimization(self, bt, strategy):
         # This method assumes the trend_class is defined inside of the strategy class.
