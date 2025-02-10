@@ -9,6 +9,21 @@ class Trade(ABC):
     def sellConfirmation(self):
         pass
 
+# Factory method to create and instantiate a Filter object
+    def trade_factory(self, class_name: str, **kwargs) -> 'Trade':
+        # Get the class from the global namespace
+        cls = globals().get(class_name)
+        if not cls:
+            raise ValueError(f"Class {class_name} not found")
+    
+        # Get the constructor parameters for the class of class_name
+        constructor_params = cls.__init__.__code__.co_varnames[1:cls.__init__.__code__.co_argcount]
+    
+        # Filter the kwargs to include only the parameters needed by the constructor
+        filtered_kwargs = {key: kwargs[key] for key in constructor_params if key in kwargs}
+    
+        # Instantiate the class with the filtered parameters
+        return cls(**filtered_kwargs)
 
 class TradeBuy_HighLastCandle(Trade):
     def __init__(self, data):
