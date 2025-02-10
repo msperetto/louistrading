@@ -13,7 +13,7 @@ from time import sleep
 from common.strategy import *
 
 # It deals with a list of strategies. 
-class BacktestPortfolioManager(Strategy):
+class BacktestManagerPortfolio(Strategy):
     def __init__(self, strategies):
         self.strategies = strategies  
         self.position = None # Not sure if we really need this. Perhaps position is already initialized by Backtesting.Strategy

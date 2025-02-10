@@ -2,7 +2,7 @@ from common.filter import *
 from common.trigger import *
 from common.trade import *
 from common.trend import *
-from backtesting import Backtest, Strategy
+from backtesting import Strategy
 from backtesting.lib import resample_apply
 from common.strategybuy import StrategyBuy
 from common.strategysell import StrategySell
@@ -12,9 +12,7 @@ import pandas as pd
 from time import sleep
 from common.strategy import *
 
-# TODO: While StrategyManager (from Prod) deals with a single Strategy, for Backtesting purpose this class would problably need to be different.
-# Rename this class to a better name. Exemple: BacktestManager.
-class NoShirt(Strategy):
+class BacktestManagerIntraday(Strategy):
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0
