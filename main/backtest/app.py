@@ -191,7 +191,6 @@ class Main():
 
     # Basically the main method.
     def start(self):
-        print("Backtest started.")
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
@@ -224,7 +223,9 @@ class Main():
                 return
             case _:
                 # Json_type not defined
-                return
+                return        
         
 if __name__ == "__main__":
+    print("Backtest started.")
     Main().start()
+    print("Backtest finished.")
