@@ -41,7 +41,7 @@ class Strategy_B1():
             self.intraday_ema_short = 9
             self.intraday_rsi_layer_cheap = 19
             self.intraday_rsi_layer_expensive = 79
-            self.intraday_rsi_period = 4
+            self.intraday_rsi = 4
             self.intraday_max_candles_buy = 4
             self.intraday_max_candles_sell = 5
 
@@ -86,33 +86,35 @@ class Strategy_B2():
 class Strategy_B3():
     def __init__(self, optimize: bool = False):
         if not optimize:
-            self.ema_trend_short = 8
-            self.sma_trend_medium = 18
-            self.sma_trend_long = 44
+            self.trend_ema_short = 8
+            self.trend_sma_medium = 18
+            self.trend_sma_long = 44
             self.adx_trend_layer = 25
-            self.sma_p_short = 7
-            self.sma_p_medium = 19
-            self.sma_p_long = 48
-            self.ema_p_short = 9
-            self.rsi_layer_cheap = 19
-            self.rsi_layer_expensive = 79
-            self.rsi_period = 4
-            self.max_candles_buy = 4
-            self.max_candles_sell = 5
+            self.intraday_sma_short = 7
+            self.intraday_sma_medium = 19
+            self.intraday_sma_long = 48
+            self.intraday_ema_short = 9
+            self.intraday_rsi_layer_cheap = 19
+            self.intraday_rsi_layer_expensive = 79
+            self.intraday_rsi = 4
+            self.intraday_max_candles_buy = 4
+            self.intraday_max_candles_sell = 4
+            self.trend_longest_indicator_value = 44
         else:
-            self.ema_trend_short = 8
-            self.sma_trend_medium = 18
-            self.sma_trend_long = 44
+            self.trend_ema_short = 8
+            self.trend_sma_medium = 18
+            self.trend_sma_long = 44
             self.adx_trend_layer = 25
-            self.sma_p_short = range(7, 9, 1)
-            self.sma_p_medium = 19
-            self.sma_p_long = 48
-            self.ema_p_short = range(6, 10, 1)
-            self.rsi_layer_cheap = 19
-            self.rsi_layer_expensive = 79
-            self.rsi_period = 4
-            self.max_candles_buy = 4
-            self.max_candles_sell = 5
+            self.intraday_sma_short = range(7, 9, 1)
+            self.intraday_sma_medium = 19
+            self.intraday_sma_long = 48
+            self.intraday_ema_short = range(6, 10, 1)
+            self.intraday_rsi_layer_cheap = 19
+            self.intraday_rsi_layer_expensive = 79
+            self.intraday_rsi = 4
+            self.intraday_max_candles_buy = 4
+            self.intraday_max_candles_sell = 4
+            self.trend_longest_indicator_value = 44
 
         self.intraday_interval = "h"
         self.trend_interval = "D"
@@ -126,34 +128,36 @@ class Strategy_B3():
 
 class Strategy_C1():
     def __init__(self, optimize: bool = False):
-        if not optimize:
-            self.ema_trend_short = 8
-            self.sma_trend_medium = 18
-            self.sma_trend_long = 44
+        if not optimize:       
+            self.trend_ema_short = 8
+            self.trend_sma_medium = 18
+            self.trend_sma_long = 44
             self.adx_trend_layer = 25
-            self.sma_p_short = 9
-            self.sma_p_medium = 20
-            self.sma_p_long = 48
-            self.ema_p_short = 8
-            self.rsi_layer_cheap = 22
-            self.rsi_layer_expensive = 79
-            self.rsi_period = 4
-            self.max_candles_buy = 5
-            self.max_candles_sell = 5
+            self.intraday_sma_short = 9
+            self.intraday_sma_medium = 20
+            self.intraday_sma_long = 48
+            self.intraday_ema_short = 8
+            self.intraday_rsi_layer_cheap = 22
+            self.intraday_rsi_layer_expensive = 79
+            self.intraday_rsi = 4
+            self.intraday_max_candles_buy = 5
+            self.intraday_max_candles_sell = 5
+            self.trend_longest_indicator_value = 44
         else:
-            self.ema_trend_short = 8
-            self.sma_trend_medium = 18
-            self.sma_trend_long = 44
+            self.trend_ema_short = 8
+            self.trend_sma_medium = 18
+            self.trend_sma_long = 44
             self.adx_trend_layer = 25
-            self.sma_p_short = 7
-            self.sma_p_medium = 20
-            self.sma_p_long = 48
-            self.ema_p_short = 8
-            self.rsi_layer_cheap = 22
-            self.rsi_layer_expensive = 79
-            self.rsi_period = 4
-            self.max_candles_buy = 5
-            self.max_candles_sell = 5
+            self.intraday_sma_short = 9
+            self.intraday_sma_medium = 20
+            self.intraday_sma_long = 48
+            self.intraday_ema_short = 8
+            self.intraday_rsi_layer_cheap = 22
+            self.intraday_rsi_layer_expensive = 79
+            self.intraday_rsi = 4
+            self.intraday_max_candles_buy = 5
+            self.intraday_max_candles_sell = 5
+            self.trend_longest_indicator_value = 44
 
         self.intraday_interval = "h"
         self.trend_interval = "D"
