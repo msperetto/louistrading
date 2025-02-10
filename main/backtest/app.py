@@ -143,15 +143,19 @@ class Main():
             )
             self.save_report(stats)
 
+    def get_strategy_class_name(self, strategy):
+        return strategy.__class__.__name__
+
     def run_trend_strategy(self, bt, strategy):
+        strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
             stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
-
-            self.save_report(stats, strategy.__class__.__name__)
-            self.generate_CSV_trades(stats, strategy.__class__.__name__, trend_class)
-            self.plot_chart(bt, strategy.__class__.__name__, trend_class)
+            self.save_report(stats, strategyName)
+            self.generate_CSV_trades(stats, strategyName, trend_class)
+            self.plot_chart(bt, strategyName, trend_class)
 
     def run_trend_strategy_optimization(self, bt, strategy):
+        strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
@@ -159,7 +163,7 @@ class Main():
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
 
-            self.save_report(stats, strategy.__class__.__name__)
+            self.save_report(stats, strategyName)
 
     def run_strategy(self, bt, strategy):
         if not hasattr(strategy, 'trend_class'):
@@ -169,9 +173,11 @@ class Main():
         # This method assumes the trend_class is defined inside of the strategy class.
         stats = bt.run(**vars(strategy))
         trend = strategy.trend_class
-        self.save_report(stats, strategy.__class__.__name__)
-        self.generate_CSV_trades(stats, strategy.__class__.__name__, trend)
-        self.plot_chart(bt, strategy.__class__.__name__, trend)
+
+        strategyName = self.get_strategy_class_name(strategy)
+        self.save_report(stats, strategyName)
+        self.generate_CSV_trades(stats, strategyName, trend)
+        self.plot_chart(bt, strategyName, trend)
 
     def run_strategy_optimization(self, bt, strategy):
         # This method assumes the trend_class is defined inside of the strategy class.
@@ -180,7 +186,8 @@ class Main():
                     maximize = 'Equity Final [$]',
                     return_heatmap = True)
 
-        self.save_report(stats, strategy.__class__.__name__)
+        strategyName = self.get_strategy_class_name(strategy)
+        self.save_report(stats, strategyName)
 
     # Basically the main method.
     def start(self):
