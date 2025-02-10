@@ -19,11 +19,11 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.TREND,
+            "json_type": Json_type.STRATEGY,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": True,
-            "should_generate_CSV_trades": True,
+            "should_plot_chart": False,
+            "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
 
@@ -162,9 +162,13 @@ class Main():
             self.save_report(stats, strategy.__class__.__name__)
 
     def run_strategy(self, bt, strategy):
-        # This method assumes the trend_class is defined inside of the strategy class. I assume this works.
+        if not hasattr(strategy, 'trend_class'):
+            # Throw an exception in case strategy.trend_class is not defined.
+            raise AttributeError("The strategy object does not have a 'trend_class' attribute.")
+
+        # This method assumes the trend_class is defined inside of the strategy class.
         stats = bt.run(**vars(strategy))
-        trend = strategy.trend_analysis # I assume this works. Not sure!
+        trend = strategy.trend_class
         self.save_report(stats, strategy.__class__.__name__)
         self.generate_CSV_trades(stats, strategy.__class__.__name__, trend)
         self.plot_chart(bt, strategy.__class__.__name__, trend)

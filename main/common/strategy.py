@@ -54,6 +54,7 @@ class Strategy_B1():
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+        self.trend_class=db.get_class_code("UpTrend_AlwaysTrend")
 
 class Strategy_B2():
     def __init__(self, optimize: bool = False):
@@ -82,6 +83,7 @@ class Strategy_B2():
         self.filter_sell_class=db.get_class_code("FilterSell_alwaysTrue")
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
+        self.trend_class=db.get_class_code("UpTrend_Price_gt_SMAlong")
        
 class Strategy_B3():
     def __init__(self, optimize: bool = False):
