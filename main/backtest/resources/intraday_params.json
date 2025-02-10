@@ -16,7 +16,8 @@
         "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium"
     ],
     "trigger_buy_classes": [
-        "TriggeredState_MaxCandles"
+        "TriggeredState_MaxCandles_Buy",
+        "TriggeredState_MaxCandles_Sell"
     ],
     "trade_buy_classes": [
         "TradeBuy_High_x_HighLastCandle",

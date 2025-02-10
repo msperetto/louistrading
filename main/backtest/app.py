@@ -132,12 +132,12 @@ class Main():
             filter_buy_class, trigger_buy_class, trade_buy_class, filter_sell_class, trigger_sell_class, trade_sell_class = combination
             stats, heatmap = bt.optimize(
                 **self.get_optimization_params(),
-                filter_buy_class=db.get_class_code(filter_buy_class),
-                trigger_buy_class=db.get_class_code(trigger_buy_class),
-                trade_buy_class=db.get_class_code(trade_buy_class),
-                filter_sell_class=db.get_class_code(filter_sell_class),
-                trigger_sell_class=db.get_class_code(trigger_sell_class),
-                trade_sell_class=db.get_class_code(trade_sell_class),
+                filter_buy_class=filter_buy_class,
+                trigger_buy_class=trigger_buy_class,
+                trade_buy_class=trade_buy_class,
+                filter_sell_class=filter_sell_class,
+                trigger_sell_class=trigger_sell_class,
+                trade_sell_class=trade_sell_class,
                 maximize='Equity Final [$]',
                 return_heatmap=True
             )
