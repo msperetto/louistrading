@@ -27,7 +27,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
-    command: python main/backtest/app2.py
+    command: python main/backtest/app.py
     ports:
       - "8081:81"
     depends_on:
