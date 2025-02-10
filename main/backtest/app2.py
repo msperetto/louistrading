@@ -1,13 +1,13 @@
 import pandas_ta as ta
 import pandas as pd
-from backtesting import Backtest
 from common import management
-from common import database_operations as db
-from backtest import NoShirt, BacktestPortfolioManager
+from common.dao import database_operations as db
 from common.strategy import *
+from backtest import Json_type
+from backtest.BacktestManager import BacktestManager
+from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
-from backtest import Json_type
 from itertools import product
 
 # Useful constants
@@ -29,9 +29,9 @@ class Main():
 
         # Paths for JSONs
         self.json_paths = {
-            Json_type.INTRADAY: "backtest/resources/intraday_params.json",
-            Json_type.TREND: "backtest/resources/trend_params.json",
-            Json_type.STRATEGY: "backtest/resources/strategy_params.json"
+            Json_type.INTRADAY: "main/backtest/resources/intraday_params.json",
+            Json_type.TREND: "main/backtest/resources/trend_params.json",
+            Json_type.STRATEGY: "main/backtest/resources/strategy_params.json"
         }
 
         # Prepare to generate output files.
@@ -73,34 +73,34 @@ class Main():
         if not strategy_info:
             raise ValueError(f"The JSON defined in {json_path} is empty or invalid.")
 
-        self.pair = strategy_info["pair"]
-        self.intraday_interval = strategy_info["intraday_period"]
-        self.trend_interval = strategy_info["trend_period"]
-        self.period_label = strategy_info["period_label"]
-        self.startTime = strategy_info["startTime"]
-        self.endTime = strategy_info["endTime"]
-        self.filter_buy_classes = strategy_info["filter_buy_classes"]
-        self.trigger_buy_classes = strategy_info["trigger_buy_classes"]
-        self.trade_buy_classes = strategy_info["trade_buy_classes"] 
-        self.filter_sell_classes = strategy_info["filter_sell_classes"]
-        self.trigger_sell_classes = strategy_info["trigger_sell_classes"]
-        self.trade_sell_classes = strategy_info["trade_sell_classes"]
-        self.trend_classes = strategy_info["trend_classes"]
-        self.strategy_classes = strategy_info["strategy_classes"]
-        self.intraday_strategy_classes = strategy_info["intraday_strategy_classes"]
+        self.pair = strategy_info.get("pair", None)
+        self.interval = strategy_info.get("intraday_period", None)
+        self.trend_interval = strategy_info.get("trend_period", None)
+        self.period_label = strategy_info.get("period_label", None)
+        self.startTime = strategy_info.get("startTime", None)
+        self.endTime = strategy_info.get("endTime", None)
+        self.filter_buy_classes = strategy_info.get("filter_buy_classes", None)
+        self.trigger_buy_classes = strategy_info.get("trigger_buy_classes", None)
+        self.trade_buy_classes = strategy_info.get("trade_buy_classes", None)
+        self.filter_sell_classes = strategy_info.get("filter_sell_classes", None)
+        self.trigger_sell_classes = strategy_info.get("trigger_sell_classes", None)
+        self.trade_sell_classes = strategy_info.get("trade_sell_classes", None)
+        self.trend_classes = strategy_info.get("trend_classes", None)
+        self.intraday_strategy_classes = strategy_info.get("intraday_strategy_classes", None)
+        self.strategy_classes = strategy_info.get("strategy_classes", None)
 
     def get_optimization_params(self):
         return {
-            "sma_p_short": range(3, 4, 1),
-            "sma_p_medium": range(15, 16, 1),
-            "sma_p_long": range(50, 51, 1),
-            "ema_p_short": range(8, 9, 1),
-            "rsi_layer_cheap": range(22, 23, 1),
-            "rsi_layer_expensive": range(79, 80, 1),
-            "rsi_period": range(4, 5, 1),
-            "max_candles_buy": range(5, 6, 1),
-            "max_candles_sell": range(5, 6, 1),
-            "intraday_interval": self.intraday_interval,
+            "intraday_sma_short": range(3, 4, 1),
+            "intraday_sma_medium": range(15, 16, 1),
+            "intraday_sma_long": range(50, 51, 1),
+            "intraday_ema_short": range(8, 9, 1),
+            "intraday_rsi_layer_cheap": range(22, 23, 1),
+            "intraday_rsi_layer_expensive": range(79, 80, 1),
+            "intraday_rsi": range(4, 5, 1),
+            "intraday_max_candles_buy": range(5, 6, 1),
+            "intraday_max_candles_sell": range(5, 6, 1),
+            "intraday_interval": self.interval,
             "trend_interval": self.trend_interval
         }
 
@@ -180,11 +180,11 @@ class Main():
 
     # Basically the main method.
     def start(self):
+        print("Backtest started.")
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        # TODO: Instead of NoShirt, it should use StrategyManager class. 
-        bt = Backtest(dataset, NoShirt, CASH, COMISSION)
+        bt = Backtest(dataset, BacktestManager, cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:
