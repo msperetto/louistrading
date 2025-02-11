@@ -4,29 +4,28 @@ from common.trade import *
 from common.trend import *
 from backtesting import Backtest, Strategy
 from backtesting.lib import resample_apply
-from main.common.strategybuy import StrategyBuy
-from main.common.strategysell import StrategySell
-from main.common.trendanalysis import TrendAnalysis
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
+from common.strategyLong import StrategyLong
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
 from common.strategy import *
 
-# It deals with a list of strategies. 
-class BacktestManagerPortfolio(Strategy):
-    def __init__(self, strategies):
-        self.strategies = strategies  
-        self.position = None # Not sure if we really need this. Perhaps position is already initialized by Backtesting.Strategy
-        # Maybe set somehow all necessary classes used by the strategies parameter
+# It deals with a single strategy (passed as a parameter) 
+class BacktestManagerStrategy(Strategy):
+    strategyName = ''
 
+    # def init(self):
+        # TODO: Define strategy class
+        # self.strategy 
 
     def next(self):
         # maybe deal with stop loss and stop gain?
-
         self.try_open_position()
         self.try_close_position()
          
-
     # try open position
     def try_open_position(self):
         for strategy in self.strategies:

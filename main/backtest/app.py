@@ -5,6 +5,8 @@ from common.dao import database_operations as db
 from common.strategy import *
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
+from backtest.backtest_manager_portfolio import BacktestManagerPortfolio
+from backtest.backtest_manager_strategy import BacktestManagerStrategy
 from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
@@ -149,7 +151,10 @@ class Main():
     def run_trend_strategy(self, bt, strategy):
         strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
-            stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
+            stats = bt.run(
+                **vars(strategy),
+                trend_class=db.get_class_code(trend_class),
+                strategy_class=strategyName)
             self.save_report(stats, strategyName)
             self.generate_CSV_trades(stats, strategyName, trend_class)
             self.plot_chart(bt, strategyName, trend_class)
@@ -160,33 +165,35 @@ class Main():
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
                         trend_class=db.get_class_code(trend_class),
+                        strategy_class=strategyName,
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
 
             self.save_report(stats, strategyName)
 
     def run_strategy(self, bt, strategy):
+        strategyName = self.get_strategy_class_name(strategy)
         if not hasattr(strategy, 'trend_class'):
             # Throw an exception in case strategy.trend_class is not defined.
             raise AttributeError("The strategy object does not have a 'trend_class' attribute.")
 
         # This method assumes the trend_class is defined inside of the strategy class.
-        stats = bt.run(**vars(strategy))
+        stats = bt.run(**vars(strategy), strategy_class=strategyName)
         trend = strategy.trend_class
 
-        strategyName = self.get_strategy_class_name(strategy)
         self.save_report(stats, strategyName)
         self.generate_CSV_trades(stats, strategyName, trend)
         self.plot_chart(bt, strategyName, trend)
 
     def run_strategy_optimization(self, bt, strategy):
         # This method assumes the trend_class is defined inside of the strategy class.
+        strategyName = self.get_strategy_class_name(strategy)
         stats, heatmap = bt.optimize(
                     **vars(strategy), 
+                    strategy_class=strategyName,
                     maximize = 'Equity Final [$]',
                     return_heatmap = True)
 
-        strategyName = self.get_strategy_class_name(strategy)
         self.save_report(stats, strategyName)
 
     # Basically the main method.
@@ -194,7 +201,7 @@ class Main():
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, BacktestManagerIntraday, cash=CASH, commission=COMISSION)
+        bt = Backtest(dataset, BacktestManagerPortfolio, cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:

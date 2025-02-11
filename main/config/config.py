@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from common.enums import Environment_Type
 
 # Connection string for the database
@@ -12,3 +13,9 @@ LOG_LEVEL = logging.DEBUG  # It can be: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 # Defining user account id
 ACCOUNT_ID = 1
+
+# Strategies Folder:
+STRATEGIES_MODULE = "common.strategies"
+
+# Strategies Path:
+STRATEGIES_PATH = Path(__file__).parent.parent / 'common' / 'strategies'

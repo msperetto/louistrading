@@ -1,6 +1,6 @@
 from main.common.strategyLong import StrategyLong
 
-class Strategy_B2B(StrategyLong):
+class Strategy_B1A(StrategyLong):
     """
     B2 strategy that configures the necessary components and indicator parameters.
     """

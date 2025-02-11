@@ -6,10 +6,19 @@
     "intraday_period": "1h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
-    "strategy_classes": [
+    "intraday_strategy_classes": [
         "B1",
         "B2",
         "B3",
         "C1"
+    ],
+    "trend_classes": [
+        "UpTrend_AlwaysTrend",
+        "UpTrend_EMAshort_gt_SMAlong",
+        "UpTrend_EMAshort_gt_SMAmedium",
+        "UpTrend_SMAmedium_gt_SMAlong",
+        "UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong",
+        "UpTrend_Price_gt_SMAmedium",
+        "UpTrend_Price_gt_SMAlong"
     ]
 }

@@ -1,4 +1,5 @@
 from common.dao import database_operations as db
+from common.strategyLong import StrategyLong
 
 class Strategy_Test():
     def __init__(self, optimize: bool = False):
@@ -16,7 +17,7 @@ class Strategy_Test():
         self.trigger_sell_class=db.get_class_code("TriggeredStateSell_alwaysTrue")
         self.trade_sell_class=db.get_class_code("TradeSell_Price_EMAshort")
 
-class Strategy_B1():
+class Strategy_B1(StrategyLong):
     def __init__(self, optimize: bool = False):
         if not optimize:
             self.trend_ema_short = 8
