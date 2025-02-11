@@ -19,7 +19,7 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.INTRADAY,
+            "json_type": Json_type.STRATEGY,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
             "should_plot_chart": False,
@@ -30,8 +30,8 @@ class Main():
         # Paths for JSONs
         self.json_paths = {
             Json_type.INTRADAY: "main/backtest/resources/intraday_params.json",
-            Json_type.TREND: "main/backtest/resources/trend_params.json",
-            Json_type.STRATEGY: "main/backtest/resources/strategy_params.json"
+            Json_type.STRATEGY: "main/backtest/resources/strategy_params.json",
+            Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json"
         }
 
         # Prepare to generate output files.
@@ -200,7 +200,7 @@ class Main():
             case Json_type.INTRADAY:
                 self.run_intraday_optimization(bt)
                 return
-            case Json_type.TREND:
+            case Json_type.STRATEGY:
                 # TODO: Define backtest using BacktestManagerStrategy.   
                 # bt = Backtest(dataset, BacktestManagerStrategy, cash=CASH, commission=COMISSION)
                 for strategy in self.intraday_strategy_classes:
@@ -208,8 +208,8 @@ class Main():
                         strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
                         method_name(bt, strategy_param)
                 return
-            case Json_type.STRATEGY:
-                # The STRATEGY mode is used when we want to run backtest for many strategies.
+            case Json_type.PORTFOLIO:
+                # The PORTFOLIO mode is used when we want to run backtest for many strategies.
                 # About "should_run_portfolio_strategies":
                 #   True: means that backtest will merge all the given strategies to act as a "single strategy". This is what we mean by Portfolio of Strategies. 
                 #   False: means that backtest will run for each strategy individually.  
