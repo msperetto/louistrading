@@ -16,7 +16,7 @@
         "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium"
     ],
     "trigger_buy_classes": [
-        "TriggeredState_MaxCandles"
+        "TriggeredState_MaxCandles_Buy"
     ],
     "trade_buy_classes": [
         "TradeBuy_High_x_HighLastCandle",
@@ -30,7 +30,7 @@
     ],
     "filter_sell_classes": [
         "FilterSell_RSI",
-        "FilterSell_alwaysTrue"
+        "Filter_alwaysTrue"
     ],
     "trigger_sell_classes": [
         "TriggeredState_MaxCandles_Sell"

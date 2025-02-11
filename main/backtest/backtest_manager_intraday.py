@@ -35,13 +35,13 @@ class BacktestManagerIntraday(Strategy):
     stop_loss = None
     take_profit = None
     trend_longest_indicator_value = 40
-    trend_class = "self.trend = UpTrend_AlwaysTrend()"
-    filter_buy_class = "self.filterBuy = Filter_alwaysTrue()"
-    trigger_buy_class = "self.triggerBuy = TriggeredState_alwaysTrue()"
-    trade_buy_class = "self.tradeBuy = TradeBuy_HighLastCandle(self.data)"
-    filter_sell_class = "self.filterSell = Filter_alwaysTrue()"
-    trigger_sell_class = "self.triggerSell = TriggeredState_alwaysTrue()"
-    trade_sell_class = "self.tradeSell = TradeSell_LowLastCandle(self.data)"
+    trend_class = "UpTrend_AlwaysTrend"
+    filter_buy_class = "Filter_alwaysTrue"
+    trigger_buy_class = "TriggeredState_alwaysTrue"
+    trade_buy_class = "TradeBuy_HighLastCandle"
+    filter_sell_class = "Filter_alwaysTrue"
+    trigger_sell_class = "TriggeredState_alwaysTrue"
+    trade_sell_class = "TradeSell_LowLastCandle"
 
     def init(self):
         # TODO: Maybe change the concept of "strategy" to use the new class design, which uses a parent StrategyLong class.
@@ -63,11 +63,15 @@ class BacktestManagerIntraday(Strategy):
         if self.trend_sma_medium != 0: self.trend_sma_medium = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_medium)
         if self.trend_sma_long != 0: self.trend_sma_long = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_long)
 
+        #getting all class attributes to pass to buying and selling support objects
+        self.attributes = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__") and not isinstance(getattr(self, attr), type(self.init))}
+
         #instantiating buying support objects
-        exec(self.filter_buy_class)
-        exec(self.trigger_buy_class)
-        exec(self.trade_buy_class)
-        exec(self.trend_class)
+        self.filterBuy = Filter().filter_factory(self.filter_buy_class, **self.attributes)
+        self.triggerBuy = TriggeredState().trigger_factory(self.trigger_buy_class, **self.attributes)
+        self.tradeBuy = Trade().trade_factory(self.trade_buy_class, **self.attributes)
+
+        self.trend = Trend().trend_factory(self.trend_class, **self.attributes)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_buy'] = self.filterBuy.__class__.__name__
@@ -76,10 +80,10 @@ class BacktestManagerIntraday(Strategy):
         self.classes['trend'] = self.trend.__class__.__name__
 
         #instantiating selling support objects
-        exec(self.filter_sell_class)
-        exec(self.trigger_sell_class)
-        exec(self.trade_sell_class)
-        
+        self.filterSell = Filter().filter_factory(self.filter_sell_class, **self.attributes)
+        self.triggerSell = TriggeredState().trigger_factory(self.trigger_sell_class, **self.attributes)
+        self.tradeSell = Trade().trade_factory(self.trade_sell_class, **self.attributes)
+
         #adding classes name to stats list to populate DB
         self.classes['filter_sell'] = self.filterSell.__class__.__name__
         self.classes['trigger_sell'] = self.triggerSell.__class__.__name__

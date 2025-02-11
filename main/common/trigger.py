@@ -7,6 +7,22 @@ class TriggeredState(ABC):
     def reset(self):
         pass
 
+# Factory method to create and instantiate a Filter object
+    def trigger_factory(self, class_name: str, **kwargs) -> 'Trigger':
+        # Get the class from the global namespace
+        cls = globals().get(class_name)
+        if not cls:
+            raise ValueError(f"Class {class_name} not found")
+    
+        # Get the constructor parameters for the class of class_name
+        constructor_params = cls.__init__.__code__.co_varnames[1:cls.__init__.__code__.co_argcount]
+    
+        # Filter the kwargs to include only the parameters needed by the constructor
+        filtered_kwargs = {key: kwargs[key] for key in constructor_params if key in kwargs}
+    
+        # Instantiate the class with the filtered parameters
+        return cls(**filtered_kwargs)
+
 # 
 class TriggeredState_alwaysTrue(TriggeredState):
     def __init__(self):
@@ -19,54 +35,57 @@ class TriggeredState_alwaysTrue(TriggeredState):
         return self.is_filtered
 
 
-class TriggeredState_MaxCandles(TriggeredState):
-    def __init__(self, max_candles):
-        self.max_candles = max_candles
-        self.candles_after_triggered = max_candles
-        # self.triggered = False
+class TriggeredState_MaxCandles_Buy(TriggeredState):
+    def __init__(self, intraday_max_candles_buy):
+        self.intraday_max_candles = intraday_max_candles_buy
+        self.intraday_candles_after_triggered = intraday_max_candles_buy
 
-    def reset(self, is_filtered):
-        if is_filtered:
-            self.candles_after_triggered = 0
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
 
     def isStillValid(self):
-        # starting to count the next candles after triggered
-        # if self.triggered and self.candles_after_triggered < self.max_candles:
-        if self.candles_after_triggered < self.max_candles:
-            self.candles_after_triggered += 1
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
             return True
-        
-        # untriggering after max_candles
-        elif self.candles_after_triggered >= self.max_candles:
-            # self.candles_after_triggered = 0
-            # self.triggered = False 
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
 
 
-#not finished, but not sure if is needed
-class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
-    def __init__(self, max_candles, ema_short_fn, sma_long_fn, data):
-        self.max_candles = max_candles
-        self.candles_after_triggered = max_candles
-        self.data = data
-        self.get_ema_short = ema_short_fn
-        self.get_sma_long = sma_long_fn
+class TriggeredState_MaxCandles_Sell(TriggeredState):
+    def __init__(self, intraday_max_candles_sell):
+        self.intraday_max_candles = intraday_max_candles_sell
+        self.intraday_candles_after_triggered = intraday_max_candles_sell
 
-    def reset(self, is_filtered):
-        if is_filtered:
-            self.candles_after_triggered = 0
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
 
     def isStillValid(self):
-        # starting to count the next candles after triggered
-        # if self.triggered and self.candles_after_triggered < self.max_candles:
-        if self.candles_after_triggered < self.max_candles:
-            self.candles_after_triggered += 1
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
             return True
-        
-        # untriggering after max_candles
-        elif self.candles_after_triggered >= self.max_candles:
-            # self.candles_after_triggered = 0
-            # self.triggered = False 
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
+            return False
+
+
+class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
+    def __init__(self, intraday_max_candles, intraday_ema_short, intraday_sma_long, data):
+        self.intraday_max_candles = intraday_max_candles
+        self.intraday_candles_after_triggered = intraday_max_candles
+        self.data = data
+        self.ema_short = intraday_ema_short
+        self.sma_long = intraday_sma_long
+
+    def reset(self, intraday_is_filtered):
+        if intraday_is_filtered:
+            self.intraday_candles_after_triggered = 0
+
+    def isStillValid(self):
+        if self.intraday_candles_after_triggered < self.intraday_max_candles:
+            self.intraday_candles_after_triggered += 1
+            return True
+        elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
 
 
