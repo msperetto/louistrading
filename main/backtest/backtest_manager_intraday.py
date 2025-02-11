@@ -104,7 +104,10 @@ class BacktestManagerIntraday(Strategy):
         self.try_close_position()
 
     def try_open_position(self, stop_loss, take_profit):
-        # TODO: Ideally, this "trendAnalysis.is_upTrend" should actually be inside of the strategy class.
+        # TODO: Drop self.trendAnalysis.is_upTrend() from this classe. 
+        # That shold be used on BacktestManagerStrategy and ideally inside of the strategy class.
+
+        # Ideally, this "trendAnalysis.is_upTrend" should actually be inside of the strategy class.
         # Notice that we want to be able to run this class even when trying to "discovery an intrady strategy". 
         # So, the concept of trend would not defined yet.
         if self.trendAnalysis.is_upTrend():
