@@ -9,7 +9,7 @@ class Trade(ABC):
     def sellConfirmation(self):
         pass
 
-# Factory method to create and instantiate a Filter object
+    # Factory method to create and instantiate a Trade object
     def trade_factory(self, class_name: str, **kwargs) -> 'Trade':
         # Get the class from the global namespace
         cls = globals().get(class_name)
