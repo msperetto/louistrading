@@ -2,6 +2,7 @@ import pandas_ta as ta
 import pandas as pd
 from common import management
 from common.dao import database_operations as db
+from common.enums import Side_Type
 from common.strategy import *
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
@@ -19,7 +20,8 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.STRATEGY,
+            "json_type": Json_type.INTRADAY,
+            "operation_type": Side_Type.LONG,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
             "should_plot_chart": False,
@@ -137,6 +139,7 @@ class Main():
                 filter_sell_class=filter_sell_class,
                 trigger_sell_class=trigger_sell_class,
                 trade_sell_class=trade_sell_class,
+                operation_type=self.config["operation_type"],
                 maximize='Equity Final [$]',
                 return_heatmap=True
             )

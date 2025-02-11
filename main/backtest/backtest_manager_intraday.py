@@ -7,12 +7,14 @@ from backtesting.lib import resample_apply
 from common.strategybuy import StrategyBuy
 from common.strategysell import StrategySell
 from common.trendanalysis import TrendAnalysis
+from common.enums import Side_Type
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
 from common.strategy import *
 
 class BacktestManagerIntraday(Strategy):
+    operation_type = Side_Type.LONG
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0
@@ -95,15 +97,20 @@ class BacktestManagerIntraday(Strategy):
 
 
     def next(self):
-        # TODO: We might need a new parameter to this class saying if it's LONG or SHORT position.
+        #TODO: Understand why the first iteration on next is always LONG regardless of the operation_type. It seems odd!
+        if (self.operation_type == Side_Type.LONG):
+            self.handle_long_position()
+        else:
+            self.handle_short_position()
 
+    def handle_long_position(self):
         stop_loss = self.calculate_stop_loss()
         take_profit = self.calculate_take_profit()
 
-        self.try_open_position(stop_loss, take_profit)
-        self.try_close_position()
+        self.try_open_long_position(stop_loss, take_profit)
+        self.try_close_long_position()
 
-    def try_open_position(self, stop_loss, take_profit):
+    def try_open_long_position(self, stop_loss, take_profit):
         # TODO: Drop self.trendAnalysis.is_upTrend() from this classe. 
         # That shold be used on BacktestManagerStrategy and ideally inside of the strategy class.
 
@@ -116,9 +123,19 @@ class BacktestManagerIntraday(Strategy):
             #keeps updating trigger status even if not on trend
             self.strategyBuy.triggeredState.isStillValid()
 
-    def try_close_position(self):
+    def try_close_long_position(self):
         if self.strategySell.shouldSell(): self.position.close()
         
+    def handle_short_position(self):
+        self.try_open_short_position()
+        self.try_close_short_position()
+
+    def try_open_short_position(self):
+        if self.strategySell.shouldSell(): self.sell()
+
+    def try_close_short_position(self):
+        if self.strategyBuy.shouldBuy: self.position.close()
+
     def calculate_stop_loss(self):
         """
         Calculates the stop loss based on the most recent closing price and the configured percentage.
