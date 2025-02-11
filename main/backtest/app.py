@@ -149,7 +149,7 @@ class Main():
     def run_trend_strategy(self, bt, strategy):
         strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
-            stats = bt.run(**vars(strategy), trend_class=db.get_class_code(trend_class))
+            stats = bt.run(**vars(strategy), trend_class=trend_class)
             self.save_report(stats, strategyName)
             self.generate_CSV_trades(stats, strategyName, trend_class)
             self.plot_chart(bt, strategyName, trend_class)
@@ -159,7 +159,7 @@ class Main():
         for trend_class in self.trend_classes:
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
-                        trend_class=db.get_class_code(trend_class),
+                        trend_class=trend_class,
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
 

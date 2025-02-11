@@ -35,7 +35,7 @@ class BacktestManagerIntraday(Strategy):
     stop_loss = None
     take_profit = None
     trend_longest_indicator_value = 40
-    trend_class = "self.trend = UpTrend_AlwaysTrend()"
+    trend_class = "UpTrend_AlwaysTrend"
     filter_buy_class = "Filter_alwaysTrue"
     trigger_buy_class = "TriggeredState_alwaysTrue"
     trade_buy_class = "TradeBuy_HighLastCandle"
@@ -71,8 +71,7 @@ class BacktestManagerIntraday(Strategy):
         self.triggerBuy = TriggeredState().trigger_factory(self.trigger_buy_class, **self.attributes)
         self.tradeBuy = Trade().trade_factory(self.trade_buy_class, **self.attributes)
 
-        #adjust it later to same pattern as above
-        exec(self.trend_class)
+        self.trend = Trend().trend_factory(self.trend_class, **self.attributes)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_buy'] = self.filterBuy.__class__.__name__
