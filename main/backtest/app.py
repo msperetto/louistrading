@@ -42,16 +42,12 @@ class Main():
 
         # Check if the trend should be automatically included in the strategy.
         self.shouldIncludeTrend = self.config["json_type"] == Json_type.PORTFOLIO
+        self.optimize = self.config["strategy_optimizer_mode"]
 
         # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
         self.strategy_dict = {
-            "B1": Strategy_B1(optimize=False, shouldIncludeTrend=self.shouldIncludeTrend),
-            "B2": Strategy_B2(optimize=False, shouldIncludeTrend=self.shouldIncludeTrend)
-        }
-
-        self.strategy_optimize_dict = {
-            "B1": Strategy_B1(optimize=True, shouldIncludeTrend=self.shouldIncludeTrend),
-            "B2": Strategy_B2(optimize=True, shouldIncludeTrend=self.shouldIncludeTrend)
+            "B1": Strategy_B1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
         }
 
         # Inicializinzg some vars
@@ -209,7 +205,7 @@ class Main():
                 # bt = Backtest(dataset, BacktestManagerStrategy, cash=CASH, commission=COMISSION)
                 for strategy in self.intraday_strategy_classes:
                         method_name = self.run_trend_strategy_optimization if self.config["strategy_optimizer_mode"] else self.run_trend_strategy
-                        strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
+                        strategy_param = self.strategy_dict[strategy]
                         method_name(bt, strategy_param)
                 return
             case Json_type.PORTFOLIO:
@@ -224,7 +220,7 @@ class Main():
                     # This logic assumes the trend_class is defined inside of the strategy class.
                     for strategy in self.strategy_classes:
                         method_name = self.run_strategy_optimization if self.config["strategy_optimizer_mode"] else self.run_strategy
-                        strategy_param = self.strategy_optimize_dict[strategy] if self.config["strategy_optimizer_mode"] else self.strategy_dict[strategy]
+                        strategy_param = self.strategy_dict[strategy]
                         method_name(bt, strategy_param)                  
                 return
             case _:
