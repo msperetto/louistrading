@@ -1,4 +1,5 @@
 from abc import ABC
+from backtesting._util import _Indicator
 
 class TriggeredState(ABC):
     def isStillValid(self) -> bool:
@@ -7,8 +8,8 @@ class TriggeredState(ABC):
     def reset(self):
         pass
 
-# Factory method to create and instantiate a Filter object
-    def trigger_factory(self, class_name: str, **kwargs) -> 'Trigger':
+    # Factory method to create and instantiate a Filter object
+    def trigger_factory(self, class_name: str, obj_caller, **kwargs) -> 'Trigger':
         # Get the class from the global namespace
         cls = globals().get(class_name)
         if not cls:
@@ -19,9 +20,12 @@ class TriggeredState(ABC):
     
         # Filter the kwargs to include only the parameters needed by the constructor
         filtered_kwargs = {key: kwargs[key] for key in constructor_params if key in kwargs}
-    
-        # Instantiate the class with the filtered parameters
-        return cls(**filtered_kwargs)
+ 
+        # Convert the parameters to lambda functions if they are _Indicator (a list) and not 'data'
+        lambda_kwargs = {key: (lambda self=self, key=key: getattr(obj_caller, key)[:len(getattr(obj_caller, key))]) if isinstance(value, _Indicator) and key != 'data' else value for key, value in filtered_kwargs.items()}
+
+        # Instantiate the class with the lambda parameters
+        return cls(**lambda_kwargs)
 
 # 
 class TriggeredState_alwaysTrue(TriggeredState):
