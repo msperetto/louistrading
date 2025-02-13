@@ -1,15 +1,12 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.08.2024",
-    "endTime": "17.10.2024",
+    "startTime": "01.12.2023",
+    "endTime": "18.11.2024",
     "period_label": "bear",
     "intraday_period": "1h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "strategy_classes": [
-        "B1",
-        "B2",
-        "B3",
-        "C1"
+        "B2"
     ]
 }

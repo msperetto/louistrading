@@ -67,11 +67,10 @@ class BacktestManagerIntraday(Strategy):
         self.attributes = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__") and not isinstance(getattr(self, attr), type(self.init))}
 
         #instantiating buying support objects
-        self.filterBuy = Filter().filter_factory(self.filter_buy_class, **self.attributes)
-        self.triggerBuy = TriggeredState().trigger_factory(self.trigger_buy_class, **self.attributes)
-        self.tradeBuy = Trade().trade_factory(self.trade_buy_class, **self.attributes)
-
-        self.trend = Trend().trend_factory(self.trend_class, **self.attributes)
+        self.filterBuy = Filter().filter_factory(self.filter_buy_class, self, **self.attributes)
+        self.triggerBuy = TriggeredState().trigger_factory(self.trigger_buy_class, self, **self.attributes)
+        self.tradeBuy = Trade().trade_factory(self.trade_buy_class, self, **self.attributes)
+        self.trend = Trend().trend_factory(self.trend_class, self, **self.attributes)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_buy'] = self.filterBuy.__class__.__name__
@@ -80,9 +79,9 @@ class BacktestManagerIntraday(Strategy):
         self.classes['trend'] = self.trend.__class__.__name__
 
         #instantiating selling support objects
-        self.filterSell = Filter().filter_factory(self.filter_sell_class, **self.attributes)
-        self.triggerSell = TriggeredState().trigger_factory(self.trigger_sell_class, **self.attributes)
-        self.tradeSell = Trade().trade_factory(self.trade_sell_class, **self.attributes)
+        self.filterSell = Filter().filter_factory(self.filter_sell_class, self, **self.attributes)
+        self.triggerSell = TriggeredState().trigger_factory(self.trigger_sell_class, self, **self.attributes)
+        self.tradeSell = Trade().trade_factory(self.trade_sell_class, self, **self.attributes)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_sell'] = self.filterSell.__class__.__name__
@@ -94,9 +93,10 @@ class BacktestManagerIntraday(Strategy):
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
         self.trendAnalysis = TrendAnalysis(self.trend)
 
+
     def next(self):
         # TODO: We might need a new parameter to this class saying if it's LONG or SHORT position.
-        
+
         stop_loss = self.calculate_stop_loss()
         take_profit = self.calculate_take_profit()
 

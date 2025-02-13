@@ -19,7 +19,7 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.INTRADAY,
+            "json_type": Json_type.STRATEGY,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
             "should_plot_chart": False,
