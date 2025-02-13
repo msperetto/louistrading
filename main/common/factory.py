@@ -1,5 +1,6 @@
 import sys
 from backtesting._util import _Indicator
+import pandas as pd
 
 class Factory:
     """_summary_
@@ -29,7 +30,7 @@ class Factory:
         # Converter _Indicator em lambdas (exceto 'data')
         lambda_kwargs = {
             key: (lambda key=key, obj_caller=obj_caller: getattr(obj_caller, key)[:len(getattr(obj_caller, key))])
-            if isinstance(value, _Indicator) and key != 'data' else value
+            if (isinstance(value, _Indicator) and key != 'data') or isinstance(value, pd.Series) else value
             for key, value in filtered_kwargs.items()
         }
 
