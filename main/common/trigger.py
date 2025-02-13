@@ -1,5 +1,5 @@
 from abc import ABC
-from backtest.factory import Factory
+from common.factory import Factory
 
 class TriggeredState(ABC):
     def isStillValid(self) -> bool:

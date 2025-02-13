@@ -1,8 +1,14 @@
-from abc import ABC
 import sys
 from backtesting._util import _Indicator
 
 class Factory:
+    """_summary_
+    Class made to handle the instantiation of Filter, Trigger, Trade and Trend objects.
+    In backtest and prod the Strategy classes hold the proper classes to be instantiated.
+    When the classes are passed to backtest manager or in prod StrategyManager, the Factory
+    will get the correct attributes for each Strategy class and instantiate it correctly.
+
+    """
     @staticmethod
     def create(class_name: str, obj_caller, **kwargs):
         cls = None
