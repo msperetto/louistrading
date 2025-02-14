@@ -6,6 +6,7 @@ from common.enums import Side_Type
 from common.strategy import *
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
+from backtest.backtest_manager_strategy import BacktestManagerStrategy
 from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
@@ -166,7 +167,7 @@ class Main():
     def run_trend_strategy(self, bt, strategy):
         strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
-            stats = bt.run(**vars(strategy), trend_class=trend_class, operation_type=self.config["operation_type"])
+            stats = bt.run(**vars(strategy), trend_class=trend_class, strategy_class=strategyName, operation_type=self.config["operation_type"])
             self.save_report(stats, strategyName)
             self.generate_CSV_trades(stats, strategyName, trend_class)
             self.plot_chart(bt, strategyName, trend_class)
@@ -177,6 +178,7 @@ class Main():
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
                         trend_class=trend_class,
+                        strategy_class=strategyName,
                         operation_type=self.config["operation_type"],
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
@@ -192,7 +194,7 @@ class Main():
             raise AttributeError(message)
 
         # This method assumes the trend_class is defined inside of the strategy class.
-        stats = bt.run(**vars(strategy), operation_type=self.config["operation_type"])
+        stats = bt.run(**vars(strategy), strategy_class=strategyName, operation_type=self.config["operation_type"])
         trend = strategy.trend_class
 
         self.save_report(stats, strategyName)
@@ -201,13 +203,14 @@ class Main():
 
     def run_strategy_optimization(self, bt, strategy):
         # This method assumes the trend_class is defined inside of the strategy class.
+        strategyName = self.get_strategy_class_name(strategy)
         stats, heatmap = bt.optimize(
                     **vars(strategy), 
+                    strategy_class=strategyName,
                     operation_type=self.config["operation_type"],
                     maximize = 'Equity Final [$]',
                     return_heatmap = True)
 
-        strategyName = self.get_strategy_class_name(strategy)
         self.save_report(stats, strategyName)
 
     # Basically the main method.
