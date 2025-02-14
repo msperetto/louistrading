@@ -11,7 +11,7 @@ class Strategy_B2():
             self.intraday_sma_long = 51
             self.trend_longest_indicator_value = 51
         
-        self.intraday_interval = "1h"
+        self.intraday_interval = "2h"
         self.trend_interval = "1d"
         self.filter_buy_class = "FilterBuy_SMAmedium_gt_SMAlong"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
