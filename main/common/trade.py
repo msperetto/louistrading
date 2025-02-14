@@ -1,6 +1,6 @@
 from abc import ABC
 from common import util
-from backtest.factory import Factory
+from common.factory import Factory
 
 class Trade(ABC):
     def buyConfirmation(self):

@@ -59,12 +59,14 @@ class StrategyManager():
         if hasattr(self.strategy, 'intraday_max_candles_sell'):
             self.intraday_max_candles_sell = getattr(self.strategy, 'intraday_max_candles_sell')
 
+        # getting all class attributes to pass to buying and selling support objects
+        self.attributes = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__") and not isinstance(getattr(self, attr), (type(self.set_support_objects), type(self.__init__)))}
 
-        # instantiating objects for filter, trigger, trade e trend classes
-        exec(self.strategy.filter_buy_class)
-        exec(self.strategy.trigger_buy_class)
-        exec(self.strategy.trade_buy_class)
-        exec(self.strategy.trend_class)
+        #instantiating buying support objects
+        self.filterBuy = Filter().filter_factory(self.strategy.filter_buy_class, self, **self.attributes)
+        self.triggerBuy = TriggeredState().trigger_factory(self.strategy.trigger_buy_class, self, **self.attributes)
+        self.tradeBuy = Trade().trade_factory(self.strategy.trade_buy_class, self, **self.attributes)
+        self.trend = Trend().trend_factory(self.strategy.trend_class, self, **self.attributes)
 
         #adding classes name to stats list to populate DB
         self.classes['filter_buy'] = self.filterBuy.__class__.__name__
@@ -73,10 +75,10 @@ class StrategyManager():
         self.classes['trend'] = self.trend.__class__.__name__
 
         #instantiating selling support objects
-        exec(self.strategy.filter_sell_class)
-        exec(self.strategy.trigger_sell_class)
-        exec(self.strategy.trade_sell_class)
-        
+        self.filterSell = Filter().filter_factory(self.strategy.filter_sell_class, self, **self.attributes)
+        self.triggerSell = TriggeredState().trigger_factory(self.strategy.trigger_sell_class, self, **self.attributes)
+        self.tradeSell = Trade().trade_factory(self.strategy.trade_sell_class, self, **self.attributes)
+       
         #adding classes name to stats list to populate DB
         self.classes['filter_sell'] = self.filterSell.__class__.__name__
         self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
