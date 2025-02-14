@@ -13,6 +13,14 @@ import pandas as pd
 from time import sleep
 from common.strategy import *
 
+# Dynamically import all modules from the common/strategies folder
+def import_all_strategies():
+    for module_info in pkgutil.iter_modules([str(STRATEGIES_PATH)]):
+        print("Importing all strategies")
+        module = importlib.import_module(f"{STRATEGIES_MODULE}.{module_info.name}")
+        globals().update({name: cls for name, cls in module.__dict__.items() if isinstance(cls, type)})
+        print(globals())
+
 # It deals with a single strategy (passed as a parameter) 
 class BacktestManagerStrategy(Strategy):
     strategyName = ''
