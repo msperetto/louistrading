@@ -14,7 +14,7 @@ from time import sleep
 from common.strategy import *
 
 class BacktestManagerIntraday(Strategy):
-    operation_type = Side_Type.LONG
+    operation_type = None
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0
@@ -92,11 +92,10 @@ class BacktestManagerIntraday(Strategy):
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
         self.trendAnalysis = TrendAnalysis(self.trend)
 
-
     def next(self):
         if (self.operation_type == Side_Type.LONG):
             self.handle_long_position()
-        else:
+        elif (self.operation_type == Side_Type.SHORT):
             self.handle_short_position()
 
     def handle_long_position(self):
