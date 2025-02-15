@@ -46,9 +46,6 @@ class BacktestManagerIntraday(Strategy):
     trade_sell_class = "TradeSell_LowLastCandle"
 
     def init(self):
-        # TODO: Maybe change the concept of "strategy" to use the new class design, which uses a parent StrategyLong class.
-        # Doing that, I believe all of the code of this class can be simplified.
-
         self.classes = {}
 
         if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_short)
@@ -97,7 +94,6 @@ class BacktestManagerIntraday(Strategy):
 
 
     def next(self):
-        #TODO: Understand why the first iteration on next is always LONG regardless of the operation_type. It seems odd!
         if (self.operation_type == Side_Type.LONG):
             self.handle_long_position()
         else:
