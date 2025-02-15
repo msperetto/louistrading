@@ -1,0 +1,53 @@
+{
+    "pair": "BTCUSDT",
+    "startTime": "01.08.2024",
+    "endTime": "01.10.2024",
+    "period_label": "test-long",
+    "intraday_period": "1h",
+    "trend_period": "D",
+    "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
+    "filter_buy_classes": [
+        "FilterBuy_RSI",
+        "FilterBuy_RSI_price_x_SMAlong",
+        "FilterBuy_RSI_price_x_SMAmedium",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAlong",
+        "FilterBuy_RSI_EMAshort_gt_SMAmedium",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong_price_x_SMAmedium",
+        "FilterBuy_RSI_EMAshort_gt_SMAlong",
+        "FilterBuy_RSI_EMAshort_gt_SMAmedium_EMAshort_gt_SMAlong",
+        "FilterBuy_RSI_EMAshort_gt_SMAmedium_gt_SMAlong",
+        "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAmedium",
+        "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong",
+        "FilterBuy_EMAshort_lt_SMAmedium_gt_SMAlong_Price_gt_SMAlong",
+        "FilterBuy_EMAshort_gt_SMAlong",
+        "FilterBuy_EMAshort_gt_SMAmedium",
+        "FilterBuy_SMAmedium_gt_SMAlong",
+        "FilterBuy_SMAmedium_gt_SMAlong_or_price_x_SMAlong_price_x_SMAmedium"
+    ],
+    "trigger_buy_classes": [
+        "TriggeredState_MaxCandles_Buy",
+        "TriggeredState_alwaysTrue"
+    ],
+    "trade_buy_classes": [
+        "TradeBuy_High_x_HighLastCandle",
+        "TradeBuy_HighLastCandle",
+        "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium",
+        "TradeBuy_EMAshort_gt_SMAmedium",
+        "TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle",
+        "TradeBuy_Price_gt_EMAshort",
+        "TradeBuy_Price_gt_SMAmedium",
+        "TradeBuy_Close_gt_CloseLastCandle"
+    ],
+    "filter_sell_classes": [
+        "FilterSell_RSI",
+        "Filter_alwaysTrue"
+    ],
+    "trigger_sell_classes": [
+        "TriggeredState_MaxCandles_Sell",
+        "TriggeredState_alwaysTrue"
+    ],
+    "trade_sell_classes": [
+        "TradeSell_LowLastCandle",
+        "TradeSell_Price_EMAshort"
+    ]
+}
