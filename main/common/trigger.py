@@ -12,7 +12,6 @@ class TriggeredState(ABC):
     def trigger_factory(self, class_name: str, obj_caller, **kwargs):
         return Factory.create(class_name, obj_caller, **kwargs)
 
-# 
 class TriggeredState_alwaysTrue(TriggeredState):
     def __init__(self):
         self.is_filtered = False
@@ -22,7 +21,6 @@ class TriggeredState_alwaysTrue(TriggeredState):
 
     def isStillValid(self) -> bool:
         return self.is_filtered
-
 
 class TriggeredState_MaxCandles_Buy(TriggeredState):
     def __init__(self, intraday_max_candles_buy):
@@ -40,7 +38,6 @@ class TriggeredState_MaxCandles_Buy(TriggeredState):
         elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
 
-
 class TriggeredState_MaxCandles_Sell(TriggeredState):
     def __init__(self, intraday_max_candles_sell):
         self.intraday_max_candles = intraday_max_candles_sell
@@ -56,7 +53,6 @@ class TriggeredState_MaxCandles_Sell(TriggeredState):
             return True
         elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
-
 
 class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
     def __init__(self, intraday_max_candles, intraday_ema_short, intraday_sma_long, data):
@@ -76,7 +72,6 @@ class TriggeredState_MaxCandles_EMAshort_SMAlong_Price_SMAlong(TriggeredState):
             return True
         elif self.intraday_candles_after_triggered >= self.intraday_max_candles:
             return False
-
 
 class TriggeredState_MaxCandles_LongSma(TriggeredState):
     def reset(self):

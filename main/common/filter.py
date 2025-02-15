@@ -25,7 +25,6 @@ class FilterBuy_RSI(Filter):
     def isValid(self) -> bool:
         return util.get_value_by_index(self.intraday_rsi(), -1) < self.intraday_rsi_layer_cheap
 
-
 class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
     def __init__(self, intraday_rsi, intraday_rsi_layer_cheap, intraday_ema_short, intraday_sma_long):
         self.intraday_rsi = intraday_rsi
