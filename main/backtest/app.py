@@ -20,8 +20,8 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.INTRADAY,
-            "operation_type": Side_Type.LONG,
+            "json_type": Json_type.STRATEGY,
+            "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
             "should_plot_chart": False,
@@ -47,7 +47,8 @@ class Main():
         # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
         self.strategy_dict = {
             "B1": Strategy_B1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
+            "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "S1": Strategy_Short_1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
         }
 
         # Inicializinzg some vars
@@ -147,7 +148,7 @@ class Main():
     def run_trend_strategy(self, bt, strategy):
         strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
-            stats = bt.run(**vars(strategy), trend_class=trend_class)
+            stats = bt.run(**vars(strategy), trend_class=trend_class, operation_type=self.config["operation_type"])
             self.save_report(stats, strategyName)
             self.generate_CSV_trades(stats, strategyName, trend_class)
             self.plot_chart(bt, strategyName, trend_class)
@@ -158,6 +159,7 @@ class Main():
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
                         trend_class=trend_class,
+                        operation_type=self.config["operation_type"],
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
 
@@ -172,7 +174,7 @@ class Main():
             raise AttributeError(message)
 
         # This method assumes the trend_class is defined inside of the strategy class.
-        stats = bt.run(**vars(strategy))
+        stats = bt.run(**vars(strategy), operation_type=self.config["operation_type"])
         trend = strategy.trend_class
 
         self.save_report(stats, strategyName)
@@ -183,6 +185,7 @@ class Main():
         # This method assumes the trend_class is defined inside of the strategy class.
         stats, heatmap = bt.optimize(
                     **vars(strategy), 
+                    operation_type=self.config["operation_type"],
                     maximize = 'Equity Final [$]',
                     return_heatmap = True)
 
