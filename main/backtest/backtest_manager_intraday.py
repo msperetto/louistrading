@@ -106,6 +106,9 @@ class BacktestManagerIntraday(Strategy):
         self.try_close_long_position()
 
     def try_open_long_position(self, stop_loss, take_profit):
+        # In case there's a opened position, just skip the logic. 
+        if self.position: return
+
         # TODO: Drop self.trendAnalysis.is_upTrend() from this classe. 
         # That shold be used on BacktestManagerStrategy and ideally inside of the strategy class.
 
@@ -126,6 +129,9 @@ class BacktestManagerIntraday(Strategy):
         self.try_close_short_position()
 
     def try_open_short_position(self):
+        # In case there's a opened position, just skip the logic. 
+        if self.position: return
+
         if self.strategySell.shouldSell(): self.sell()
 
     def try_close_short_position(self):
