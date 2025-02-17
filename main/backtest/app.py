@@ -4,9 +4,10 @@ from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
 from common.strategy import *
-from backtest import Json_type
+from backtest import Json_type, Backtest_manager_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
+from backtest.backtest_manager_portfolio import BacktestManagerPortfolio
 from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
@@ -23,6 +24,7 @@ class Main():
         self.config = {
             "json_type": Json_type.STRATEGY,
             "operation_type": Side_Type.SHORT,
+            "backtest_manager_type": Backtest_manager_type.STRATEGY,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
             "should_plot_chart": True,
@@ -35,6 +37,13 @@ class Main():
             Json_type.INTRADAY: "main/backtest/resources/intraday_params.json",
             Json_type.STRATEGY: "main/backtest/resources/strategy_params.json",
             Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json"
+        }
+
+        # Backtest Manager selection:
+        self.BacktestManager = {
+            Backtest_manager_type.INTRADAY: BacktestManagerIntraday,
+            Backtest_manager_type.STRATEGY: BacktestManagerStrategy,
+            Backtest_manager_type.PORTFOLIO: BacktestManagerPortfolio
         }
 
         # Prepare to generate output files.
@@ -218,7 +227,8 @@ class Main():
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, BacktestManagerIntraday, cash=CASH, commission=COMISSION)
+        bt = Backtest(dataset, self.BacktestManager[self.config["backtest_manager_type"]], cash=CASH, commission=COMISSION)
+
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:
