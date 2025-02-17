@@ -129,7 +129,7 @@ class BacktestManagerIntraday(Strategy):
         if self.strategySell.shouldSell(): self.sell()
 
     def try_close_short_position(self):
-        if self.strategyBuy.shouldBuy: self.position.close()
+        if self.strategyBuy.shouldBuy(): self.position.close()
 
     def calculate_stop_loss(self):
         """
