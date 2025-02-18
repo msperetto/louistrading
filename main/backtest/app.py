@@ -20,11 +20,11 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.STRATEGY,
+            "json_type": Json_type.INTRADAY,
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": True,
+            "should_plot_chart": False,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -90,15 +90,14 @@ class Main():
 
     def get_optimization_params(self):
         return {
-            "intraday_sma_short": range(3, 4, 1),
-            "intraday_sma_medium": range(15, 16, 1),
-            "intraday_sma_long": range(50, 51, 1),
-            "intraday_ema_short": range(8, 9, 1),
-            "intraday_rsi_layer_cheap": range(22, 23, 1),
-            "intraday_rsi_layer_expensive": range(79, 80, 1),
-            "intraday_rsi": range(4, 5, 1),
-            "intraday_max_candles_buy": range(5, 6, 1),
-            "intraday_max_candles_sell": range(5, 6, 1),
+            "intraday_ema_short": range(6, 10, 1),
+            "intraday_sma_medium": range(17, 22, 1),
+            "intraday_sma_long": range(48, 52, 1),
+            # "intraday_rsi_layer_cheap": range(22, 23, 1),
+            # "intraday_rsi_layer_expensive": range(79, 80, 1),
+            # "intraday_rsi": range(4, 5, 1),
+            # "intraday_max_candles_buy": range(5, 6, 1),
+            # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
             "trend_interval": self.trend_interval
         }
