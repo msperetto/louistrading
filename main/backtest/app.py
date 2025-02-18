@@ -24,7 +24,7 @@ class Main():
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": False,
+            "should_plot_chart": True,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -48,7 +48,8 @@ class Main():
         self.strategy_dict = {
             "B1": Strategy_B1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S1": Strategy_Short_1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "ST2": Strategy_Short_Test2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
         }
 
         # Inicializinzg some vars

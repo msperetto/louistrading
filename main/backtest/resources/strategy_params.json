@@ -1,22 +1,16 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.12.2023",
-    "endTime": "18.11.2024",
-    "period_label": "bear",
-    "intraday_period": "1h",
+    "startTime": "01.01.2022",
+    "endTime": "30.08.2022",
+    "period_label": "short-1",
+    "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
-        "B1",
-        "B2"
+        "ST1",
+        "ST2"
     ],
     "trend_classes": [
-        "UpTrend_AlwaysTrend",
-        "UpTrend_EMAshort_gt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAmedium",
-        "UpTrend_SMAmedium_gt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong",
-        "UpTrend_Price_gt_SMAmedium",
-        "UpTrend_Price_gt_SMAlong"
+        "UpTrend_AlwaysTrend"
     ]
 }
