@@ -104,7 +104,7 @@ class UpTrend_SMAmedium_gt_SMAlong_ADX(Trend):
         return util.get_value_by_index(self.trend_sma_medium(), -1) > util.get_value_by_index(self.trend_sma_long(), -1) and \
                 util.get_value_by_index(self.trend_adx(), -1) > self.trend_adx_trend_layer
 
-class UpTrend_AlwaysTrend(Trend):
+class UpTrend_alwaysTrue(Trend):
     def __init__(self):
         pass
     

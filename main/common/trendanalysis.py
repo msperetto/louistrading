@@ -1,6 +1,6 @@
 class TrendAnalysis():
-    def __init__(self, trend):
-        self.trend = trend
+    def __init__(self, trend_class):
+        self.trend = trend_class
 
     def is_upTrend(self):
         if self.trend.__class__.__name__[0:self.trend.__class__.__name__.find("_")] == "UpTrend":

@@ -28,34 +28,43 @@ class StrategyLong:
         return self.strategy_sell.shouldSell()
 
 
-    def build_strategy_buy(self, filter_class, trigger_class, trade_class):
+    def build_strategy_buy(self, filter_class, trigger_class, trade_class, class_attributes, class_caller):
         """
         Constructs the strategy buy logic using the provided classes.
         """
-        return StrategyBuy(
-            filter_class=filter_class,
-            trigger_class=trigger_class,
-            trade_class=trade_class,
+        filter_buy = Filter().filter_factory(filter_class, class_caller, **class_attributes)
+        trigger_buy = TriggeredState().trigger_factory(trigger_class, class_caller, **class_attributes)
+        trade_buy = Trade().trade_factory(trade_class, class_caller, **class_attributes)
+
+        self.strategy_buy = StrategyBuy(
+            filter_buy,
+            trigger_buy,
+            trade_buy
         )
 
-    def build_strategy_sell(self, filter_class, trigger_class, trade_class):
+    def build_strategy_sell(self, filter_class, trigger_class, trade_class, class_attributes, class_caller):
         """
         Constructs the strategy sell logic using the provided classes.
         """
-        return StrategySell(
-            filter_class=filter_class,
-            trigger_class=trigger_class,
-            trade_class=trade_class,
+        filter_sell = Filter().filter_factory(filter_class, class_caller, **class_attributes)
+        trigger_sell = TriggeredState().trigger_factory(trigger_class, class_caller, **class_attributes)
+        trade_sell = Trade().trade_factory(trade_class, class_caller, **class_attributes)
+
+        self.strategy_sell = StrategySell(
+            filter_sell,
+            trigger_sell,
+            trade_sell
         )
 
-    def build_trend_analysis(self, trend_class):
+    def build_trend_analysis(self, trend_class, class_attributes, class_caller):
         """
         Constructs the trend analysis logic using the provided class and parameters.
         """
-        return TrendAnalysis(
+        trend_class = Trend().trend_factory(trend_class, class_caller, **class_attributes)
+        self.trend_analysis = TrendAnalysis(
             trend_class=trend_class
         )
-    
+   
     def get_biggest_trend_interval(self):
         """
         Finds the largest value among all attributes that start with 'trend'.

@@ -50,9 +50,9 @@ class BacktestManagerPortfolio(Strategy):
                 if isinstance(strategy, StrategyLong):
                     # We could potentially track which strategy close the position.
                     # print(f"Closing a LONG position with {strategy.__class__.__name__}")
-                    self.sell()
+                    self.position.close()
                 elif isinstance(strategy, StrategyShort):
                     # We could potentially track which strategy close the position.
                     # print(f"Closing a SHORT position with {strategy.__class__.__name__}")
-                    self.buy()
+                    self.position.close()
                 return

@@ -1,8 +1,8 @@
 class StrategyBuy():
-    def __init__(self, filterBuy, triggeredState, trade):
-        self.filter = filterBuy
-        self.triggeredState = triggeredState
-        self.trade = trade
+    def __init__(self, filter_class, trigger_class, trade_class):
+        self.filter = filter_class
+        self.triggeredState = trigger_class
+        self.trade = trade_class
 
     def shouldBuy(self):
         if self.filter.isValid(): 
