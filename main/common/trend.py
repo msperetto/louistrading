@@ -9,7 +9,10 @@ class Trend(ABC):
     # Factory method to create and instantiate a Trend object
     def trend_factory(self, class_name: str, obj_caller, **kwargs):
         return Factory.create(class_name, obj_caller, **kwargs)
-        
+
+#------------------------------------------------------
+# Up Trend classes:
+
 class UpTrend_EMAshort_gt_SMAlong(Trend):
     def __init__(self, trend_ema_short, trend_sma_long):
         self.trend_ema_short = trend_ema_short
@@ -107,3 +110,71 @@ class UpTrend_AlwaysTrend(Trend):
     
     def ontrend(self):
         return True
+
+#------------------------------------------------------
+# Down Trend classes:
+
+class DownTrend_AlwaysTrend(Trend):
+    def __init__(self):
+        pass
+    
+    def ontrend(self):
+        return True
+
+class DownTrend_EMAshort_lt_SMAlong(Trend):
+    def __init__(self, trend_ema_short, trend_sma_long):
+        self.trend_ema_short = trend_ema_short
+        self.trend_sma_long = trend_sma_long
+
+    def ontrend(self):
+        return util.get_value_by_index(self.trend_ema_short(), -1) < util.get_value_by_index(self.trend_sma_long(), -1)
+
+class DownTrend_EMAshort_lt_SMAmedium(Trend):
+    def __init__(self, trend_ema_short, trend_sma_medium):
+        self.trend_ema_short = trend_ema_short
+        self.trend_sma_medium = trend_sma_medium
+
+    def ontrend(self):
+        return util.get_value_by_index(self.trend_ema_short(), -1) < util.get_value_by_index(self.trend_sma_medium(), -1)
+
+class DownTrend_SMAmedium_lt_SMAlong(Trend):
+    def __init__(self, trend_sma_medium, trend_sma_long):
+        self.trend_sma_medium = trend_sma_medium
+        self.trend_sma_long = trend_sma_long
+
+    def ontrend(self):
+        return util.get_value_by_index(self.trend_sma_medium(), -1) < util.get_value_by_index(self.trend_sma_long(), -1)
+
+class DownTrend_EMAshort_l_SMAmedium_lt_SMAlong(Trend):
+    def __init__(self, trend_ema_short, trend_sma_medium, trend_sma_long):
+        self.trend_ema_short = trend_ema_short
+        self.trend_sma_medium = trend_sma_medium
+        self.trend_sma_long = trend_sma_long
+
+    def ontrend(self):
+        return (util.get_value_by_index(self.trend_ema_short(), -1) < util.get_value_by_index(self.trend_sma_medium(), -1)) \
+                and (util.get_value_by_index(self.trend_sma_medium(), -1) < util.get_value_by_index(self.trend_sma_long(), -1))
+
+class DownTrend_Price_lt_SMAmedium(Trend):
+    def __init__(self, data, trend_sma_medium):
+        self.data = data
+        self.trend_sma_medium = trend_sma_medium
+
+    def ontrend(self):
+        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.trend_sma_medium(), -1)
+
+class DownTrend_Price_lt_SMAlong(Trend):
+    def __init__(self, data, trend_sma_long):
+        self.data = data
+        self.trend_sma_long = trend_sma_long
+
+    def ontrend(self):
+        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.trend_sma_long(), -1)
+
+class DownTrend_Price_lt_EMAshort(Trend):
+    def __init__(self, data, trend_ema_short):
+        self.data = data
+        self.trend_ema_short = trend_ema_short
+
+    def ontrend(self):
+        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.trend_ema_short(), -1)
