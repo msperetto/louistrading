@@ -14,7 +14,9 @@ from common.trendanalysis import TrendAnalysis
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
-from common.strategy import *
+from common.strategyLong import StrategyLong
+from common.strategies.strategyB2 import Strategy_B2
+# from common.strategy import *
 
 # Dynamically import all modules from the common/strategies folder
 def import_all_strategies():

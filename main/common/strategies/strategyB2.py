@@ -1,4 +1,4 @@
-from main.common.strategyLong import StrategyLong
+from common.strategyLong import StrategyLong
 
 class Strategy_B2(StrategyLong):
     """
