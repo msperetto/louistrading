@@ -1,16 +1,30 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.01.2022",
-    "endTime": "30.08.2022",
-    "period_label": "short-1",
+    "startTime": "04.01.2020",
+    "endTime": "22.03.2020",
+    "period_label": "block-strategy-pandemic",
     "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
-        "ST1",
-        "ST2"
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9"
     ],
     "trend_classes": [
-        "UpTrend_AlwaysTrend"
+        "DownTrend_AlwaysTrend",
+        "DownTrend_EMAshort_lt_SMAlong",
+        "DownTrend_EMAshort_lt_SMAmedium",
+        "DownTrend_SMAmedium_lt_SMAlong",
+        "DownTrend_EMAshort_l_SMAmedium_lt_SMAlong",
+        "DownTrend_Price_lt_SMAmedium",
+        "DownTrend_Price_lt_SMAlong",
+        "DownTrend_Price_lt_EMAshort"
     ]
 }
