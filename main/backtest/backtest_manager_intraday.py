@@ -132,7 +132,8 @@ class BacktestManagerIntraday(Strategy):
         # In case there's a opened position, just skip the logic. 
         if self.position: return
 
-        if self.strategySell.shouldSell(): self.sell()
+        if self.trendAnalysis.is_downTrend():
+            if self.strategySell.shouldSell(): self.sell()       
 
     def try_close_short_position(self):
         if self.strategyBuy.shouldBuy(): self.position.close()
