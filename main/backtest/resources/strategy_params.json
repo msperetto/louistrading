@@ -1,21 +1,15 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "04.01.2020",
-    "endTime": "22.03.2020",
-    "period_label": "block-strategy-pandemic",
+    "startTime": "18.11.2023",
+    "endTime": "31.12.2024",
+    "period_label": "block-strategy-2024",
     "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
         "S1",
-        "S2",
-        "S3",
         "S4",
-        "S5",
-        "S6",
-        "S7",
-        "S8",
-        "S9"
+        "S6"
     ],
     "trend_classes": [
         "DownTrend_AlwaysTrend",
