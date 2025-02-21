@@ -49,16 +49,8 @@ class Main():
             "B1": Strategy_B1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "ST2": Strategy_Short_Test2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "S1": Strategy_S1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S2": Strategy_S2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S3": Strategy_S3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S4": Strategy_S4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S5": Strategy_S5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "S6": Strategy_S6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S7": Strategy_S7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S8": Strategy_S8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S9": Strategy_S9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
         }
 
         # Inicializinzg some vars
