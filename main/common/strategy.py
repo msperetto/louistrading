@@ -126,10 +126,10 @@ class Strategy_S1():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
             self.trend_ema_short = 6
-            self.trend_sma_medium = 18
-            self.trend_sma_long = 50
-            self.intraday_ema_short = 9
-            self.intraday_sma_medium = 19
+            self.trend_sma_medium = 20
+            self.trend_sma_long = 48
+            self.intraday_ema_short = 10
+            self.intraday_sma_medium = 21
             self.intraday_sma_long = 51
             self.trend_longest_indicator_value = 51
         else:
@@ -153,15 +153,15 @@ class Strategy_S1():
         self.trade_buy_class = "TradeBuy_HighLastCandle"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_AlwaysTrend"
+            self.trend_class = "DownTrend_EMAshort_l_SMAmedium_lt_SMAlong"
 
 class Strategy_S6():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
-            self.trend_ema_short = 9
-            self.trend_sma_medium = 20
+            self.trend_ema_short = 7
+            self.trend_sma_medium = 18
             self.trend_sma_long = 50
-            self.intraday_ema_short = 9
+            self.intraday_ema_short = 6
             self.intraday_sma_medium = 19
             self.intraday_sma_long = 51
             self.trend_longest_indicator_value = 51
@@ -186,4 +186,4 @@ class Strategy_S6():
         self.trade_buy_class = "TradeBuy_Price_EMAshort"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_AlwaysTrend"
+            self.trend_class = "DownTrend_Price_lt_EMAshort"
