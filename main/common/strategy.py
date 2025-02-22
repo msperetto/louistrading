@@ -132,6 +132,8 @@ class Strategy_S1():
             self.intraday_sma_medium = 21
             self.intraday_sma_long = 51
             self.trend_longest_indicator_value = 51
+            self.stop_loss = 3
+            self.take_profit = 1
         else:
             self.trend_ema_short = range(6,11,1)
             self.trend_sma_medium = range(18,22,1)
@@ -139,6 +141,9 @@ class Strategy_S1():
             self.intraday_ema_short = range(6,12,1)
             self.intraday_sma_medium = range(18,22,1)
             self.intraday_sma_long = range(48,52,1)
+            # self.stop_loss = range(1,5,1)
+            # self.take_profit = range(1,5,1)
+
             self.trend_longest_indicator_value = 51
         
         self.intraday_interval = "2h"
@@ -171,7 +176,9 @@ class Strategy_S6():
             self.trend_sma_long = range(48,51,1)
             self.intraday_ema_short = range(6,12,1)
             self.intraday_sma_medium = range(18,22,1)
-            self.intraday_sma_long = range(48,52,1)
+            self.intraday_sma_long = range(48,52,1)         
+            # self.stop_loss = range(1,5,1)
+            # self.take_profit = range(1,5,1)
             self.trend_longest_indicator_value = 51
         
         self.intraday_interval = "2h"
