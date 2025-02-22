@@ -125,31 +125,40 @@ class BacktestManagerIntraday(Strategy):
         if self.strategySell.shouldSell(): self.position.close()
         
     def handle_short_position(self):
-        self.try_open_short_position()
+        stop_loss = self.calculate_stop_loss(is_short=True)
+        take_profit = self.calculate_take_profit(is_short=True)
+    
+        self.try_open_short_position(stop_loss, take_profit)
         self.try_close_short_position()
 
-    def try_open_short_position(self):
+    def try_open_short_position(self, stop_loss, take_profit):
         # In case there's a opened position, just skip the logic. 
         if self.position: return
 
         if self.trendAnalysis.is_downTrend():
-            if self.strategySell.shouldSell(): self.sell()       
+            if self.strategySell.shouldSell(): self.sell(sl=stop_loss, tp=take_profit)       
 
     def try_close_short_position(self):
         if self.strategyBuy.shouldBuy(): self.position.close()
 
-    def calculate_stop_loss(self):
+    def calculate_stop_loss(self, is_short=False):
         """
-        Calculates the stop loss based on the most recent closing price and the configured percentage.
+        Calcula o Stop Loss. Para operações SHORT, o Stop Loss deve ser acima do preço de entrada.
         """
         if self.stop_loss:
-            return self.data.Close[-1] * ((100 - self.stop_loss) / 100)
+            if is_short:
+                return self.data.Close[-1] * ((100 + self.stop_loss) / 100)  # Para SHORT, Stop Loss é para cima
+            else:
+                return self.data.Close[-1] * ((100 - self.stop_loss) / 100)  # Para LONG, Stop Loss é para baixo
         return None
 
-    def calculate_take_profit(self):
+    def calculate_take_profit(self, is_short=False):
         """
-        Calculates the take profit based on the most recent closing price and the configured percentage.
+        Calcula o Take Profit. Para operações SHORT, o Take Profit deve ser abaixo do preço de entrada.
         """
         if self.take_profit:
-            return self.data.Close[-1] * ((100 + self.take_profit) / 100)
+            if is_short:
+                return self.data.Close[-1] * ((100 - self.take_profit) / 100)  # Para SHORT, Take Profit é para baixo
+            else:
+                return self.data.Close[-1] * ((100 + self.take_profit) / 100)  # Para LONG, Take Profit é para cima
         return None
