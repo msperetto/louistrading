@@ -48,6 +48,6 @@
     ],
     "trade_sell_classes": [
         "TradeSell_LowLastCandle",
-        "TradeSell_Price_EMAshort"
+        "TradeSell_Price_lt_EMAshort"
     ]
 }

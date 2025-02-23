@@ -14,7 +14,7 @@ class Strategy_Test():
         self.trade_buy_class = "TradeBuy_Price_gt_EMAshort"
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Price_EMAshort"
+        self.trade_sell_class = "TradeSell_Price_lt_EMAshort"
         if (shouldIncludeTrend):
             self.trend_class = "UpTrend_AlwaysTrend"
 
@@ -55,7 +55,7 @@ class Strategy_B1():
         self.trade_buy_class = "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Price_EMAshort"
+        self.trade_sell_class = "TradeSell_Price_lt_EMAshort"
         if (shouldIncludeTrend):
             self.trend_class = "UpTrend_AlwaysTrend"
 
@@ -85,7 +85,7 @@ class Strategy_B2():
         self.trade_buy_class = "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Price_EMAshort"
+        self.trade_sell_class = "TradeSell_Price_lt_EMAshort"
         if (shouldIncludeTrend):
             self.trend_class = "UpTrend_Price_gt_SMAlong"
 
@@ -117,7 +117,7 @@ class Strategy_Short_Test1():
 
         self.filter_buy_class = "Filter_alwaysTrue"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
-        self.trade_buy_class = "TradeBuy_Price_EMAshort"
+        self.trade_buy_class = "TradeBuy_Price_gt_EMAshort"
 
         if (shouldIncludeTrend):
             self.trend_class = "UpTrend_Price_gt_SMAlong"
@@ -183,7 +183,7 @@ class Strategy_S6():
 
         self.filter_buy_class = "Filter_alwaysTrue"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
-        self.trade_buy_class = "TradeBuy_Price_EMAshort"
+        self.trade_buy_class = "TradeBuy_Price_gt_EMAshort"
 
         if (shouldIncludeTrend):
             self.trend_class = "DownTrend_Price_lt_EMAshort"

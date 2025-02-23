@@ -45,6 +45,6 @@
     ],
     "trade_buy_classes": [
         "TradeBuy_HighLastCandle",
-        "TradeBuy_Price_EMAshort"
+        "TradeBuy_Price_gt_EMAshort"
     ]
 }

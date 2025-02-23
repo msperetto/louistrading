@@ -18,5 +18,5 @@ class Strategy_B2():
         self.trade_buy_class = "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Price_EMAshort"
+        self.trade_sell_class = "TradeSell_Price_lt_EMAshort"
         self.trend_class = "UpTrend_Price_gt_SMAlong"

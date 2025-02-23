@@ -92,14 +92,6 @@ class TradeSell_HighLastCandle(Trade):
     def sellConfirmation(self):
         return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.data.High, -2)
 
-class TradeSell_Price_EMAshort(Trade):
-    def __init__(self, data, intraday_ema_short):
-        self.data = data
-        self.intraday_ema_short = intraday_ema_short
-
-    def sellConfirmation(self) -> bool:
-        return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_ema_short(), -1)
-    
 class TradeSell_Price_lt_EMAshort(Trade):
     def __init__(self, data, intraday_ema_short):
         self.data = data
@@ -174,11 +166,3 @@ class TradeBuy_HighLastCandle(Trade):
 
     def buyConfirmation(self):
         return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.High, -2)
-
-class TradeBuy_Price_EMAshort(Trade):
-    def __init__(self, data, intraday_ema_short):
-        self.data = data
-        self.intraday_ema_short = intraday_ema_short
-
-    def buyConfirmation(self) -> bool:
-        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.intraday_ema_short(), -1)
