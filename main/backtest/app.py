@@ -20,7 +20,7 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.STRATEGY,
+            "json_type": Json_type.INTRADAY,
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
@@ -91,12 +91,20 @@ class Main():
 
     def get_optimization_params(self):
         return {
+            # "intraday_ema_short": 6,
+            # "intraday_sma_medium": 19,
+            # "intraday_sma_long": 50,
+            # "intraday_rsi_layer_cheap": 22,
+            # "intraday_rsi_layer_expensive": 80,
+            # "intraday_rsi": 4,
+
             "intraday_ema_short": range(6, 10, 1),
             "intraday_sma_medium": range(17, 22, 1),
             "intraday_sma_long": range(48, 52, 1),
-            # "intraday_rsi_layer_cheap": range(22, 23, 1),
-            # "intraday_rsi_layer_expensive": range(79, 80, 1),
-            # "intraday_rsi": range(4, 5, 1),
+            "intraday_rsi_layer_cheap": range(22, 23, 1),
+            "intraday_rsi_layer_expensive": range(79, 90, 1),
+            "intraday_rsi": range(3, 7, 1),
+
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
