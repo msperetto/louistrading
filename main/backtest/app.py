@@ -20,11 +20,11 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.INTRADAY,
+            "json_type": Json_type.STRATEGY,
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": False,
+            "should_plot_chart": True,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
