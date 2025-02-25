@@ -16,7 +16,6 @@ import pandas as pd
 from time import sleep
 from common.strategyLong import StrategyLong
 from common.strategies.strategyB2 import Strategy_B2
-# from common.strategy import *
 
 # Dynamically import all modules from the common/strategies folder
 def import_all_strategies():
@@ -80,13 +79,8 @@ class BacktestManagerStrategy(Strategy):
         if self.trend_sma_medium != 0: self.trend_sma_medium = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_medium)
         if self.trend_sma_long != 0: self.trend_sma_long = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_long)
 
+        # TODO: Understand why the import_all_strategies() function is not working properly
         # import_all_strategies()
-
-        # print(f"Strategy B1A: {Strategy_B1A}")
-        # print(f"strategy B2B: {Strategy_B2B}")
-
-        # self.position = None # Not sure if we really need this. Perhaps position is already initialized by Backtesting.Strategy
-        # Maybe set somehow all necessary classes used by the strategies parameter
 
         self.strategy = globals().get(self.strategy_class)()
 
@@ -125,7 +119,6 @@ class BacktestManagerStrategy(Strategy):
         )
                 
     def next(self):
-        # maybe deal with stop loss and stop gain?
         self.try_open_position()
         self.try_close_position()
          
