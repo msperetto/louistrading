@@ -128,10 +128,10 @@ class BacktestManagerStrategy(Strategy):
             if self.strategy.shouldOpen():
                 self.buy()
                 return
-        # elif isinstance(self.strategy, StrategyShort):
-        #     if self.strategy.shouldOpen():
-        #         self.sell()
-        #         return
+        elif isinstance(self.strategy, StrategyShort):
+            if self.strategy.shouldOpen():
+                self.sell()
+                return
 
     # try close position
     def try_close_position(self):
@@ -140,10 +140,5 @@ class BacktestManagerStrategy(Strategy):
             return
 
         if self.strategy.shouldClose():
-            if isinstance(self.strategy , StrategyLong):
-                # We could potentially track which strategy close the position.
-                self.position.close()
-            # elif isinstance(self.strategy , StrategyShort):
-            #     # We could potentially track which strategy close the position.
-            #     self.close()
+            self.position.close()
             return
