@@ -25,7 +25,6 @@ class FilterBuy_RSI(Filter):
     def isValid(self) -> bool:
         return util.get_value_by_index(self.intraday_rsi(), -1) < self.intraday_rsi_layer_cheap
 
-
 class FilterBuy_RSI_EMAshort_gt_SMAlong(Filter):
     def __init__(self, intraday_rsi, intraday_rsi_layer_cheap, intraday_ema_short, intraday_sma_long):
         self.intraday_rsi = intraday_rsi
@@ -199,3 +198,159 @@ class FilterSell_RSI(Filter):
 
     def isValid(self) -> bool:
         return util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive
+
+class FilterSell_RSI_EMAshort_lt_SMAlong(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, intraday_ema_short, intraday_sma_long):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+    
+class FilterSell_RSI_EMAshort_lt_SMAmedium(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, intraday_ema_short, intraday_sma_medium):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1))
+
+class FilterSell_RSI_EMAshort_lt_SMAmedium_EMAshort_lt_SMAlong(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, intraday_ema_short, intraday_sma_medium, intraday_sma_long):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+class FilterSell_RSI_EMAshort_lt_SMAmedium_lt_SMAlong(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, intraday_ema_short, intraday_sma_medium, intraday_sma_long):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)) and \
+                (util.get_value_by_index(self.intraday_sma_medium(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+class FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong(Filter):
+    def __init__(self, intraday_ema_short, intraday_sma_medium, intraday_sma_long):
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)) and \
+                (util.get_value_by_index(self.intraday_sma_medium(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+class FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAmedium(Filter):
+    def __init__(self, intraday_ema_short, intraday_sma_medium, intraday_sma_long, data):
+        self.data = data
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)) and \
+                (util.get_value_by_index(self.intraday_sma_medium(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_medium(), -1))
+
+class FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAlong(Filter):
+    def __init__(self, intraday_ema_short, intraday_sma_medium, intraday_sma_long, data):
+        self.data = data
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)) and \
+                (util.get_value_by_index(self.intraday_sma_medium(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+class FilterSell_RSI_price_x_SMAmedium(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, data, intraday_sma_medium):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.data = data
+        self.intraday_sma_medium = intraday_sma_medium
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_medium(), -1))
+
+class FilterSell_RSI_price_x_SMAlong(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, data, intraday_sma_long):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.data = data
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+
+class FilterSell_RSI_EMAshort_lt_SMAlong_price_x_SMAmedium(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, data, intraday_sma_medium, intraday_ema_short, intraday_sma_long):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.data = data
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_medium(), -1))
+
+class FilterSell_RSI_EMAshort_lt_SMAlong_price_x_SMAlong(Filter):
+    def __init__(self, intraday_rsi, intraday_rsi_layer_expensive, data, intraday_sma_long, intraday_ema_short):
+        self.intraday_rsi = intraday_rsi
+        self.intraday_rsi_layer_expensive = intraday_rsi_layer_expensive
+        self.data = data
+        self.intraday_sma_long = intraday_sma_long
+        self.intraday_ema_short = intraday_ema_short
+
+    def isValid(self) -> bool:
+        return (util.get_value_by_index(self.intraday_rsi(), -1) > self.intraday_rsi_layer_expensive) and \
+                (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)) and \
+                (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.intraday_sma_long(), -1))
+
+class FilterSell_SMAmedium_lt_SMAlong(Filter):
+    def __init__(self, intraday_sma_medium, intraday_sma_long):
+        self.intraday_sma_medium = intraday_sma_medium
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return util.get_value_by_index(self.intraday_sma_medium(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)
+
+class FilterSell_EMAshort_lt_SMAlong(Filter):
+    def __init__(self, intraday_ema_short, intraday_sma_long):
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_long = intraday_sma_long
+
+    def isValid(self) -> bool:
+        return util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_long(), -1)
+
+class FilterSell_EMAshort_lt_SMAmedium(Filter):
+    def __init__(self, intraday_ema_short, intraday_sma_medium):
+        self.intraday_ema_short = intraday_ema_short
+        self.intraday_sma_medium = intraday_sma_medium
+
+    def isValid(self) -> bool:
+        return util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1)

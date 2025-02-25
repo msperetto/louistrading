@@ -14,7 +14,7 @@ from time import sleep
 from common.strategy import *
 
 class BacktestManagerIntraday(Strategy):
-    operation_type = Side_Type.LONG
+    operation_type = None
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0
@@ -37,7 +37,7 @@ class BacktestManagerIntraday(Strategy):
     stop_loss = None
     take_profit = None
     trend_longest_indicator_value = 40
-    trend_class = "UpTrend_AlwaysTrend"
+    trend_class = "DownTrend_AlwaysTrend"  
     filter_buy_class = "Filter_alwaysTrue"
     trigger_buy_class = "TriggeredState_alwaysTrue"
     trade_buy_class = "TradeBuy_HighLastCandle"
@@ -46,9 +46,6 @@ class BacktestManagerIntraday(Strategy):
     trade_sell_class = "TradeSell_LowLastCandle"
 
     def init(self):
-        # TODO: Maybe change the concept of "strategy" to use the new class design, which uses a parent StrategyLong class.
-        # Doing that, I believe all of the code of this class can be simplified.
-
         self.classes = {}
 
         if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_short)
@@ -95,12 +92,10 @@ class BacktestManagerIntraday(Strategy):
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
         self.trendAnalysis = TrendAnalysis(self.trend)
 
-
     def next(self):
-        #TODO: Understand why the first iteration on next is always LONG regardless of the operation_type. It seems odd!
         if (self.operation_type == Side_Type.LONG):
             self.handle_long_position()
-        else:
+        elif (self.operation_type == Side_Type.SHORT):
             self.handle_short_position()
 
     def handle_long_position(self):
@@ -111,6 +106,9 @@ class BacktestManagerIntraday(Strategy):
         self.try_close_long_position()
 
     def try_open_long_position(self, stop_loss, take_profit):
+        # In case there's a opened position, just skip the logic. 
+        if self.position: return
+
         # TODO: Drop self.trendAnalysis.is_upTrend() from this classe. 
         # That shold be used on BacktestManagerStrategy and ideally inside of the strategy class.
 
@@ -131,10 +129,14 @@ class BacktestManagerIntraday(Strategy):
         self.try_close_short_position()
 
     def try_open_short_position(self):
-        if self.strategySell.shouldSell(): self.sell()
+        # In case there's a opened position, just skip the logic. 
+        if self.position: return
+
+        if self.trendAnalysis.is_downTrend():
+            if self.strategySell.shouldSell(): self.sell()       
 
     def try_close_short_position(self):
-        if self.strategyBuy.shouldBuy: self.position.close()
+        if self.strategyBuy.shouldBuy(): self.position.close()
 
     def calculate_stop_loss(self):
         """

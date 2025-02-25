@@ -1,18 +1,27 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.03.2024",
-    "endTime": "01.11.2024",
-    "period_label": "intraday-2024-mar-nov",
-    "intraday_period": "2h",
+    "startTime": "01.08.2024",
+    "endTime": "01.10.2024",
+    "period_label": "test-short",
+    "intraday_period": "1h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "filter_sell_classes": [
         "FilterSell_RSI",
         "FilterSell_RSI_price_x_SMAmedium",
+        "FilterSell_RSI_price_x_SMAlong",
+        "FilterSell_RSI_EMAshort_lt_SMAlong",
+        "FilterSell_RSI_EMAshort_lt_SMAmedium",
+        "FilterSell_RSI_EMAshort_lt_SMAmedium_EMAshort_lt_SMAlong",
+        "FilterSell_RSI_EMAshort_lt_SMAmedium_lt_SMAlong",
+        "FilterSell_RSI_EMAshort_lt_SMAlong_price_x_SMAmedium",
+        "FilterSell_RSI_EMAshort_lt_SMAlong_price_x_SMAlong",
         "FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong",
         "FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAmedium",
         "FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAlong",
-        "FilterSell_EMAshort_lt_SMAlong"
+        "FilterSell_EMAshort_lt_SMAlong",
+        "FilterSell_EMAshort_lt_SMAmedium",
+        "FilterSell_SMAmedium_lt_SMAlong"
     ],
     "trigger_sell_classes": [
         "TriggeredState_alwaysTrue"
@@ -24,19 +33,22 @@
         "TradeSell_EMAshort_lt_SMAmedium_Low_lt_LowLastCandle",
         "TradeSell_LowLastCandle_EMAshort_lt_SMAmedium",
         "TradeSell_Low_x_LowLastCandle",
+        "TradeSell_LowLastCandle",
         "TradeSell_Close_lt_CloseLastCandle"
     ],
     "filter_buy_classes": [
+        "FilterBuy_RSI",
         "Filter_alwaysTrue"
     ],
     "trigger_buy_classes": [
         "TriggeredState_alwaysTrue"
     ],
     "trade_buy_classes": [
-        "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium",
-        "TradeBuy_EMAshort_gt_SMAmedium",
+        "TradeBuy_HighLastCandle",
+        "TradeBuy_Price_gt_EMAshort",
         "TradeBuy_Price_gt_SMAmedium",
+        "TradeBuy_EMAshort_gt_SMAmedium",
         "TradeBuy_Close_gt_CloseLastCandle",
-        "TradeBuy_HighLastCandle"
+        "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
     ]
 }
