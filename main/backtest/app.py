@@ -228,7 +228,7 @@ class Main():
     def start(self):
         self.set_common_variables()
 
-        dataset = binance().get_extended_kline(self.pair, self.interval, self.startTame, self.endTime)
+        dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
         bt = Backtest(dataset, self.get_backtest_manager(), cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:

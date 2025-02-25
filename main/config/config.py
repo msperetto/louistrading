@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from common.enums import Environment_Type
 
 # Connection string for the database
