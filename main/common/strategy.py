@@ -198,9 +198,9 @@ class Strategy_S6():
 class Strategy_SH1():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
-            self.trend_ema_short = 7
+            self.trend_ema_short = 6
             self.trend_sma_medium = 18
-            self.trend_sma_long = 50
+            self.trend_sma_long = 48
             self.intraday_ema_short = 6
             self.intraday_sma_medium = 17
             self.intraday_sma_long = 48
@@ -212,11 +212,11 @@ class Strategy_SH1():
             self.trend_ema_short = range(6,8,1)
             self.trend_sma_medium = range(18,22,1)
             self.trend_sma_long = range(48,51,1)
-            self.intraday_ema_short = range(9,11,1)
-            self.intraday_sma_medium = range(18,22,1)
+            self.intraday_ema_short = range(6,11,1)
+            self.intraday_sma_medium = range(17,22,1)
             self.intraday_sma_long = range(48,51,1)
             self.intraday_rsi_layer_cheap = 22
-            self.intraday_rsi_layer_expensive = range(79, 83, 1)
+            self.intraday_rsi_layer_expensive = range(79, 84, 1)
             self.intraday_rsi = range(3, 5, 1)
             self.trend_longest_indicator_value = 51
         
@@ -323,11 +323,11 @@ class Strategy_SH4():
             self.trend_ema_short = range(6,8,1)
             self.trend_sma_medium = range(18,22,1)
             self.trend_sma_long = range(48,51,1)
-            self.intraday_ema_short = range(9,11,1)
-            self.intraday_sma_medium = range(18,22,1)
+            self.intraday_ema_short = range(6,11,1)
+            self.intraday_sma_medium = range(17,22,1)
             self.intraday_sma_long = range(48,51,1)
             self.intraday_rsi_layer_cheap = 22
-            self.intraday_rsi_layer_expensive = range(79, 83, 1)
+            self.intraday_rsi_layer_expensive = range(79, 84, 1)
             self.intraday_rsi = range(3, 5, 1)
             self.trend_longest_indicator_value = 51
         
@@ -363,11 +363,11 @@ class Strategy_SH5():
             self.trend_ema_short = range(6,8,1)
             self.trend_sma_medium = range(18,22,1)
             self.trend_sma_long = range(48,51,1)
-            self.intraday_ema_short = range(9,11,1)
-            self.intraday_sma_medium = range(18,22,1)
+            self.intraday_ema_short = range(6,11,1)
+            self.intraday_sma_medium = range(17,22,1)
             self.intraday_sma_long = range(48,51,1)
             self.intraday_rsi_layer_cheap = 22
-            self.intraday_rsi_layer_expensive = range(79, 83, 1)
+            self.intraday_rsi_layer_expensive = range(79, 84, 1)
             self.intraday_rsi = range(3, 5, 1)
             self.trend_longest_indicator_value = 51
         
@@ -402,11 +402,11 @@ class Strategy_SH6():
             self.trend_ema_short = range(6,8,1)
             self.trend_sma_medium = range(18,22,1)
             self.trend_sma_long = range(48,51,1)
-            self.intraday_ema_short = range(9,11,1)
-            self.intraday_sma_medium = range(18,22,1)
+            self.intraday_ema_short = range(6,11,1)
+            self.intraday_sma_medium = range(17,22,1)
             self.intraday_sma_long = range(48,51,1)
             self.intraday_rsi_layer_cheap = 22
-            self.intraday_rsi_layer_expensive = range(79, 83, 1)
+            self.intraday_rsi_layer_expensive = range(79, 84, 1)
             self.intraday_rsi = range(3, 5, 1)
             self.trend_longest_indicator_value = 51
         
