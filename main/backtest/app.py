@@ -54,6 +54,12 @@ class Main():
             "SH1": Strategy_SH1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH2": Strategy_SH2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH3": Strategy_SH3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH4": Strategy_SH4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH5": Strategy_SH5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH6": Strategy_SH6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH7": Strategy_SH7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH8": Strategy_SH8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH9": Strategy_SH9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
         }
 
         # Inicializinzg some vars
