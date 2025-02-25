@@ -1,7 +1,7 @@
 import importlib
 import pkgutil
 
-from config.config import STRATEGIES_PATH, STRATEGIES_MODULE
+from common import STRATEGIES_PATH, STRATEGIES_MODULE
 from common.filter import *
 from common.trigger import *
 from common.trade import *
