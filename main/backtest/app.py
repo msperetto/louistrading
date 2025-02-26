@@ -3,9 +3,12 @@ import pandas as pd
 from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
-from common.strategy import *
+# from common.strategy import *
+from common.strategies.strategyB2 import Strategy_B2
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
+from backtest.backtest_manager_strategy import BacktestManagerStrategy
+from backtest.backtest_manager_portfolio import BacktestManagerPortfolio
 from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
@@ -166,7 +169,7 @@ class Main():
     def run_trend_strategy(self, bt, strategy):
         strategyName = self.get_strategy_class_name(strategy)
         for trend_class in self.trend_classes:
-            stats = bt.run(**vars(strategy), trend_class=trend_class, operation_type=self.config["operation_type"])
+            stats = bt.run(**vars(strategy), trend_class=trend_class, strategy_class=strategyName, operation_type=self.config["operation_type"])
             self.save_report(stats, strategyName)
             self.generate_CSV_trades(stats, strategyName, trend_class)
             self.plot_chart(bt, strategyName, trend_class)
@@ -177,6 +180,7 @@ class Main():
             stats, heatmap = bt.optimize(
                         **vars(strategy), 
                         trend_class=trend_class,
+                        strategy_class=strategyName,
                         operation_type=self.config["operation_type"],
                         maximize = 'Equity Final [$]',
                         return_heatmap = True)
@@ -192,7 +196,7 @@ class Main():
             raise AttributeError(message)
 
         # This method assumes the trend_class is defined inside of the strategy class.
-        stats = bt.run(**vars(strategy), operation_type=self.config["operation_type"])
+        stats = bt.run(**vars(strategy), strategy_class=strategyName, operation_type=self.config["operation_type"])
         trend = strategy.trend_class
 
         self.save_report(stats, strategyName)
@@ -201,21 +205,31 @@ class Main():
 
     def run_strategy_optimization(self, bt, strategy):
         # This method assumes the trend_class is defined inside of the strategy class.
+        strategyName = self.get_strategy_class_name(strategy)
         stats, heatmap = bt.optimize(
                     **vars(strategy), 
+                    strategy_class=strategyName,
                     operation_type=self.config["operation_type"],
                     maximize = 'Equity Final [$]',
                     return_heatmap = True)
 
-        strategyName = self.get_strategy_class_name(strategy)
         self.save_report(stats, strategyName)
+
+    def get_backtest_manager(self):
+        match self.config["json_type"]:
+            case Json_type.INTRADAY:
+                return BacktestManagerIntraday
+            case Json_type.STRATEGY:
+                return BacktestManagerStrategy
+            case Json_type.PORTFOLIO:
+                return BacktestManagerPortfolio
 
     # Basically the main method.
     def start(self):
         self.set_common_variables()
 
         dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
-        bt = Backtest(dataset, BacktestManagerIntraday, cash=CASH, commission=COMISSION)
+        bt = Backtest(dataset, self.get_backtest_manager(), cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:

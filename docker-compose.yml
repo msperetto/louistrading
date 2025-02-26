@@ -1,3 +1,10 @@
+# Commands to run services below:
+# docker-compose run --rm --service-ports app
+# docker-compose up -d db
+# docker-compose run --rm backtest
+# Enter database via terminal:
+# docker exec -it noshirt-postgres psql -U postgres -d noshirt
+
 services:
   app:
     build: .
