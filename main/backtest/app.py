@@ -51,6 +51,7 @@ class Main():
             "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "S1": Strategy_S1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "S6": Strategy_S6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "S7": Strategy_S7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH1": Strategy_SH1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH2": Strategy_SH2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH3": Strategy_SH3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),

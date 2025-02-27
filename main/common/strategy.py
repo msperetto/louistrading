@@ -195,10 +195,45 @@ class Strategy_S6():
         if (shouldIncludeTrend):
             self.trend_class = "DownTrend_Price_lt_EMAshort"
 
+class Strategy_S7():
+    def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
+        if not optimize:
+            self.trend_ema_short = 7
+            self.trend_sma_medium = 18
+            self.trend_sma_long = 48
+            self.intraday_ema_short = 7
+            self.intraday_sma_medium = 19
+            self.intraday_sma_long = 50
+            self.trend_longest_indicator_value = 51
+        else:
+            self.trend_ema_short = range(6,11,1)
+            self.trend_sma_medium = range(18,22,1)
+            self.trend_sma_long = range(48,51,1)
+            self.intraday_ema_short = range(6,12,1)
+            self.intraday_sma_medium = range(18,22,1)
+            self.intraday_sma_long = range(48,52,1)         
+            # self.stop_loss = range(1,5,1)
+            # self.take_profit = range(1,5,1)
+            self.trend_longest_indicator_value = 51
+        
+        self.intraday_interval = "2h"
+        self.trend_interval = "1d"
+
+        self.filter_sell_class = "FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAmedium"
+        self.trigger_sell_class = "TriggeredState_alwaysTrue"
+        self.trade_sell_class = "TradeSell_Low_lt_LowLastCandle"
+
+        self.filter_buy_class = "Filter_alwaysTrue"
+        self.trigger_buy_class = "TriggeredState_alwaysTrue"
+        self.trade_buy_class = "TradeBuy_Close_gt_CloseLastCandle_EMAshort_gt_SMAmedium"
+
+        if (shouldIncludeTrend):
+            self.trend_class = "DownTrend_EMAshort_lt_SMAmedium"
+
 class Strategy_SH1():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
         if not optimize:
-            self.trend_ema_short = 6
+            self.trend_ema_short = 7
             self.trend_sma_medium = 18
             self.trend_sma_long = 48
             self.intraday_ema_short = 6
