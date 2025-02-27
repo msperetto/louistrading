@@ -225,7 +225,7 @@ class Strategy_SH1():
 
         self.filter_sell_class = "FilterSell_RSI"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Low_x_LowLastCandle"
+        self.trade_sell_class = "TradeSell_Low_lt_LowLastCandle"
 
         self.filter_buy_class = "Filter_alwaysTrue"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
@@ -297,7 +297,7 @@ class Strategy_SH3():
 
         self.filter_sell_class = "FilterSell_EMAshort_lt_SMAmedium_lt_SMAlong_Price_lt_SMAmedium"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Low_x_LowLastCandle"
+        self.trade_sell_class = "TradeSell_Low_lt_LowLastCandle"
 
         self.filter_buy_class = "Filter_alwaysTrue"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
@@ -415,7 +415,7 @@ class Strategy_SH6():
 
         self.filter_sell_class = "FilterSell_RSI_price_x_SMAmedium"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Low_x_LowLastCandle"
+        self.trade_sell_class = "TradeSell_Low_lt_LowLastCandle"
 
         self.filter_buy_class = "Filter_alwaysTrue"
         self.trigger_buy_class = "TriggeredState_alwaysTrue"
