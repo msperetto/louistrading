@@ -53,7 +53,19 @@ class Main():
         self.strategy_dict = {
             "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            }
+            "S1": Strategy_S1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "S6": Strategy_S6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "S7": Strategy_S7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH1": Strategy_SH1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH2": Strategy_SH2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH3": Strategy_SH3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH4": Strategy_SH4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH5": Strategy_SH5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH6": Strategy_SH6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH7": Strategy_SH7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH8": Strategy_SH8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SH9": Strategy_SH9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+        }
 
         # Inicializinzg some vars
         self.pair = None
