@@ -10,21 +10,33 @@ from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
 from itertools import product
+import math
 
 # Useful constants
 CASH = 150_000
 COMISSION = 0.0015
+
+def custom_score_optimization(stats):
+    """Calcula um score baseado em Win Rate, número de Trades e Retorno Total."""
+    win_rate = stats["Win Rate [%]"] / 100     # Convertendo para escala de 0 a 1
+    num_trades = stats["# Trades"]
+    total_return = stats["Return [%]"] / 100   # Convertendo para escala de 0 a 1
+
+    if num_trades == 0:  # Evita erro de log(0)
+        return 0
+
+    return win_rate * math.log(num_trades) * total_return
 
 class Main():
     def __init__(self):
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.STRATEGY,
+            "json_type": Json_type.INTRADAY,
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
-            "strategy_optimizer_mode": False,
-            "should_plot_chart": True,
+            "strategy_optimizer_mode": True,
+            "should_plot_chart": False,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -156,7 +168,8 @@ class Main():
                 trigger_sell_class=trigger_sell_class,
                 trade_sell_class=trade_sell_class,
                 operation_type=self.config["operation_type"],
-                maximize='Equity Final [$]',
+                # maximize='Equity Final [$]',
+                maximize = custom_score_optimization,
                 return_heatmap=True
             )
             self.save_report(stats)
@@ -179,7 +192,9 @@ class Main():
                         **vars(strategy), 
                         trend_class=trend_class,
                         operation_type=self.config["operation_type"],
-                        maximize = 'Equity Final [$]',
+                        # maximize = 'Equity Final [$]',
+                        # maximize = 'Win Rate [%]',
+                        maximize = custom_score_optimization,
                         return_heatmap = True)
 
             self.save_report(stats, strategyName)
