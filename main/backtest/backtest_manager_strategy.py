@@ -29,6 +29,7 @@ def import_all_strategies():
 
 # It deals with a single strategy (passed as a parameter) 
 class BacktestManagerStrategy(Strategy):
+    operation_type = None
     trend_ema_short = 0
     trend_sma_medium = 0
     trend_sma_long = 0
