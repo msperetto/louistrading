@@ -15,7 +15,6 @@ class Strategy_B2(StrategyLong):
             self.intraday_ema_short = 9
             self.intraday_sma_medium = 19
             self.intraday_sma_long = 51
-            self.trend_longest_indicator_value = 51
         else:
             self.trend_ema_short = 6
             self.trend_sma_medium = 18
@@ -23,7 +22,6 @@ class Strategy_B2(StrategyLong):
             self.intraday_ema_short = range(7,12,1)
             self.intraday_sma_medium = range(18,22,1)
             self.intraday_sma_long = 51
-            self.trend_longest_indicator_value = 51
 
 
         self.intraday_interval = "2h"

@@ -36,7 +36,6 @@ class BacktestManagerIntraday(Strategy):
     intraday_max_candles_sell = 0
     stop_loss = None
     take_profit = None
-    trend_longest_indicator_value = 40
     trend_class = "DownTrend_AlwaysTrend"  
     filter_buy_class = "Filter_alwaysTrue"
     trigger_buy_class = "TriggeredState_alwaysTrue"
