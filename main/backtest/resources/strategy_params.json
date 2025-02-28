@@ -7,20 +7,11 @@
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
-        "S1",
-        "S6",
-        "SH1",
-        "SH2",
-        "SH3",
-        "SH4",
-        "SH5",
-        "SH6",
-        "SH7",
-        "SH8",
-        "SH9"
+        "ST1"
     ],
     "trend_classes": [
         "DownTrend_EMAshort_lt_SMAlong",
+        "UpTrend_EMAshort_gt_SMAlong",
         "DownTrend_EMAshort_lt_SMAmedium",
         "DownTrend_SMAmedium_lt_SMAlong",
         "DownTrend_Price_lt_SMAmedium",

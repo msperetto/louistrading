@@ -27,7 +27,7 @@ class Main():
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": True,
+            "should_plot_chart": False,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -49,21 +49,9 @@ class Main():
 
         # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
         self.strategy_dict = {
-            "B1": Strategy_B1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S1": Strategy_S1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S6": Strategy_S6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH1": Strategy_SH1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH2": Strategy_SH2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH3": Strategy_SH3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH4": Strategy_SH4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH5": Strategy_SH5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH6": Strategy_SH6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH7": Strategy_SH7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH8": Strategy_SH8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH9": Strategy_SH9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-        }
+            }
 
         # Inicializinzg some vars
         self.pair = None
