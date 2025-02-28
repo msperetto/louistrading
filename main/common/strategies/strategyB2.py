@@ -35,7 +35,7 @@ class Strategy_B2(StrategyLong):
         # Define components for strategy sell logic
         self.filter_sell_class = "Filter_alwaysTrue"
         self.trigger_sell_class = "TriggeredState_alwaysTrue"
-        self.trade_sell_class = "TradeSell_Price_EMAshort"
+        self.trade_sell_class = "TradeSell_Price_lt_EMAshort"
 
         # Define other strategy components
         if (shouldIncludeTrend):

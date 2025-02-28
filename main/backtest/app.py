@@ -4,7 +4,8 @@ from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
 # from common.strategy import *
-from common.strategies.strategyB2 import Strategy_B2
+from common.strategies.strategy_STest1 import Strategy_Short_Test1
+from common.strategies.strategy_B2 import Strategy_B2
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
