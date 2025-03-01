@@ -16,7 +16,7 @@ class StrategyLong:
         self.trend_analysis = None
 
     def ShouldOpen(self):
-        if self.trend_analysis.is_upTrend():
+        if self.trend_analysis.is_onTrend():
             return self.strategy_buy.shouldBuy()
         return False
 

@@ -115,7 +115,7 @@ class BacktestManagerIntraday(Strategy):
         # Ideally, this "trendAnalysis.is_upTrend" should actually be inside of the strategy class.
         # Notice that we want to be able to run this class even when trying to "discovery an intrady strategy". 
         # So, the concept of trend would not defined yet.
-        if self.trendAnalysis.is_upTrend():
+        if self.trendAnalysis.is_onTrend():
             if self.strategyBuy.shouldBuy(): self.buy(sl=stop_loss, tp=take_profit)
         else:
             #keeps updating trigger status even if not on trend
@@ -135,7 +135,7 @@ class BacktestManagerIntraday(Strategy):
         # In case there's a opened position, just skip the logic. 
         if self.position: return
 
-        if self.trendAnalysis.is_downTrend():
+        if self.trendAnalysis.is_onTrend():
             if self.strategySell.shouldSell(): self.sell(sl=stop_loss, tp=take_profit)       
 
     def try_close_short_position(self):
