@@ -158,7 +158,7 @@ class Strategy_S1():
         self.trade_buy_class = "TradeBuy_HighLastCandle"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_EMAshort_l_SMAmedium_lt_SMAlong"
+            self.trend_class = "DownTrend_EMAshort_lt_SMAmedium_lt_SMAlong"
 
 class Strategy_S6():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
