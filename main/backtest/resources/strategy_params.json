@@ -1,13 +1,14 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.11.2021",
-    "endTime": "31.12.2022",
-    "period_label": "block-strategy-2022",
+    "startTime": "01.04.2024",
+    "endTime": "31.10.2024",
+    "period_label": "block-strategy-2024-optimize-win-rate-custom-score",
     "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
-        "ST1"
+        "S7",
+        "SH7"
     ],
     "trend_classes": [
         "DownTrend_EMAshort_lt_SMAlong",

@@ -37,11 +37,11 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.INTRADAY,
+            "json_type": Json_type.PORTFOLIO,
             "operation_type": Side_Type.SHORT,
             "should_save_report": True,
-            "strategy_optimizer_mode": True,
-            "should_plot_chart": False,
+            "strategy_optimizer_mode": False,
+            "should_plot_chart": True,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -129,14 +129,12 @@ class Main():
             # "intraday_rsi_layer_cheap": 22,
             # "intraday_rsi_layer_expensive": 80,
             # "intraday_rsi": 4,
-
             "intraday_ema_short": range(6, 10, 1),
             "intraday_sma_medium": range(17, 22, 1),
             "intraday_sma_long": range(48, 52, 1),
-            "intraday_rsi_layer_cheap": range(22, 23, 1),
-            "intraday_rsi_layer_expensive": range(79, 90, 1),
+            "intraday_rsi_layer_cheap": 22,
+            "intraday_rsi_layer_expensive": range(75, 86, 1),
             "intraday_rsi": range(3, 7, 1),
-
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
@@ -233,7 +231,8 @@ class Main():
                     **vars(strategy), 
                     strategy_class=strategyName,
                     operation_type=self.config["operation_type"],
-                    maximize = 'Equity Final [$]',
+                    # maximize = 'Equity Final [$]',
+                    maximize = custom_score_optimization,
                     return_heatmap = True)
 
         self.save_report(stats, strategyName)
