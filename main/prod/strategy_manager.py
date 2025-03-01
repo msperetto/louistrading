@@ -92,7 +92,7 @@ class StrategyManager():
 
     # check if can open position
     def try_open_position(self):
-        if self.trendAnalysis.is_upTrend():
+        if self.trendAnalysis.is_onTrend():
             if self.strategyBuy.shouldBuy():
                 strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
                 return self.negotiate.open_position(Side_Type.LONG, self.order_value, strategy.id)
