@@ -78,11 +78,17 @@ class Main():
             "SH8": Strategy_SH8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SH9": Strategy_SH9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC1": Strategy_SC1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC1A": Strategy_SC1A(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC1B": Strategy_SC1B(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC1C": Strategy_SC1C(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC2": Strategy_SC2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC3": Strategy_SC3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC4": Strategy_SC4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC5": Strategy_SC5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
             "SC6": Strategy_SC6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC6A": Strategy_SC6A(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC6B": Strategy_SC6B(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
+            "SC6C": Strategy_SC6C(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
         }
 
         # Inicializinzg some vars
