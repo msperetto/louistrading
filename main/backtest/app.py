@@ -3,9 +3,8 @@ import pandas as pd
 from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
-# from common.strategy import *
-from common.strategies.strategy_STest1 import Strategy_Short_Test1
-from common.strategies.strategy_B2 import Strategy_B2
+from common.util import import_all_strategies
+from common import STRATEGIES_PATH, STRATEGIES_MODULE
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
@@ -21,6 +20,8 @@ COMISSION = 0.0015
 
 class Main():
     def __init__(self):
+        # Import all strategies from the strategies folder.
+        import_all_strategies(STRATEGIES_PATH, STRATEGIES_MODULE, globals())
 
         # Main config to run the Backtest:
         self.config = {

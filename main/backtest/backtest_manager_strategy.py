@@ -1,6 +1,4 @@
-import importlib
-import pkgutil
-
+from common.util import import_all_strategies
 from common import STRATEGIES_PATH, STRATEGIES_MODULE
 from common.filter import *
 from common.trigger import *
@@ -16,19 +14,12 @@ import pandas as pd
 from time import sleep
 from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
-from common.strategies.strategy_B2 import Strategy_B2
-from common.strategies.strategy_STest1 import Strategy_Short_Test1
-
-# Dynamically import all modules from the common/strategies folder
-def import_all_strategies():
-    for module_info in pkgutil.iter_modules([str(STRATEGIES_PATH)]):
-        print("Importing all strategies")
-        module = importlib.import_module(f"{STRATEGIES_MODULE}.{module_info.name}")
-        globals().update({name: cls for name, cls in module.__dict__.items() if isinstance(cls, type)})
-        print(globals())
 
 # It deals with a single strategy (passed as a parameter) 
 class BacktestManagerStrategy(Strategy):
+    # Import all strategies from the strategies folder.
+    import_all_strategies(STRATEGIES_PATH, STRATEGIES_MODULE, globals())
+
     operation_type = None
     trend_ema_short = 0
     trend_sma_medium = 0
