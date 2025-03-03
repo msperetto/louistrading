@@ -6,9 +6,9 @@ from common.trigger import TriggeredState
 from common.trade import Trade
 from common.trend import Trend
 
-class StrategyLong:
+class StrategyShort:
     """
-    Base class for LONG strategies, encapsulating the logic for buying and selling.
+    Base class for SHORT strategies, encapsulating the logic for buying and selling.
     Subclasses must define the necessary attributes, such as `trend_analysis`,
     and provide the components for `strategy_buy` and `strategy_sell` construction.
     """
@@ -20,12 +20,12 @@ class StrategyLong:
         self.trend_analysis = None
 
     def shouldOpen(self):
-        if self.trend_analysis.is_upTrend():
-            return self.strategy_buy.shouldBuy()
+        if self.trend_analysis.is_downTrend():
+            return self.strategy_sell.shouldSell()
         return False
 
     def shouldClose(self):
-        return self.strategy_sell.shouldSell()
+        return self.strategy_buy.shouldBuy()
 
 
     def build_strategy_buy(self, filter_class, trigger_class, trade_class, class_attributes, class_caller):

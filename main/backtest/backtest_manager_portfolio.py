@@ -4,9 +4,9 @@ from common.trade import *
 from common.trend import *
 from backtesting import Backtest, Strategy
 from backtesting.lib import resample_apply
-from main.common.strategybuy import StrategyBuy
-from main.common.strategysell import StrategySell
-from main.common.trendanalysis import TrendAnalysis
+from common.strategybuy import StrategyBuy
+from common.strategysell import StrategySell
+from common.trendanalysis import TrendAnalysis
 import pandas_ta as ta
 import pandas as pd
 from time import sleep
@@ -50,9 +50,9 @@ class BacktestManagerPortfolio(Strategy):
                 if isinstance(strategy, StrategyLong):
                     # We could potentially track which strategy close the position.
                     # print(f"Closing a LONG position with {strategy.__class__.__name__}")
-                    self.sell()
+                    self.position.close()
                 elif isinstance(strategy, StrategyShort):
                     # We could potentially track which strategy close the position.
                     # print(f"Closing a SHORT position with {strategy.__class__.__name__}")
-                    self.buy()
+                    self.position.close()
                 return
