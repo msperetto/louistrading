@@ -88,6 +88,13 @@ class TradeBuy_Close_gt_CloseLastCandle_EMAshort_gt_SMAmedium(Trade):
         return (util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.Close, -2)) and \
                 (util.get_value_by_index(self.intraday_ema_short(), -1) > util.get_value_by_index(self.intraday_sma_medium(), -1))
 
+class TradeBuy_HighLastCandle(Trade):
+    def __init__(self, data):
+        self.data = data
+
+    def buyConfirmation(self):
+        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.High, -2)
+    
 class TradeSell_LowLastCandle(Trade):
     def __init__(self, data):
         self.data = data
@@ -169,10 +176,3 @@ class TradeSell_Close_lt_CloseLastCandle(Trade):
 
     def sellConfirmation(self):
         return util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.data.Close, -2)
-
-class TradeBuy_HighLastCandle(Trade):
-    def __init__(self, data):
-        self.data = data
-
-    def buyConfirmation(self):
-        return util.get_value_by_index(self.data.Close, -1) > util.get_value_by_index(self.data.High, -2)
