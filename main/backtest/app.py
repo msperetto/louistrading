@@ -61,40 +61,28 @@ class Main():
         self.shouldIncludeTrend = self.config["json_type"] == Json_type.PORTFOLIO
         self.optimize = self.config["strategy_optimizer_mode"]
 
-        # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
-        self.strategy_dict = {
-            "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S1": Strategy_S1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S6": Strategy_S6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "S7": Strategy_S7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH1": Strategy_SH1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH2": Strategy_SH2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH3": Strategy_SH3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH4": Strategy_SH4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH5": Strategy_SH5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH6": Strategy_SH6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH7": Strategy_SH7(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH8": Strategy_SH8(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SH9": Strategy_SH9(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC1": Strategy_SC1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC1A": Strategy_SC1A(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC1B": Strategy_SC1B(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC1C": Strategy_SC1C(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC2": Strategy_SC2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC3": Strategy_SC3(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC4": Strategy_SC4(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC5": Strategy_SC5(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC6": Strategy_SC6(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC6A": Strategy_SC6A(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC6B": Strategy_SC6B(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "SC6C": Strategy_SC6C(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
-        }
+        self.strategy_dict = self.create_strategy_dict([
+            "B1", "B2", "S1", "S6", "S7",
+            "SH1", "SH2", "SH3", "SH4", "SH5", "SH6", "SH7", "SH8", "SH9",
+            "SC1", "SC1A", "SC1B", "SC1C", "SC2", "SC3", "SC4", "SC5", "SC6", "SC6A", "SC6B", "SC6C"
+        ])
 
         # Inicializinzg some vars
         self.pair = None
         self.interval = None
         self.trend_interval = None
+
+
+    def create_strategy_dict(self, strategy_keys):
+        """Cria um dicionário de estratégias dinamicamente."""
+        strategy_dict = {}
+        for key in strategy_keys:
+            strategy_class = globals().get(f"Strategy_{key}")  # Obtém a classe pelo nome
+            if strategy_class:
+                strategy_dict[key] = strategy_class(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
+            else:
+                print(f"Warning: Class Strategy_{key} not found!")  # Mensagem opcional de debug
+        return strategy_dict
 
     # Runs the logic to save a row in the Optimization_test table.
     # It will save only if the global "should_save_report" flag is True.
