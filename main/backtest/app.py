@@ -64,7 +64,8 @@ class Main():
         self.strategy_dict = self.create_strategy_dict([
             "B1", "B2", "S1", "S6", "S7",
             "SH1", "SH2", "SH3", "SH4", "SH5", "SH6", "SH7", "SH8", "SH9",
-            "SC1", "SC1A", "SC1B", "SC1C", "SC2", "SC3", "SC4", "SC5", "SC6", "SC6A", "SC6B", "SC6C"
+            "SC1", "SC1A", "SC1B", "SC1C", "SC2", "SC3", "SC4", "SC5", "SC6", "SC6A", "SC6B", "SC6C",
+            "L1A", "L1B", "L1C", "L1CX", "L1D", "L2", "L3", "L4A", "L4B", "L4C", "L4CX","L4D", "L5"
         ])
 
         # Inicializinzg some vars
@@ -120,14 +121,14 @@ class Main():
             # "intraday_ema_short": 6,
             # "intraday_sma_medium": 19,
             # "intraday_sma_long": 50,
-            # "intraday_rsi_layer_cheap": 22,
+            # "intraday_rsi_layer_cheap": 10,
             # "intraday_rsi_layer_expensive": 80,
             # "intraday_rsi": 4,
             "intraday_ema_short": range(6, 10, 1),
             "intraday_sma_medium": range(17, 22, 1),
             "intraday_sma_long": range(48, 52, 1),
-            "intraday_rsi_layer_cheap": 22,
-            "intraday_rsi_layer_expensive": range(75, 86, 1),
+            "intraday_rsi_layer_cheap": range(5, 20, 1),
+            "intraday_rsi_layer_expensive": 80,
             "intraday_rsi": range(3, 7, 1),
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
