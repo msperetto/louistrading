@@ -20,7 +20,7 @@ class StrategyShort:
         self.trend_analysis = None
 
     def shouldOpen(self):
-        if self.trend_analysis.is_downTrend():
+        if self.trend_analysis.is_onTrend():
             return self.strategy_sell.shouldSell()
         return False
 
