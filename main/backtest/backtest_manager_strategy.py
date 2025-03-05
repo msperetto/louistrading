@@ -1,5 +1,5 @@
 from common.util import import_all_strategies
-from common import STRATEGIES_PATH, STRATEGIES_MODULE
+from common import STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT
 from common.filter import *
 from common.trigger import *
 from common.trade import *
@@ -18,7 +18,7 @@ from common.strategyShort import StrategyShort
 # It deals with a single strategy (passed as a parameter) 
 class BacktestManagerStrategy(Strategy):
     # Import all strategies from the strategies folder.
-    import_all_strategies(STRATEGIES_PATH, STRATEGIES_MODULE, globals())
+    import_all_strategies(STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT, globals())
 
     operation_type = None
     trend_ema_short = 0
