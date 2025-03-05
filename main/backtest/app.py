@@ -4,7 +4,7 @@ from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
 from common.util import import_all_strategies
-from common import STRATEGIES_PATH, STRATEGIES_MODULE
+from common import STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
@@ -33,7 +33,7 @@ def custom_score_optimization(stats):
 class Main():
     def __init__(self):
         # Import all strategies from the strategies folder.
-        import_all_strategies(STRATEGIES_PATH, STRATEGIES_MODULE, globals())
+        import_all_strategies(STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT, globals())
 
         # Main config to run the Backtest:
         self.config = {
