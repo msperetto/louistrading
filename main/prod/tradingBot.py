@@ -6,7 +6,8 @@ from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
 from prod.strategy_manager import StrategyManager
-from prod.released_strategies.strategy_B2 import Strategy_B2
+from common.util import import_all_strategies
+from common import STRATEGIES_MODULE_PROD, STRATEGIES_PATH_PROD
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
 from common.strategy import *
@@ -26,6 +27,9 @@ class TradingBot:
     MINIMUM_BALANCE_INCREMENT = 1.5
 
     def __init__(self, strategies, db, setup, exchange_session):
+        # Import all strategies from the released strategies folder.
+        import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
+
         self.strategies = strategies
         self.db = db
         self.setup = setup
