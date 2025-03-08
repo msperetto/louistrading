@@ -1,29 +1,25 @@
 {
     "pair": "BTCUSDT",
     "startTime": "01.11.2024",
-    "endTime": "26.02.2025",
-    "period_label": "block-strategy-2025-contra-tendencia-v1",
+    "endTime": "03.03.2025",
+    "period_label": "block-long-strategy-trend-downtrend-optimizer-v2",
     "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "intraday_strategy_classes": [
-        "SC1",
-        "SC6"
+        "L1A", 
+        "L1B", 
+        "L1C",
+        "L1D", 
+        "L4A", 
+        "L4B", 
+        "L4C", 
+        "L4D"
     ],
     "trend_classes": [
-        "UpTrend_EMAshort_gt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAmedium",
-        "UpTrend_SMAmedium_gt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAmedium_gt_SMAlong",
-        "UpTrend_Price_gt_SMAmedium",
-        "UpTrend_Price_gt_SMAlong",
-        "UpTrend_Price_gt_EMAshort",
-        "DownTrend_EMAshort_lt_SMAlong",
-        "UpTrend_EMAshort_gt_SMAlong",
         "DownTrend_EMAshort_lt_SMAmedium",
         "DownTrend_SMAmedium_lt_SMAlong",
         "DownTrend_Price_lt_SMAmedium",
-        "DownTrend_Price_lt_SMAlong",
         "DownTrend_Price_lt_EMAshort",
         "DownTrend_EMAshort_lt_SMAmedium_lt_SMAlong"
     ]

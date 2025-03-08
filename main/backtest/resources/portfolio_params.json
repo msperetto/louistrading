@@ -1,13 +1,15 @@
 {
     "pair": "BTCUSDT",
-    "startTime": "01.11.2024",
-    "endTime": "01.03.2025",
-    "period_label": "block-strategy-short-2025-v1",
+    "startTime": "01.11.2023",
+    "endTime": "31.12.2024",
+    "period_label": "block-long-strategy-trend-downtrend-chart-2024",
     "intraday_period": "2h",
     "trend_period": "D",
     "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
     "strategy_classes": [
-        "SH7",
-        "SC6A"
+        "L1A",
+        "L4A",
+        "L1B",
+        "L1D"
     ]
 }
