@@ -36,6 +36,7 @@
         "TradeBuy_EMAshort_gt_SMAmedium_High_gt_HighLastCandle",
         "TradeBuy_Price_gt_EMAshort",
         "TradeBuy_Price_gt_SMAmedium",
+        "TradeBuy_Close_gt_CloseLastCandle_EMAshort_gt_SMAmedium",
         "TradeBuy_Close_gt_CloseLastCandle"
     ],
     "filter_sell_classes": [
@@ -48,6 +49,13 @@
     ],
     "trade_sell_classes": [
         "TradeSell_LowLastCandle",
-        "TradeSell_Price_lt_EMAshort"
+        "TradeSell_Price_lt_EMAshort",
+        "TradeSell_Price_lt_SMAmedium",
+        "TradeSell_EMAshort_lt_SMAmedium",
+        "TradeSell_EMAshort_lt_SMAmedium_Low_lt_LowLastCandle",
+        "TradeSell_LowLastCandle_EMAshort_lt_SMAmedium",
+        "TradeSell_Low_lt_LowLastCandle",
+        "TradeSell_EMAshort_lt_SMAmedium_High_lt_HighLastCandle",
+        "TradeSell_Close_lt_CloseLastCandle"
     ]
 }
