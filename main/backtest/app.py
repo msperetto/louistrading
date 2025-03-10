@@ -239,7 +239,8 @@ class Main():
             case Json_type.STRATEGY:
                 return BacktestManagerStrategy
             case Json_type.PORTFOLIO:
-                return BacktestManagerPortfolio
+                # TODO: Add BacktestManagerPortfolio when it's ready.
+                return BacktestManagerStrategy
 
     # Basically the main method.
     def start(self):
