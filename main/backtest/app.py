@@ -4,7 +4,7 @@ from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type
 from common.util import import_all_strategies
-from common import STRATEGIES_PATH, STRATEGIES_MODULE
+from common import STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
@@ -13,23 +13,35 @@ from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
 from itertools import product
+import math
 
 # Useful constants
 CASH = 150_000
 COMISSION = 0.0015
 
+def custom_score_optimization(stats):
+    """Calcula um score baseado em Win Rate, número de Trades e Retorno Total."""
+    win_rate = stats["Win Rate [%]"] / 100     # Convertendo para escala de 0 a 1
+    num_trades = stats["# Trades"]
+    total_return = stats["Return [%]"] / 100   # Convertendo para escala de 0 a 1
+
+    if num_trades == 0:  # Evita erro de log(0)
+        return 0
+
+    return win_rate * math.log(num_trades) * total_return
+
 class Main():
     def __init__(self):
         # Import all strategies from the strategies folder.
-        import_all_strategies(STRATEGIES_PATH, STRATEGIES_MODULE, globals())
+        import_all_strategies(STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT, globals())
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.STRATEGY,
-            "operation_type": Side_Type.SHORT,
+            "json_type": Json_type.PORTFOLIO,
+            "operation_type": Side_Type.LONG,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": False,
+            "should_plot_chart": True,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False
         }
@@ -49,16 +61,29 @@ class Main():
         self.shouldIncludeTrend = self.config["json_type"] == Json_type.PORTFOLIO
         self.optimize = self.config["strategy_optimizer_mode"]
 
-        # TODO: Maybe move this to global Strategies catalog? (similar to what we have for indicators - see: indicators_catalog.py)
-        self.strategy_dict = {
-            "B2": Strategy_B2(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            "ST1": Strategy_Short_Test1(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend),
-            }
+        self.strategy_dict = self.create_strategy_dict([
+            "B1", "B2", "S1", "S6", "S7",
+            "SH1", "SH2", "SH3", "SH4", "SH5", "SH6", "SH7", "SH8", "SH9",
+            "SC1", "SC1A", "SC1B", "SC1C", "SC2", "SC3", "SC4", "SC5", "SC6", "SC6A", "SC6B", "SC6C",
+            "L1A", "L1B", "L1C", "L1CX", "L1D", "L2", "L3", "L4A", "L4B", "L4C", "L4CX","L4D", "L5"
+        ])
 
         # Inicializinzg some vars
         self.pair = None
         self.interval = None
         self.trend_interval = None
+
+
+    def create_strategy_dict(self, strategy_keys):
+        """Cria um dicionário de estratégias dinamicamente."""
+        strategy_dict = {}
+        for key in strategy_keys:
+            strategy_class = globals().get(f"Strategy_{key}")  # Obtém a classe pelo nome
+            if strategy_class:
+                strategy_dict[key] = strategy_class(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
+            # else:
+            #     print(f"Warning: Class Strategy_{key} not found!")  # Mensagem opcional de debug
+        return strategy_dict
 
     # Runs the logic to save a row in the Optimization_test table.
     # It will save only if the global "should_save_report" flag is True.
@@ -96,17 +121,15 @@ class Main():
             # "intraday_ema_short": 6,
             # "intraday_sma_medium": 19,
             # "intraday_sma_long": 50,
-            # "intraday_rsi_layer_cheap": 22,
+            # "intraday_rsi_layer_cheap": 10,
             # "intraday_rsi_layer_expensive": 80,
             # "intraday_rsi": 4,
-
             "intraday_ema_short": range(6, 10, 1),
             "intraday_sma_medium": range(17, 22, 1),
             "intraday_sma_long": range(48, 52, 1),
-            "intraday_rsi_layer_cheap": range(22, 23, 1),
-            "intraday_rsi_layer_expensive": range(79, 90, 1),
+            "intraday_rsi_layer_cheap": range(5, 20, 1),
+            "intraday_rsi_layer_expensive": 80,
             "intraday_rsi": range(3, 7, 1),
-
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
@@ -148,7 +171,8 @@ class Main():
                 trigger_sell_class=trigger_sell_class,
                 trade_sell_class=trade_sell_class,
                 operation_type=self.config["operation_type"],
-                maximize='Equity Final [$]',
+                # maximize='Equity Final [$]',
+                maximize = custom_score_optimization,
                 return_heatmap=True
             )
             self.save_report(stats)
@@ -172,7 +196,9 @@ class Main():
                         trend_class=trend_class,
                         strategy_class=strategyName,
                         operation_type=self.config["operation_type"],
-                        maximize = 'Equity Final [$]',
+                        # maximize = 'Equity Final [$]',
+                        # maximize = 'Win Rate [%]',
+                        maximize = custom_score_optimization,
                         return_heatmap = True)
 
             self.save_report(stats, strategyName)
@@ -200,7 +226,8 @@ class Main():
                     **vars(strategy), 
                     strategy_class=strategyName,
                     operation_type=self.config["operation_type"],
-                    maximize = 'Equity Final [$]',
+                    # maximize = 'Equity Final [$]',
+                    maximize = custom_score_optimization,
                     return_heatmap = True)
 
         self.save_report(stats, strategyName)
@@ -212,7 +239,8 @@ class Main():
             case Json_type.STRATEGY:
                 return BacktestManagerStrategy
             case Json_type.PORTFOLIO:
-                return BacktestManagerPortfolio
+                # TODO: Add BacktestManagerPortfolio when it's ready.
+                return BacktestManagerStrategy
 
     # Basically the main method.
     def start(self):

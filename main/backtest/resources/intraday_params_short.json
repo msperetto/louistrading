@@ -32,7 +32,7 @@
         "TradeSell_EMAshort_lt_SMAmedium",
         "TradeSell_EMAshort_lt_SMAmedium_Low_lt_LowLastCandle",
         "TradeSell_LowLastCandle_EMAshort_lt_SMAmedium",
-        "TradeSell_Low_x_LowLastCandle",
+        "TradeSell_Low_lt_LowLastCandle",
         "TradeSell_LowLastCandle",
         "TradeSell_Close_lt_CloseLastCandle"
     ],

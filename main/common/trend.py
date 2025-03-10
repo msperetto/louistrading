@@ -114,7 +114,7 @@ class UpTrend_alwaysTrue(Trend):
 #------------------------------------------------------
 # Down Trend classes:
 
-class DownTrend_AlwaysTrend(Trend):
+class DownTrend_alwaysTrend(Trend):
     def __init__(self):
         pass
     
@@ -145,7 +145,7 @@ class DownTrend_SMAmedium_lt_SMAlong(Trend):
     def ontrend(self):
         return util.get_value_by_index(self.trend_sma_medium(), -1) < util.get_value_by_index(self.trend_sma_long(), -1)
 
-class DownTrend_EMAshort_l_SMAmedium_lt_SMAlong(Trend):
+class DownTrend_EMAshort_lt_SMAmedium_lt_SMAlong(Trend):
     def __init__(self, trend_ema_short, trend_sma_medium, trend_sma_long):
         self.trend_ema_short = trend_ema_short
         self.trend_sma_medium = trend_sma_medium
