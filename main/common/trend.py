@@ -114,7 +114,7 @@ class UpTrend_alwaysTrue(Trend):
 #------------------------------------------------------
 # Down Trend classes:
 
-class DownTrend_AlwaysTrend(Trend):
+class DownTrend_alwaysTrend(Trend):
     def __init__(self):
         pass
     

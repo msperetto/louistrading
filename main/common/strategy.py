@@ -783,7 +783,7 @@ class Strategy_SH1():
         self.trade_buy_class = "TradeBuy_Close_gt_CloseLastCandle"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_AlwaysTrend"
+            self.trend_class = "DownTrend_alwaysTrend"
 
 class Strategy_SH2():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
@@ -819,7 +819,7 @@ class Strategy_SH2():
         self.trade_buy_class = "TradeBuy_EMAshort_gt_SMAmedium"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_AlwaysTrend"
+            self.trend_class = "DownTrend_alwaysTrend"
 
 class Strategy_SH3():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
@@ -972,7 +972,7 @@ class Strategy_SH6():
         self.trade_buy_class = "TradeBuy_HighLastCandle_EMAshort_gt_SMAmedium"
 
         if (shouldIncludeTrend):
-            self.trend_class = "DownTrend_AlwaysTrend"
+            self.trend_class = "DownTrend_alwaysTrend"
     
 class Strategy_SH7():
     def __init__(self, optimize: bool = False, shouldIncludeTrend: bool = False):
