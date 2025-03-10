@@ -118,12 +118,16 @@ class BacktestManagerStrategy(Strategy):
     # try open position
     def try_open_position(self):
         if isinstance(self.strategy, StrategyLong):
+            stop_loss = self.calculate_stop_loss()
+            take_profit = self.calculate_take_profit()
             if self.strategy.shouldOpen():
-                self.buy()
+                self.buy(sl=stop_loss, tp=take_profit)
                 return
         elif isinstance(self.strategy, StrategyShort):
+            stop_loss = self.calculate_stop_loss(is_short=True)
+            take_profit = self.calculate_take_profit(is_short=True)
             if self.strategy.shouldOpen():
-                self.sell()
+                self.sell(sl=stop_loss, tp=take_profit)
                 return
 
     # try close position
@@ -135,3 +139,25 @@ class BacktestManagerStrategy(Strategy):
         if self.strategy.shouldClose():
             self.position.close()
             return
+        
+    def calculate_stop_loss(self, is_short=False):
+        """
+        Calcula o Stop Loss. Para operações SHORT, o Stop Loss deve ser acima do preço de entrada.
+        """
+        if self.stop_loss:
+            if is_short:
+                return self.data.Close[-1] * ((100 + self.stop_loss) / 100)  # Para SHORT, Stop Loss é para cima
+            else:
+                return self.data.Close[-1] * ((100 - self.stop_loss) / 100)  # Para LONG, Stop Loss é para baixo
+        return None
+
+    def calculate_take_profit(self, is_short=False):
+        """
+        Calcula o Take Profit. Para operações SHORT, o Take Profit deve ser abaixo do preço de entrada.
+        """
+        if self.take_profit:
+            if is_short:
+                return self.data.Close[-1] * ((100 - self.take_profit) / 100)  # Para SHORT, Take Profit é para baixo
+            else:
+                return self.data.Close[-1] * ((100 + self.take_profit) / 100)  # Para LONG, Take Profit é para cima
+        return None
