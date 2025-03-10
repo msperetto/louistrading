@@ -81,8 +81,8 @@ class Main():
             strategy_class = globals().get(f"Strategy_{key}")  # Obtém a classe pelo nome
             if strategy_class:
                 strategy_dict[key] = strategy_class(optimize=self.optimize, shouldIncludeTrend=self.shouldIncludeTrend)
-            else:
-                print(f"Warning: Class Strategy_{key} not found!")  # Mensagem opcional de debug
+            # else:
+            #     print(f"Warning: Class Strategy_{key} not found!")  # Mensagem opcional de debug
         return strategy_dict
 
     # Runs the logic to save a row in the Optimization_test table.
