@@ -59,8 +59,39 @@ class StrategyManager():
         if hasattr(self.strategy, 'intraday_max_candles_sell'):
             self.intraday_max_candles_sell = getattr(self.strategy, 'intraday_max_candles_sell')
 
+        #adding classes name to stats list to populate DB
+        self.classes['filter_buy'] = self.filterBuy.__class__.__name__
+        self.classes['trigger_buy'] = self.triggerBuy.__class__.__name__
+        self.classes['trade_buy']= self.tradeBuy.__class__.__name__
+        self.classes['trend'] = self.trend.__class__.__name__
+        self.classes['filter_sell'] = self.filterSell.__class__.__name__
+        self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
+        self.classes['trade_sell'] = self.tradeSell.__class__.__name__
+
         # getting all class attributes to pass to buying and selling support objects
         self.attributes = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__") and not isinstance(getattr(self, attr), (type(self.set_support_objects), type(self.__init__)))}
+
+        self.strategy.build_strategy_buy(
+            self.strategy.filter_buy_class,
+            self.strategy.trigger_buy_class,
+            self.strategy.trade_buy_class,
+            self.attributes,
+            self
+        )
+
+        self.strategy.build_strategy_sell(
+            self.strategy.filter_sell_class,
+            self.strategy.trigger_sell_class,
+            self.strategy.trade_sell_class,
+            self.attributes,
+            self
+        )
+
+        self.strategy.build_trend_analysis(
+            self.strategy.trend_class,
+            self.attributes,
+            self
+        )
 
         #instantiating buying support objects
         self.filterBuy = Filter().filter_factory(self.strategy.filter_buy_class, self, **self.attributes)
@@ -68,22 +99,12 @@ class StrategyManager():
         self.tradeBuy = Trade().trade_factory(self.strategy.trade_buy_class, self, **self.attributes)
         self.trend = Trend().trend_factory(self.strategy.trend_class, self, **self.attributes)
 
-        #adding classes name to stats list to populate DB
-        self.classes['filter_buy'] = self.filterBuy.__class__.__name__
-        self.classes['trigger_buy'] = self.triggerBuy.__class__.__name__
-        self.classes['trade_buy']= self.tradeBuy.__class__.__name__
-        self.classes['trend'] = self.trend.__class__.__name__
-
+        
         #instantiating selling support objects
         self.filterSell = Filter().filter_factory(self.strategy.filter_sell_class, self, **self.attributes)
         self.triggerSell = TriggeredState().trigger_factory(self.strategy.trigger_sell_class, self, **self.attributes)
         self.tradeSell = Trade().trade_factory(self.strategy.trade_sell_class, self, **self.attributes)
        
-        #adding classes name to stats list to populate DB
-        self.classes['filter_sell'] = self.filterSell.__class__.__name__
-        self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
-        self.classes['trade_sell'] = self.tradeSell.__class__.__name__
-
         #instantiating buying and selling strategy classes
         self.strategyBuy = StrategyBuy(self.filterBuy, self.triggerBuy, self.tradeBuy)
         self.strategySell = StrategySell(self.filterSell, self.triggerSell, self.tradeSell)
@@ -92,21 +113,23 @@ class StrategyManager():
 
     # check if can open position
     def try_open_position(self):
-        if self.trendAnalysis.is_onTrend():
-            if self.strategyBuy.shouldBuy():
+        if isinstance(self.strategy, StrategyLong):
+            if self.strategy.shouldOpen():
                 strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
                 return self.negotiate.open_position(Side_Type.LONG, self.order_value, strategy.id)
-        else:
-            #keeps updating trigger status even if not on trend
-            #verificar necessidade dessa atualização
-            self.strategyBuy.triggeredState.isStillValid()
+        elif isinstance(self.strategy, StrategyShort):
+            if self.strategy.shouldOpen():
+                strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
+                return self.negotiate.open_position(Side_Type.SHORT, self.order_value, strategy.id)
         return False
         
 
     def try_close_position(self, strategy, trade_id):
-        if self.strategySell.shouldSell(): 
+        if self.strategy.shouldClose():
             #checar aqui possibilidade de fechar a ordem completamente, ao invés de passar um valor
-            return self.negotiate.close_position(Side_Type.LONG, self.order_value, strategy, trade_id)
+            if isinstance(self.strategy, StrategyLong):
+                return self.negotiate.close_position(Side_Type.LONG, self.order_value, strategy, trade_id)
+            elif isinstance(self.strategy, StrategyShort):
+                return self.negotiate.close_position(Side_Type.SHORT, self.order_value, strategy, trade_id)
         return False
-
 
