@@ -11,6 +11,7 @@ from common.strategysell import StrategySell
 from common.trendanalysis import TrendAnalysis
 from common import management
 from common.dao import strategy_dao
+from common.util import get_side
 from prod.dataset import Dataset
 from prod.negotiate import Negotiate
 from backtesting.lib import resample_apply
@@ -115,23 +116,20 @@ class StrategyManager():
 
     # check if can open position
     def try_open_position(self):
-        if isinstance(self.strategy, StrategyLong):
-            if self.strategy.shouldOpen():
-                strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
-                return self.negotiate.open_position(Side_Type.LONG, self.order_value, strategy.id)
-        elif isinstance(self.strategy, StrategyShort):
-            if self.strategy.shouldOpen():
-                strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
-                return self.negotiate.open_position(Side_Type.SHORT, self.order_value, strategy.id)
+        # Gets the Side_Type.LONG or Side_Type.SHORT based on the strategy type.
+        side = get_side(self.strategy)
+        if side is None: return False
+
+        if self.strategy.shouldOpen(): 
+            strategy = strategy_dao.get_strategy_by_name(self.strategy.__class__.__name__)
+            return self.negotiate.open_position(side, self.order_value, strategy.id)
         return False
-        
 
     def try_close_position(self, strategy, trade_id):
-        if self.strategy.shouldClose():
-            #checar aqui possibilidade de fechar a ordem completamente, ao invés de passar um valor
-            if isinstance(self.strategy, StrategyLong):
-                return self.negotiate.close_position(Side_Type.LONG, self.order_value, strategy, trade_id)
-            elif isinstance(self.strategy, StrategyShort):
-                return self.negotiate.close_position(Side_Type.SHORT, self.order_value, strategy, trade_id)
-        return False
+        # Gets the Side_Type.LONG or Side_Type.SHORT based on the strategy type.
+        side = get_side(self.strategy) 
+        if side is None: return False
 
+        if self.strategy.shouldClose():
+            return self.negotiate.close_position(side, self.order_value, strategy, trade_id)
+        return False
