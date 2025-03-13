@@ -1,6 +1,8 @@
 import time
 from common.enums import *
 from common.filter import *
+from common.strategyLong import StrategyLong
+from common.strategyShort import StrategyShort
 from common.trigger import *
 from common.trade import *
 from common.trend import *
