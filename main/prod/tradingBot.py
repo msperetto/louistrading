@@ -137,7 +137,12 @@ class TradingBot:
 
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
-                final_dataset = self.create_combined_dataset(pair, strategy)
+
+                if NEGOCIATION_ENV == Environment_Type.TEST:
+                    final_dataset = self.create_combined_dataset(pair, strategy)
+                    final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+                else:
+                    final_dataset = self.create_combined_dataset(pair, strategy)
 
                 #logging for debugging
                 logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
@@ -180,7 +185,11 @@ class TradingBot:
             logger.debug(f"handle_opened_trades - pair: {trade.pair}")
             logger.debug(f"current balance: {self.current_balance}")
 
-            final_dataset = self.create_combined_dataset(trade.pair, strategy)
+            if NEGOCIATION_ENV == Environment_Type.TEST:
+                final_dataset = self.create_combined_dataset(trade.pair, strategy)
+                final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+            else:
+                final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
             logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")
