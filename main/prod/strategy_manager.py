@@ -63,13 +63,13 @@ class StrategyManager():
             self.intraday_max_candles_sell = getattr(self.strategy, 'intraday_max_candles_sell')
 
         #adding classes name to stats list to populate DB
-        self.classes['filter_buy'] = self.filterBuy.__class__.__name__
-        self.classes['trigger_buy'] = self.triggerBuy.__class__.__name__
-        self.classes['trade_buy']= self.tradeBuy.__class__.__name__
-        self.classes['trend'] = self.trend.__class__.__name__
-        self.classes['filter_sell'] = self.filterSell.__class__.__name__
-        self.classes['trigger_sell'] = self.triggerSell.__class__.__name__
-        self.classes['trade_sell'] = self.tradeSell.__class__.__name__
+        self.classes['filter_buy'] = self.strategy.filter_buy_class
+        self.classes['trigger_buy'] = self.strategy.trigger_buy_class
+        self.classes['trade_buy']= self.strategy.trade_buy_class
+        self.classes['trend'] = self.strategy.trend_class
+        self.classes['filter_sell'] = self.strategy.filter_sell_class
+        self.classes['trigger_sell'] = self.strategy.trigger_sell_class
+        self.classes['trade_sell'] = self.strategy.trade_sell_class
 
         # getting all class attributes to pass to buying and selling support objects
         self.attributes = {attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__") and not isinstance(getattr(self, attr), (type(self.set_support_objects), type(self.__init__)))}
