@@ -3,6 +3,10 @@ import json
 import pandas as pd
 from common.strategy import *
 
+# number 5 is only to increase a bit the size of biggest indicator interval
+# to have bigger margin for calculation
+TREND_INTERVAL_CALC_MARGIN = 5
+
 def date_to_ms(date_value: str):
     date_value = datetime.strptime(date_value, '%d.%m.%Y')
     return int(date_value.timestamp() * 1000)
@@ -43,8 +47,7 @@ def dict_to_params(dict):
 #calculate start date to get ohcl dataset, based on the biggest timeframe interval from strategy class
 def calc_start_date(strategy):
     # calculating the total amount of time in seconds to be able to calculate the longest trend indicator
-    # number 5 is only to increase a bit the size to have bigger margin for calculation
-    diff_size = time_intervals_to_seconds(strategy.trend_interval)*(strategy.trend_longest_indicator_value+5)
+    diff_size = time_intervals_to_seconds(strategy.trend_interval)*(strategy.get_biggest_trend_interval()+TREND_INTERVAL_CALC_MARGIN)
     start_date = datetime.now() - timedelta(seconds=diff_size)
     return start_date.strftime('%d.%m.%Y')
 

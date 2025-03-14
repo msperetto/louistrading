@@ -1,5 +1,7 @@
 from config.config import NEGOCIATION_ENV
 from common.enums import *
+from common.strategyLong import StrategyLong
+from common.strategyShort import StrategyShort
 import importlib
 import pkgutil
 
@@ -18,3 +20,11 @@ def import_all_strategies(strategies_path, strategies_module, caller_globals):
     for module_info in pkgutil.iter_modules([str(strategies_path)]):
         module = importlib.import_module(f"{strategies_module}.{module_info.name}")
         caller_globals.update({name: cls for name, cls in module.__dict__.items() if isinstance(cls, type)})
+
+# Returns the Side_Type based on the type of the given strategy.
+def get_side(strategy):
+    SIDE_MAPPING = {
+        StrategyLong: Side_Type.LONG,
+        StrategyShort: Side_Type.SHORT
+    }
+    return SIDE_MAPPING.get(strategy.__class__.__bases__[0])

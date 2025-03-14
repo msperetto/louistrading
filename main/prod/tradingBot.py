@@ -6,10 +6,13 @@ from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
 from prod.strategy_manager import StrategyManager
-from prod.released_strategies.strategy_B2 import Strategy_B2
+from common.util import import_all_strategies
+from common import STRATEGIES_MODULE_PROD, STRATEGIES_PATH_PROD
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
 from common.strategy import *
+from common.strategyLong import StrategyLong
+from common.strategyShort import StrategyShort
 from prod.login import Login
 import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
@@ -18,6 +21,8 @@ from prod.binance import Binance
 import os
 import logging
 import time
+from config.config import NEGOCIATION_ENV
+from common.enums import Environment_Type
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +31,9 @@ class TradingBot:
     MINIMUM_BALANCE_INCREMENT = 1.5
 
     def __init__(self, strategies, db, setup, exchange_session):
+        # Import all strategies from the released strategies folder.
+        import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
+
         self.strategies = strategies
         self.db = db
         self.setup = setup
@@ -129,7 +137,12 @@ class TradingBot:
 
                 # Updates the last run time
                 self.last_executions[(pair, strategy)] = datetime.now()
-                final_dataset = self.create_combined_dataset(pair, strategy)
+
+                if NEGOCIATION_ENV == Environment_Type.TEST:
+                    final_dataset = self.create_combined_dataset(pair, strategy)
+                    final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+                else:
+                    final_dataset = self.create_combined_dataset(pair, strategy)
 
                 #logging for debugging
                 logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
@@ -172,7 +185,11 @@ class TradingBot:
             logger.debug(f"handle_opened_trades - pair: {trade.pair}")
             logger.debug(f"current balance: {self.current_balance}")
 
-            final_dataset = self.create_combined_dataset(trade.pair, strategy)
+            if NEGOCIATION_ENV == Environment_Type.TEST:
+                final_dataset = self.create_combined_dataset(trade.pair, strategy)
+                final_dataset = TestNegociationMain().add_fake_row(final_dataset)
+            else:
+                final_dataset = self.create_combined_dataset(trade.pair, strategy)
 
             #logging for debugging
             logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")

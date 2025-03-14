@@ -13,6 +13,7 @@ from backtesting import Backtest
 from prod.binance import Binance as binance
 from enum import Enum
 from itertools import product
+import os
 import math
 
 # Useful constants
@@ -56,6 +57,10 @@ class Main():
         # Prepare to generate output files.
         self.path_plot = "main/backtest/output/plot/"
         self.path_csv = "main/backtest/output/csv/"
+
+        # Check if the directories exist, if not, create them
+        os.makedirs(self.path_plot, exist_ok=True)
+        os.makedirs(self.path_csv, exist_ok=True)
 
         # Check if the trend should be automatically included in the strategy.
         self.shouldIncludeTrend = self.config["json_type"] == Json_type.PORTFOLIO

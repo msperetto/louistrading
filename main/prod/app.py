@@ -1,13 +1,10 @@
-from collections import OrderedDict
+from common.util import import_all_strategies
+from common import STRATEGIES_MODULE_PROD, STRATEGIES_PATH_PROD
 from prod.tradingBot import TradingBot
 from common.dao import database_operations as db
 from prod.env_setup import Env_setup
-from prod.candle_data import CandleData
 from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.login import Login
-from backtesting.lib import resample_apply
-import pandas_ta as ta
-import pandas as pd
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,11 +12,14 @@ logger = logging.getLogger(__name__)
 #  TODO: 
 class Main():
     def __init__(self):
+        # Import all strategies from the released strategies folder.
+        import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
+
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperation_active"], base_config["leverage_long_value"], base_config["leverage_short_value"])
         self.exchange_session = Login("binance")
         self.exchange_session.login_database()
-        self.strategies = [Strategy_B2()]
+        self.strategies = [Strategy_B2(), Strategy_SH7()]
 
     def start(self):
         print("Running...")
