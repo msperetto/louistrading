@@ -5,8 +5,6 @@ class Strategy_B2(StrategyLong):
     def __init__(self, optimize: bool = False):
         super().__init__()
         if not optimize:
-            self.trend_ema_short = 6
-            self.trend_sma_medium = 18
             self.trend_sma_long = 50
             self.intraday_ema_short = 9
             self.intraday_sma_medium = 19
