@@ -4,6 +4,7 @@ from common.dao import database_operations as db
 import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
+from common.enums import Environment_Type
 import logging
 
 logger = logging.getLogger(__name__)

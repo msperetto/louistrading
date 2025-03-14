@@ -11,6 +11,8 @@ from common import STRATEGIES_MODULE_PROD, STRATEGIES_PATH_PROD
 from prod.env_setup import Env_setup
 from prod.candle_data import CandleData
 from common.strategy import *
+from common.strategyLong import StrategyLong
+from common.strategyShort import StrategyShort
 from prod.login import Login
 import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
@@ -19,6 +21,8 @@ from prod.binance import Binance
 import os
 import logging
 import time
+from config.config import NEGOCIATION_ENV
+from common.enums import Environment_Type
 
 logger = logging.getLogger(__name__)
 
