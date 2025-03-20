@@ -42,6 +42,12 @@ class TradingBot:
         self.last_executions = {}
         self.current_balance = self._get_current_balance()
 
+        # setting binance initial leverage value
+        if NEGOCIATION_ENV == Environment_Type.PROD:
+            for pair in self.db.get_active_pairs():
+                Binance().change_initial_leverage(
+                    pair, self.setup.leverage_long_value, self.exchange_session.e_id, self.exchange_session)
+
     def run(self):
 
         while True:

@@ -208,6 +208,20 @@ class Binance():
         except Exception as e:
             logger.error(f'Error getting symbol price: {e}')
 
+    def change_initial_leverage(self, symbol, leverage, b_id, b_sk):
+        endpoint = '/fapi/v1/leverage'
+        params = {
+            'symbol': symbol,
+            'leverage': leverage,
+            'timestamp': str(self.get_servertime())
+        }
+        leverage = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
+        if 'code' in leverage.keys():
+            logger.error(f'Error changing leverage: {leverage}')
+            alert_dao.insert_alert(symbol, "Warning", True, f"Error changing leverage: {leverage}")
+        else:
+            return leverage
+
     def open_position(self, symbol, quantity, side, b_id, b_sk):
         endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
