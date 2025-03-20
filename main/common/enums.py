@@ -10,5 +10,5 @@ class Operation_Type(str, Enum):
     CLOSE = "Close"
 
 class Side_Type(str, Enum):
-    LONG = "long"
-    SHORT = "short"
+    LONG = "BUY"
+    SHORT = "SELL"
