@@ -43,10 +43,8 @@ class TradingBot:
         self.current_balance = self._get_current_balance()
 
         # setting binance initial leverage value
-        if NEGOCIATION_ENV == Environment_Type.PROD:
-            for pair in self.db.get_active_pairs():
-                Binance().change_initial_leverage(
-                    pair, self.setup.leverage_long_value, self.exchange_session.e_id, self.exchange_session)
+        for pair in self.db.get_active_pairs():
+            self._set_leverage(pair, self.setup.leverage)
 
     def run(self):
 
@@ -242,3 +240,7 @@ class TradingBot:
 
     def _is_balance_below_minimum(self):
         return self.current_balance < (self.setup.order_value * self.MINIMUM_BALANCE_INCREMENT)
+
+    def _set_leverage(self, pair, leverage):
+        if NEGOCIATION_ENV == Environment_Type.PROD:
+            Binance().change_initial_leverage(pair, leverage, self.exchange_session.e_id, self.exchange_session)
