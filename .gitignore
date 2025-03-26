@@ -12,3 +12,8 @@ main/prod/logs/*
 *.pyc
 .DS_Store
 .dockerignore
+.env/
+.env
+.env.production
+*.key
+/run/secrets/*
