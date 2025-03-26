@@ -41,14 +41,22 @@ class TradingBot:
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
         self.current_balance = self._get_current_balance()
+        self.running = True
 
         # setting binance initial leverage value
         for pair in self.db.get_active_pairs():
-            self._set_leverage(pair, self.setup.leverage)
+            self._set_leverage(pair, self.setup.leverage_long_value)
+
+    def stop(self):
+        logger.info("Stopping bot...")
+        self.running = False
+    
+    def start(self):
+        logger.info("Starting bot...")
+        self.running = True
 
     def run(self):
-
-        while True:
+        while self.running:
             try:
                 # register execution time to monitor bot alive status:
                 db.update_bot_execution_control()
@@ -60,30 +68,36 @@ class TradingBot:
 
                 # Pause the loop for 1 minute before trying again
                 time.sleep(60)
+                while not self.running:
+                    print("Bot is paused. Waiting for 20 seconds...")
+                    time.sleep(20)
             except Exception as e:
                 logger.error(f"An error occurred: {e}")
                 logger.info("Retrying in 2 minutes...")
-                time.sleep(120) 
+                time.sleep(120)
 
     def create_combined_dataset(self, pair, strategy):
-        #calculating de date for the first candle of the dataset
+        # calculating de date for the first candle of the dataset
         start_date = management.calc_start_date(strategy)
 
-        #getting intraday candle dataset from binance
-        intraday_data = CandleData(pair, strategy.intraday_interval, start_date, "intraday")
+        # getting intraday candle dataset from binance
+        intraday_data = CandleData(
+            pair, strategy.intraday_interval, start_date, "intraday")
         intraday_data.populate_data(round(time.time()*1000))
-        
-        #adding strategy indicators to intraday dataset
+
+        # adding strategy indicators to intraday dataset
         intraday_dataset = Dataset(intraday_data.candle_df, strategy)
         intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
-        #getting trend candle dataset from binance
-        trend_data = CandleData(pair, strategy.trend_interval, start_date, "trend")
+        # getting trend candle dataset from binance
+        trend_data = CandleData(
+            pair, strategy.trend_interval, start_date, "trend")
         trend_data.populate_data(round(time.time()*1000))
 
-        #adding strategy indicators to trend dataset
+        # adding strategy indicators to trend dataset
         trend_dataset = Dataset(trend_data.candle_df, strategy)
-        trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
+        trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset(
+            "trend")
 
         #merging intraday and trend datasets in one final dataset
         return intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
@@ -243,4 +257,4 @@ class TradingBot:
 
     def _set_leverage(self, pair, leverage):
         if NEGOCIATION_ENV == Environment_Type.PROD:
-            Binance().change_initial_leverage(pair, leverage, self.exchange_session.e_id, self.exchange_session)
+            Binance().change_initial_leverage(pair, int(leverage), self.exchange_session.e_id, self.exchange_session.e_sk)
