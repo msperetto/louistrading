@@ -8,14 +8,16 @@ import os
 
 # Get secret from file in production, environment variable in development
 def _get_secret(secret_name):
-    try:
-        with open(f'/run/secrets/{secret_name}', 'r') as secret_file:
-            return secret_file.read().strip()
-    except IOError:
+    if not os.getenv(secret_name):
+        raise ValueError(f"{secret_name} environment variable not set")
         return None
+    return os.getenv(secret_name)
 
-load_dotenv()  # Ensure environment variables are loaded
-TELEGRAM_API_KEY = _get_secret('telegram_api_key') or os.getenv("TELEGRAM_API_KEY")
+
+if os.getenv('ENVIRONMENT') != 'production':
+    from dotenv import load_dotenv
+    load_dotenv()  # Ensure environment variables are loaded
+TELEGRAM_API_KEY = _get_secret('TELEGRAM_API_KEY')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TELEGRAM_API_KEY)
 BASE_LOCAL_URL = f"http://localhost:8000/"
 MAX_MESSAGE_LEN = 4096
