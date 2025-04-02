@@ -13,13 +13,32 @@ def _get_secret(secret_name):
         return None
     return os.getenv(secret_name)
 
+def _get_ec2_public_ip():
+    try:
+        # AWS EC2 instance metadata endpoint:
+        metadata_url = "http://169.254.169.254/latest/meta-data/public-ipv4"
+        response = requests.get(metadata_url, timeout=2)
+        if response.status_code == 200:
+            logger.debug(f"Retrieved EC2 public IP: {response.text}")
+            return response.text
+        logger.warning("Unable to retrieve EC2 public IP")
+        return None
+    except Exception as e:
+        logger.error(f"Error retrieving EC2 public IP: {e}")
+        return None
 
 if os.getenv('ENVIRONMENT') != 'production':
     from dotenv import load_dotenv
     load_dotenv()  # Ensure environment variables are loaded
+    BASE_LOCAL_URL = "http://localhost:8000/"
+else:
+    EC2_IP = _get_ec2_public_ip()
+    if not EC2_IP:
+        raise ValueError("Unable to retrieve EC2 public IP")
+    BASE_LOCAL_URL = f"http://{EC2_IP}:8000/"
+
 TELEGRAM_API_KEY = _get_secret('TELEGRAM_API_KEY')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TELEGRAM_API_KEY)
-BASE_LOCAL_URL = f"http://localhost:8000/"
 MAX_MESSAGE_LEN = 4096
 
 logger = logging.getLogger(__name__)
