@@ -22,7 +22,41 @@ services:
       - "8080:80"
     depends_on:
       - db
-  
+
+  api:
+    build: .
+    container_name: noshirt_api
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: uvicorn main.prod.api:api --reload --host=0.0.0.0
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  telegram:
+    build: .
+    container_name: noshirt_telegram
+    volumes:
+      - .:/noshirt
+    environment:
+      - ENVIRONMENT=production
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/prod/telegram.py
+    depends_on:
+      - db
+    
   backtest:
     build: .
     container_name: noshirt_backtest

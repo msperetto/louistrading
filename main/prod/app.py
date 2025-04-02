@@ -21,10 +21,12 @@ class Main():
         self.exchange_session.login_database()
         self.strategies = [Strategy_B2(), Strategy_SH7()]
 
+        self.bot = TradingBot(self.strategies, db, self.setup, self.exchange_session)
+
     def start(self):
         print("Running...")
         logger.info(f"Start method - begin")
-        TradingBot(self.strategies, db, self.setup, self.exchange_session).run()
+        self.bot.run()
     
 if __name__ == "__main__":
     Main().start()
