@@ -46,15 +46,13 @@ services:
     volumes:
       - .:/noshirt
     environment:
-      - ENVIRONMENT=prod
-      # - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - ENVIRONMENT=production
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - PYTHONPATH=/noshirt/main
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
-    env_file:
-      - main/prod/.env.production
     command: python main/prod/telegram.py
     depends_on:
       - db

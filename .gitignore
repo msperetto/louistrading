@@ -17,3 +17,4 @@ main/prod/logs/*
 .env.production
 *.key
 /run/secrets/*
+docker-compose.override.yml
