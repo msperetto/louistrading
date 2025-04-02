@@ -6,6 +6,8 @@ import json
 from dotenv import load_dotenv
 import os
 
+logger = logging.getLogger(__name__)
+
 # Get secret from file in production, environment variable in development
 def _get_secret(secret_name):
     if not os.getenv(secret_name):
@@ -40,8 +42,6 @@ else:
 TELEGRAM_API_KEY = _get_secret('TELEGRAM_API_KEY')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TELEGRAM_API_KEY)
 MAX_MESSAGE_LEN = 4096
-
-logger = logging.getLogger(__name__)
 
 def get_request(endpoint):
     url = BASE_LOCAL_URL + endpoint
