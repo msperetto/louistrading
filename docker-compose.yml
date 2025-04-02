@@ -53,7 +53,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
-    command: python main/prod/telegram.py
+    command: python main/prod/telegram_bot.py
     depends_on:
       - db
     
