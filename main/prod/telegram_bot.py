@@ -5,27 +5,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import json
 from dotenv import load_dotenv
 import os
-
+from common.util import get_secret, get_server_public_ip
 from main.prod import telegram_logger
-
-# Get secret from file in production, environment variable in development
-def _get_secret(secret_name):
-    if not os.getenv(secret_name):
-        raise ValueError(f"{secret_name} environment variable not set")
-        return None
-    return os.getenv(secret_name)
-
-def _get_ec2_public_ip():
-    try:
-        env_ip = os.getenv('EC2_PUBLIC_IP')
-        if env_ip:
-            logger.debug(f"retrieved EC2 public IP from environment variable: {env_ip}")
-            return env_ip.strip()
-        logger.warning("EC2_PUBLIC_IP environment variable not set")
-        return None
-    except Exception as e:
-        logger.error(f"Error retrieving EC2 public IP: {e}")
-        return None
 
 if os.getenv('ENVIRONMENT') != 'production':
     from dotenv import load_dotenv
@@ -33,12 +14,12 @@ if os.getenv('ENVIRONMENT') != 'production':
     BASE_LOCAL_URL = "http://localhost:8000/"
     telegram_logger.info(f"Development mode: Using {BASE_LOCAL_URL}")
 else:
-    EC2_IP = _get_ec2_public_ip()
+    EC2_IP = get_server_public_ip("EC2_PUBLIC_IP")
     if not EC2_IP:
         raise ValueError("Unable to retrieve EC2 public IP")
     BASE_LOCAL_URL = f"http://{EC2_IP}:8000/"
 
-TELEGRAM_API_KEY = _get_secret('TELEGRAM_API_KEY')
+TELEGRAM_API_KEY = get_secret('TELEGRAM_API_KEY')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TELEGRAM_API_KEY)
 MAX_MESSAGE_LEN = 4096
 

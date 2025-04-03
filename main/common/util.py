@@ -4,6 +4,7 @@ from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
 import importlib
 import pkgutil
+import os
 from prod import logger, telegram_logger, aws_logger
 
 
@@ -29,3 +30,22 @@ def get_side(strategy):
         StrategyShort: Side_Type.SHORT
     }
     return SIDE_MAPPING.get(strategy.__class__.__bases__[0])
+
+# Get secret from file in production, environment variable in development
+def get_secret(secret_name):
+    if not os.getenv(secret_name):
+        raise ValueError(f"{secret_name} environment variable not set")
+        return None
+    return os.getenv(secret_name)
+
+def get_server_public_ip(server_ip_name):
+    try:
+        env_ip = os.getenv(server_ip_name)
+        if env_ip:
+            aws_logger.debug(f"retrieved {server_ip_name} from environment variable: {env_ip}")
+            return env_ip.strip()
+        aws_logger.warning(f"{server_ip_name} environment variable not set")
+        return None
+    except Exception as e:
+        aws_logger.error(f"Error retrieving public IP: {e}")
+        return None
