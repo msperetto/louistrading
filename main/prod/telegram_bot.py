@@ -6,7 +6,7 @@ import json
 from dotenv import load_dotenv
 import os
 from common.util import get_secret, get_server_public_ip
-from main.prod import telegram_logger
+from prod import telegram_logger
 
 if os.getenv('ENVIRONMENT') != 'production':
     from dotenv import load_dotenv
