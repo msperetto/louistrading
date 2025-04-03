@@ -6,8 +6,8 @@ from prod.env_setup import Env_setup
 from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.login import Login
 import logging
+from prod import logger
 
-logger = logging.getLogger(__name__)
 
 #  TODO: 
 class Main():

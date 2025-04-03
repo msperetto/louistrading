@@ -4,6 +4,7 @@ from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
 import importlib
 import pkgutil
+from prod import logger, telegram_logger, aws_logger
 
 
 def get_value_by_index(series, index):

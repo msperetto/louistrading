@@ -6,7 +6,7 @@ import json
 from dotenv import load_dotenv
 import os
 
-logger = logging.getLogger(__name__)
+from main.prod import telegram_logger
 
 # Get secret from file in production, environment variable in development
 def _get_secret(secret_name):
@@ -31,7 +31,7 @@ if os.getenv('ENVIRONMENT') != 'production':
     from dotenv import load_dotenv
     load_dotenv()  # Ensure environment variables are loaded
     BASE_LOCAL_URL = "http://localhost:8000/"
-    logger.info(f"Development mode: Using {BASE_LOCAL_URL}")
+    telegram_logger.info(f"Development mode: Using {BASE_LOCAL_URL}")
 else:
     EC2_IP = _get_ec2_public_ip()
     if not EC2_IP:
@@ -61,7 +61,7 @@ def start(update, context):
         message = response.get('status', 'Unknown response')
         update.message.reply_text(message, parse_mode=ParseMode.HTML)
     except Exception as e:
-        logger.error(f"Error starting the bot: {e}")
+        telegram_logger.error(f"Error starting the bot: {e}")
         update.message.reply_text("Error starting the bot", parse_mode=ParseMode.HTML)
 
 
@@ -72,7 +72,7 @@ def stop(update, context):
         message = response.get('status', 'Unknown response')
         update.message.reply_text(message, parse_mode=ParseMode.HTML)
     except Exception as e:
-        logger.error(f"Error stopping the bot: {e}")
+        telegram_logger.error(f"Error stopping the bot: {e}")
         update.message.reply_text("Error stopping the bot", parse_mode=ParseMode.HTML)
 
 
@@ -89,7 +89,7 @@ def echo(update, context):
 
 
 def error(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    telegram_logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
@@ -108,7 +108,7 @@ def main():
 
     # Start the Bot
     updater.start_polling()
-    logger.info("Telegram Bot started")
+    telegram_logger.info("Telegram Bot started")
 
     updater.idle()
 

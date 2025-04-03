@@ -15,8 +15,8 @@ import logging
 from common.dao import alert_dao
 from common.enums import Environment_Type
 from config.config import NEGOCIATION_ENV
+from prod import logger
 
-logger = logging.getLogger(__name__)
 
 class Binance():
 

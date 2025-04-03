@@ -4,8 +4,7 @@ from threading import Thread, Event
 # from prod.tradingBot import TradingBot
 from prod.app import Main
 import logging
-
-logger = logging.getLogger(__name__)
+from prod import api_logger
 
 api = FastAPI()
 
@@ -20,10 +19,10 @@ app = Main()
 def start_main():
     try:
         bot_ready.set() # Signal that the bot is ready
-        logger.debug(f"Bot ready status: {bot_ready.is_set()}")
+        api_logger.debug(f"Bot ready status: {bot_ready.is_set()}")
         app.start()
     except Exception as e:
-        logger.error(f"Error starting the bot: {e}")
+        api_logger.error(f"Error starting the bot: {e}")
         bot_ready.set() # Set the event even if error to prevent deadlock 
 
 thread = Thread(target=start_main, daemon=True)
@@ -50,7 +49,7 @@ async def start_app():
 
 @api.post("/stop")
 async def stop_app():
-    logger.debug(f"stop endpoint called. Bot ready status: {bot_ready.is_set()}")
+    api_logger.debug(f"stop endpoint called. Bot ready status: {bot_ready.is_set()}")
     if not bot_ready.is_set():
         return {"status": "Bot is starting......"}
 

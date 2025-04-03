@@ -23,8 +23,8 @@ import logging
 import time
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type
+from prod import logger
 
-logger = logging.getLogger(__name__)
 
 class TradingBot:
 

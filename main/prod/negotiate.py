@@ -5,9 +5,8 @@ import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type
-import logging
+from prod import logger
 
-logger = logging.getLogger(__name__)
 
 class Negotiate():
     def __init__(self, pair, api_id, api_key):
