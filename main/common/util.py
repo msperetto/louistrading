@@ -23,13 +23,17 @@ def import_all_strategies(strategies_path, strategies_module, caller_globals):
         module = importlib.import_module(f"{strategies_module}.{module_info.name}")
         caller_globals.update({name: cls for name, cls in module.__dict__.items() if isinstance(cls, type)})
 
-# Returns the Side_Type based on the type of the given strategy.
+# Returns the Side_Type based on the type of the given strategy (looks for the mother class of the strategy).
 def get_side(strategy):
     SIDE_MAPPING = {
-        StrategyLong: Side_Type.LONG,
-        StrategyShort: Side_Type.SHORT
+        StrategyLong: Side_Type.LONG.value,
+        StrategyShort: Side_Type.SHORT.value
     }
-    return SIDE_MAPPING.get(strategy.__class__.__bases__[0])
+    base_class = strategy.__class__.__bases__[0]
+    side = SIDE_MAPPING.get(base_class)
+    if side is None:
+        logging.warning(f"Unknown strategy base class: {base_class.__name__}")
+    return side
 
 # Get secret from file in production, environment variable in development
 def get_secret(secret_name):
