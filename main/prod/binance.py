@@ -97,6 +97,16 @@ class Binance():
         
         return result
 
+    def get_exchange_info(self):
+        endpoint = self.EXCHANGEINFO_ENDPOINT
+        try:
+            exchange_info = requests.get(
+                self.BASE_ENDPOINT + endpoint).json()
+        except Exception as e:
+            logger.error(f'Error getting exchange info: {e}')
+        
+        return exchange_info
+
     
 
         # Possible intervals for klines
