@@ -6,7 +6,8 @@ import importlib
 import pkgutil
 import os
 from prod import logger, telegram_logger, aws_logger
-
+from typing import List, Dict
+from prod.binance import Binance
 
 def get_value_by_index(series, index):
     """
@@ -52,4 +53,24 @@ def get_server_public_ip(server_ip_name):
         return None
     except Exception as e:
         aws_logger.error(f"Error retrieving public IP: {e}")
+        return None
+
+def get_pairs_precision(pairs: List) -> Dict:
+    """
+    Returns the precision of the given list of pairs.
+    So when passing the quantity of an order to the exchange, the decimal places are correct.
+    """
+    precision_result = {}
+    try:
+        exchange_info = Binance().get_exchange_info()
+        for pair in pairs:
+            pair_result = {pair: symbol['quantityPrecision'] for symbol in exchange_info['symbols'] if symbol['symbol'] == pair}
+            if pair_result:
+                precision_result.update(pair_result)
+            else:
+                logger.warning(f"Pair {pair} not found in exchange info.")
+        return precision_result
+
+    except Exception as e:
+        logger.error(f"Error retrieving precision for {pair}: {e}")
         return None

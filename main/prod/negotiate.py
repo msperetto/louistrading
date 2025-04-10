@@ -4,13 +4,14 @@ from common.dao import database_operations as db
 import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
-from common.enums import Environment_Type
+from common.enums import Environment_Type, Side_Type
 from prod import logger
 
 
 class Negotiate():
-    def __init__(self, pair, api_id, api_key):
+    def __init__(self, pair, pair_precision, api_id, api_key):
         self.pair = pair
+        self.pair_precision = pair_precision
         self.api_id = api_id
         self.api_key = api_key
     
@@ -20,7 +21,7 @@ class Negotiate():
         if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = self._simulate_test_order(side, total_value)        
         else:
-            order_quantity = total_value/float(Binance().get_symbol_price(self.pair))
+            order_quantity = round(total_value/float(Binance().get_symbol_price(self.pair)), self.pair_precision)
             order_response = Binance().open_position(self.pair, order_quantity, side, self.api_id, self.api_key)
 
         if order_response is None:
@@ -115,7 +116,3 @@ class Negotiate():
 
     def alert_close_transaction():
         pass
-
-# negoc = Negotiate("XTZUSDT", "a", "b")
-# negoc.open_position(Side_Type.LONG, 7200, 1)
-# negoc.close_position(Side_Type.LONG, 7200, 1)

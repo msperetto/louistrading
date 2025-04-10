@@ -24,6 +24,7 @@ import time
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type
 from prod import logger
+from common.util import get_side, get_pairs_precision
 
 
 class TradingBot:
@@ -46,6 +47,9 @@ class TradingBot:
         # setting binance initial leverage value
         for pair in self.db.get_active_pairs():
             self._set_leverage(pair, self.setup.leverage_long_value)
+
+        # getting decimal precision by pair:
+        self.pairs_precision = get_pairs_precision(self.db.get_active_pairs())
 
     def stop(self):
         logger.info("Stopping bot...")
@@ -168,6 +172,7 @@ class TradingBot:
 
                 manager = StrategyManager(
                     pair,
+                    self.pairs_precision[pair],
                     final_dataset,
                     self.exchange_session.e_id,
                     self.exchange_session.e_sk,

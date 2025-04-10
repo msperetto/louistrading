@@ -23,8 +23,9 @@ from common.indicators_catalog import indicators_catalog
 class StrategyManager():
 
     #modificar aqui para ser somente uma estratégia
-    def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
+    def __init__(self, pair, pair_precision, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
         self.pair = pair
+        self.pair_precision = pair_precision
         self.data = dataset
         self.api_id = api_id
         self.api_key = api_key
@@ -32,7 +33,7 @@ class StrategyManager():
         self.strategy = strategy
         self.stop_loss = stop_loss
         self.take_profit = take_profit
-        self.negotiate = Negotiate(self.pair, self.api_id, self.api_key)
+        self.negotiate = Negotiate(self.pair, self.pair_precision, self.api_id, self.api_key)
         self.classes = {}
         self.set_support_objects()
 
