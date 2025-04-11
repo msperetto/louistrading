@@ -86,7 +86,7 @@ def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.
                 INSERT INTO order_control(order_id, date, pair, operation_type, side, entry_price, quantity,
                                               status, fees, trade_id)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-            """, (order_response['orderId'], order_response['updateTime'], order_response['symbol'], operation_type,
+            """, (order_response['orderId'], datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['symbol'], operation_type,
                    order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
@@ -98,7 +98,7 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
                 INSERT INTO trade(open, open_time, side, pair, strategy_id)
                 VALUES(%s, %s, %s, %s, %s)
                 RETURNING id, pair;
-            """, (open, order_response['updateTime'], order_response['positionSide'], order_response['symbol'], strategy_id))
+            """, (open, datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['positionSide'], order_response['symbol'], strategy_id))
             conn.commit()
             return cur.fetchone()[0]
 
@@ -121,7 +121,7 @@ def update_trade_transaction(trade_id, strategy_id, order_response, profit = Non
                     spread = %s,
                     roi = %s
                 WHERE id = %s;
-            """, (False, order_response['updateTime'], profit, spread, roi, trade_id))
+            """, (False, datetime.fromtimestamp(order_response['updateTime'] / 1000), profit, spread, roi, trade_id))
             conn.commit()
 
 
