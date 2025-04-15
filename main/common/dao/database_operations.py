@@ -2,6 +2,7 @@ import psycopg
 import csv
 from datetime import datetime
 from config.config import DEV_ENV_CON
+from common.enums import Side_Type
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
 def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = ""):
@@ -87,7 +88,7 @@ def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.
                                               status, fees, trade_id)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, (order_response['orderId'], datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['symbol'], operation_type,
-                   order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
+                   Side_Type(order_response['side']).name, order_response['avgPrice'], order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
 
@@ -98,7 +99,7 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
                 INSERT INTO trade(open, open_time, side, pair, strategy_id)
                 VALUES(%s, %s, %s, %s, %s)
                 RETURNING id, pair;
-            """, (open, datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['positionSide'], order_response['symbol'], strategy_id))
+            """, (open, datetime.fromtimestamp(order_response['updateTime'] / 1000), Side_Type(order_response['side']).name, order_response['symbol'], strategy_id))
             conn.commit()
             return cur.fetchone()[0]
 
