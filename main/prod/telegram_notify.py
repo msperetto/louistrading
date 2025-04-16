@@ -32,7 +32,7 @@ class TelegramNotify:
             elif msg_type == "operation":
                 url_req = URL_BASE_OPERATION
             try:
-                if env != Env_type.DEV:
+                if os.getenv('ENVIRONMENT') == 'production':
                     res = requests.post(url_req, data={"text": msg})
                     if res.status_code == 429:
                         retry_after = int(res.headers["Retry-After"])
