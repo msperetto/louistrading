@@ -64,6 +64,7 @@ class TelegramNotify:
     def _send_message(self, msg):
         try:
             self.message_buffer.put(msg, block=False)
+            print("colocando mensagem na fila")
         except Full:
             telegram_logger.error(
                 "Too many messages, can't handle. Deleting message buffer."
@@ -80,6 +81,7 @@ class TelegramNotify:
 
     def send_message_alert(self, msg):
         msg = (msg, "alert")
+        print("entrou send message alert")
         self._send_message(msg)
 
     def send_message_operation(self, msg):

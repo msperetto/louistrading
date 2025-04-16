@@ -45,6 +45,7 @@ async def start_app():
         return {"status": "App already running"}
     elif hasattr(app, 'bot'):
         app.bot.start()
+        notify.send_message_alert("Bot started......")
         return {"status": "App started"}
     else:
         return {"status": "Bot not initialized"}
