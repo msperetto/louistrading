@@ -36,13 +36,6 @@ def get_side(strategy):
         logging.warning(f"Unknown strategy base class: {base_class.__name__}")
     return side
 
-# Get secret from file in production, environment variable in development
-def get_secret(secret_name):
-    if not os.getenv(secret_name):
-        raise ValueError(f"{secret_name} environment variable not set")
-        return None
-    return os.getenv(secret_name)
-
 def get_server_public_ip(server_ip_name):
     try:
         env_ip = os.getenv(server_ip_name)

@@ -5,7 +5,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import json
 from dotenv import load_dotenv
 import os
-from common.util import get_secret, get_server_public_ip
+from common.util import get_server_public_ip
+from common.secrets import get_secret
 from prod import telegram_logger
 
 if os.getenv('ENVIRONMENT') != 'production':

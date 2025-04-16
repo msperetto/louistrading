@@ -5,7 +5,7 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 from prod import telegram_logger
-from common.util import get_secret
+from common.secrets import get_secret
 
 
 GROUP_ID_ALERTS = os.getenv("GROUP_ID_ALERTS")
