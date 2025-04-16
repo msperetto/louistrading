@@ -5,6 +5,7 @@ from threading import Thread, Event
 from prod.app import Main
 import logging
 from prod import api_logger
+from prod import notify
 
 api = FastAPI()
 
@@ -37,6 +38,7 @@ def index():
 @api.post("/start")
 async def start_app():
     if not bot_ready.is_set():
+        notify.send_message_alert("Bot is starting......")
         return {"status": "Bot is starting..."}
 
     if hasattr(app, 'bot') and app.bot.running:
@@ -51,10 +53,11 @@ async def start_app():
 async def stop_app():
     api_logger.debug(f"stop endpoint called. Bot ready status: {bot_ready.is_set()}")
     if not bot_ready.is_set():
-        return {"status": "Bot is starting......"}
+        return {"status": "Bot is already stopped......"}
 
     if hasattr(app, 'bot') and app.bot.running:
         app.bot.stop()
+        notify.send_message_alert("Bot stopped......")
         return {"status": "App stopped"}
     else:
         return {"status": "App not running or bot not initialized"}

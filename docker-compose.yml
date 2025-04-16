@@ -30,6 +30,7 @@ services:
       - .:/noshirt
     environment:
       - PYTHONPATH=/noshirt/main
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

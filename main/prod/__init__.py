@@ -47,3 +47,7 @@ aws_logger = setup_logger('aws', 'aws.log')
 # Setup API logger
 api_logger = setup_logger('api', 'api.log')
 
+# Setup Notification object
+from prod.notification import Notification
+notify = Notification()
+
