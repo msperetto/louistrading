@@ -75,6 +75,8 @@ class TelegramNotify:
                 ("Too many messages, deleting buffer.", "alert"), block=False
             )
 
+        print(f"thread is alive: {self.thread.is_alive()}")
+
         if not self.thread.is_alive():
             self.thread = threading.Thread(target=self._request_from_queue)
             self.thread.start()
