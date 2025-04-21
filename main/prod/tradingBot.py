@@ -220,6 +220,7 @@ class TradingBot:
 
             manager = StrategyManager(
                 trade.pair,
+                self.pairs_precision[trade.pair],
                 final_dataset,
                 self.exchange_session.e_id,
                 self.exchange_session.e_sk,
