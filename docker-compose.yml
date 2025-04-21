@@ -29,8 +29,11 @@ services:
     volumes:
       - .:/noshirt
     environment:
+      - ENVIRONMENT=production
       - PYTHONPATH=/noshirt/main
       - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - GROUP_ID_OPERATIONS=${GROUP_ID_OPERATIONS}
+      - GROUP_ID_ALERTS=${GROUP_ID_ALERTS}
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
