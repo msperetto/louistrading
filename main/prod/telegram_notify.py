@@ -4,7 +4,7 @@ from queue import Queue, Full
 from time import sleep
 from dotenv import load_dotenv
 import os
-from prod import telegram_logger
+from prod import telegram_notify_logger
 from common.secrets import get_secret
 
 
@@ -36,7 +36,7 @@ class TelegramNotify:
                     res = requests.post(url_req, data={"text": msg})
                     if res.status_code == 429:
                         retry_after = int(res.headers["Retry-After"])
-                        telegram_logger.error(
+                        telegram_notify_logger.error(
                             f"Getting Error 429 from Telegram API. Waiting {retry_after+1} seconds"
                         )
                         sleep(retry_after + 1)
@@ -46,19 +46,19 @@ class TelegramNotify:
                         res = requests.post(url_req, data={"text": msg})
                         # throw error if didn't work again
                         if res.status_code != 200:
-                            telegram_logger.error(
+                            telegram_notify_logger.error(
                                 f"Getting error from Telegram API: {res.status_code} - {res.headers} - {res.content} - {msg}"
                             )
                             raise NameError("Telegram response not 200")
                     elif res.status_code != 200:
-                        telegram_logger.error(
+                        telegram_notify_logger.error(
                             f"Getting error from Telegram API: {res.status_code} - {res.headers} - {res.content} - {msg}"
                         )
                         raise NameError("Telegram response not 200")
                 else:
                     print(msg)
             except Exception:
-                telegram_logger.error(f"Getting error from Telegram API.")
+                telegram_notify_logger.error(f"Getting error from Telegram API.")
                 raise NameError("Error on Telegram API request")
 
     def _send_message(self, msg):
@@ -66,7 +66,7 @@ class TelegramNotify:
             self.message_buffer.put(msg, block=False)
             print("colocando mensagem na fila")
         except Full:
-            telegram_logger.error(
+            telegram_notify_logger.error(
                 "Too many messages, can't handle. Deleting message buffer."
             )
             # resetting queue

@@ -41,6 +41,9 @@ logger = setup_logger('trading_bot', 'trading_bot.log')
 # Setup telegram bot logger
 telegram_logger = setup_logger('telegram_bot', 'telegram.log')
 
+# Setup telegram notification logger
+telegram_notify_logger = setup_logger('telegram_notify', 'telegram_notify.log')
+
 # Setup AWS logger
 aws_logger = setup_logger('aws', 'aws.log')
 
