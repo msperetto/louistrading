@@ -1,11 +1,12 @@
 from common.enums import *
 from prod.binance import Binance
 from common.dao import database_operations as db
+from common.dao.strategy_dao import get_strategy_by_id
 import random
 from datetime import datetime
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type, Side_Type
-from prod import logger
+from prod import logger, notify
 
 
 class Negotiate():
@@ -28,7 +29,23 @@ class Negotiate():
             logger.error(f"Error opening position: {order_response}")
             return False
 
-        self._register_open_transaction(order_response, strategy_id)
+        trade_id = self._register_open_transaction(order_response, strategy_id)
+        # Notify the user about the opened trade
+        notify.notify_opened_trade(
+            self.pair, 
+            trade_id, 
+            side, 
+            get_strategy_by_id(strategy_id)['name'], 
+            order_response['updateTime'], 
+            float(order_response['avgPrice'])* float(order_response['origQty']),
+            order_response['origQty'],
+            order_response['avgPrice'],
+            order_response['orderId']
+        )
+
+        notify.send_message_alert(
+            f"Trade opened successfully: {order_response['orderId']}, Side: {side}, Quantity: {order_response['origQty']}, Price: {order_response['avgPrice']}"
+        )
         logger.info(f"Position successfully opened: {order_response}")
         return True
 
@@ -86,6 +103,7 @@ class Negotiate():
     def _register_open_transaction(self, order_response, strategy_id):
         trade_id = db.insert_trade_transaction(strategy_id, True, order_response)
         db.insert_order_transaction(order_response, Operation_Type.ENTRY, trade_id)
+        return trade_id
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
         
     def _register_close_transaction(self, order_response, strategy_id, trade_id):
@@ -104,6 +122,23 @@ class Negotiate():
         # Updates DB tables.
         db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
         db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id)
+
+        notify.notify_closed_trade(
+            self.pair,
+            trade_id,
+            trade_data['side'],
+            get_strategy_by_id(strategy_id)['name'],
+            trade_data['date'],
+            trade_data['entry_price'],
+            order_response['updateTime'],
+            float(order_response['avgPrice']) * float(order_response['origQty']),
+            order_response['origQty'],
+            order_response['avgPrice'],
+            order_response['orderId'],
+            spread,
+            profit,
+            roi
+        )
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
         
     # Calculates the correct ROI.    

@@ -1,34 +1,71 @@
 from prod.telegram_notify import TelegramNotify
 
 class Notification(TelegramNotify):
-    def notify_operation(
+    def notify_opened_trade(
         self,
         pair,
-        order_buy,
-        order_sell,
-        status,
+        trade_id,
+        side,
+        strategy,
+        operation_time,
+        volume,
+        quantity,
+        average_price,
+        order_id
     ):
 
-        msg += f"<b>Operação efetivada</b>:\n"
-        msg += f"pair: {coin}\n"
+        msg += f"<b>🆕Opened Trade</b>:\n"
+        msg += f"Pair: {pair}\n"
+        msg += f"Trade ID: {trade_id}\n"
+        msg += f"Side: {side}\n"
+        msg += f"Strategy: {strategy}\n"
 
-        if order_buy:
-            msg += f"Exchange Buy: {order_buy['exchange_id']}\n"
-            msg += f"Volume Buy: {order_buy['symbol']} {order_buy.get('volume', '0')}\n"
-            msg += f"Quantity Buy: {pair} {order_buy.get('quantity', '0')}\n"
-            msg += f"Average Order Price Buy: {order_buy['symbol']} {order_buy.get('average_price', 'N/A')}\n"
-            msg += f"Order ID Buy: {order_buy['order_id']}\n\n"
+        msg += f"Operation Time: {operation_time}\n"
+        msg += f"Volume: {volume}\n"
+        msg += f"Quantity: {quantity}\n"
+        msg += f"Average Order Price: USDT {average_price}\n"
+        msg += f"Order ID: {order_id}\n\n"
 
-        if order_sell:
-            msg += f"Exchange Sell: {order_sell['exchange_id']}\n"
-            msg += (
-                f"Volume Sell: {order_sell['symbol']} {order_sell.get('volume', '0')}\n"
-            )
-            msg += f"Quantity Sell: {pair} {order_sell.get('quantity', '0')}\n"
-            msg += f"Average Order Price Sell: {order_sell['symbol']} {order_sell.get('average_price', 'N/A')}\n"
-            msg += f"Order ID Sell: {order_sell['order_id']}\n\n"
+        self.send_message_operation(msg)
+    
+    def notify_closed_trade(
+        self,
+        pair,
+        trade_id,
+        side,
+        strategy,
+        entry_time,
+        entry_price,
+        operation_time,
+        volume,
+        quantity,
+        average_price,
+        order_id,
+        spread,
+        profit,
+        ROI
+    ):
 
-        msg += f"Profit: USD {round(real_profit, 2):,}\n"
+        msg = f"<b>✅Closed Trade</b>:\n"
+        msg += f"Pair: {pair}\n"
+        msg += f"Trade ID: {trade_id}\n"
+        msg += f"Side: {side}\n"
+        msg += f"Strategy: {strategy}\n"
+
+        msg += f"<i>Entry Details:</i>\n"
+        msg += f"Operation Time: {entry_time}\n"
+        msg += f"Average Order Price Entry: USDT {entry_price}\n"
+
+        msg += f"<i>Close Details:</i>\n"
+        msg += f"Operation Time: {operation_time}\n"
+        msg += f"Volume: {volume}\n"
+        msg += f"Quantity: {quantity}\n"
+        msg += f"Average Order Price Close: USDT {average_price}\n"
+        msg += f"Order ID Sell: {order_id}\n\n"
+
+        msg += f"Spread: {spread}\n"
+        msg += f"Profit: {profit}\n"
+        msg += f"ROI: {ROI}"
 
         self.send_message_operation(msg)
 
@@ -64,20 +101,3 @@ class Notification(TelegramNotify):
 
         self.send_message_alert(msg)
 
-    def notify_canceled_orders(self, canceled_orders):
-
-        if not canceled_orders:
-            self.send_message_alert("No orders canceled (Mercado).")
-            return
-
-        msg = "<b>Canceled Orders - Mercado</b>\n\n"
-
-        for order in canceled_orders:
-            msg += "Pair: {}\n".format(order["symbol"])
-            msg += "ID: {}\n".format(order["id"])
-            msg += "Status: {}\n".format(order["status"])
-            msg += "Amount: {}\n".format(order["amount"])
-            msg += "Filled: {}\n".format(order["filled"])
-            msg += "\n"
-
-        self.send_message_alert(msg)
