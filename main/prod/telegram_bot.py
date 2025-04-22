@@ -66,6 +66,25 @@ def help(update, context):
     update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
 
+def status(update, context):
+    try:
+        response = get_request("status")
+        msg = f"<b>Status:</b>\n"
+        msg += f"Bot enabled: {response.get('enabled', 'Unknown')}\n"
+        msg += f"Current state: {response.get('current_state', 'Unknown')}\n"
+        msg += f"Max open orders: {response.get('max_open_orders', 'Unknown')}\n"
+        msg += f"Order value: {response.get('order_value', 'Unknown')}\n"
+        msg += f"Leverage Long: {response.get('leverage_long', 'Unknown')}\n"
+        msg += f"Leverage Short: {response.get('leverage_short', 'Unknown')}\n"
+        msg += f"Last execution: {response.get('last_execution', 'Unknown')}\n"
+        msg += f"Active pairs: {', '.join(response.get('active_pairs', []))}\n"
+        update.message.reply_text(msg, parse_mode=ParseMode.HTML)
+
+    except Exception as e:
+        telegram_logger.error(f"Error getting status: {e}")
+        update.message.reply_text("Error getting status", parse_mode=ParseMode.HTML)
+
+
 def echo(update, context):
     update.message.reply_text(update.message.text)
 
@@ -80,6 +99,7 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("status", status))
     dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram

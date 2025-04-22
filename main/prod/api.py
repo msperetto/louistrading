@@ -6,6 +6,7 @@ from prod.app import Main
 import logging
 from prod import api_logger
 from prod import notify
+from common.dao.database_operations import get_initial_config, get_bot_execution_control, get_active_pairs
 
 api = FastAPI()
 
@@ -62,6 +63,28 @@ async def stop_app():
         return {"status": "App stopped"}
     else:
         return {"status": "App not running or bot not initialized"}
+
+@api.get("/status")
+async def status():
+    response = {}
+    initial_config = get_initial_config()
+    bot_execution_control = get_bot_execution_control()
+    active_pairs = get_active_pairs()
+    response["enabled"] = initial_config["opperation_active"]
+    response["max_open_orders"] = initial_config["max_open_orders"]
+    response["order_value"] = initial_config["order_value"]
+    response["leverage_long"] = initial_config["leverage_long_value"]
+    response["leverage_short"] = initial_config["leverage_short_value"]
+    response["last_execution"] = bot_execution_control["last_execution"]
+    response["active_pairs"] = active_pairs
+    if not bot_ready.is_set():
+        response["current_state"] = "Bot is starting..."
+    if hasattr(app, 'bot') and app.bot.running:
+        response["current_state"] = "App running"
+    else:
+        response["current_state"] = "App not running or bot not initialized"
+
+    return response
 
 @api.get("/orders")
 def get_orders():
