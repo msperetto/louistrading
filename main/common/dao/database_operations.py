@@ -72,6 +72,14 @@ def get_exchange_config(exchange: str):
                 """,(exchange,))
             return cur.fetchone()
 
+def get_bot_execution_control():
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM bot_execution_control WHERE line = 1;
+                """)
+            return cur.fetchone()
+
 def get_initial_config():
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
