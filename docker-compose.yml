@@ -1,6 +1,6 @@
 # Commands to run services below:
 # docker-compose run --rm --service-ports app
-# docker-compose up -d db
+# docker compose up -d db
 # docker-compose run --rm backtest
 # Enter database via terminal:
 # docker exec -it noshirt-postgres psql -U postgres -d noshirt
@@ -29,7 +29,7 @@ services:
     volumes:
       - .:/noshirt
     environment:
-      - ENVIRONMENT=production
+      - ENVIRONMENT=AWS
       - PYTHONPATH=/noshirt/main
       - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - GROUP_ID_OPERATIONS=${GROUP_ID_OPERATIONS}
@@ -50,7 +50,7 @@ services:
     volumes:
       - .:/noshirt
     environment:
-      - ENVIRONMENT=production
+      - ENVIRONMENT=AWS
       - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - EC2_PUBLIC_IP=${EC2_PUBLIC_IP}
       - PYTHONPATH=/noshirt/main

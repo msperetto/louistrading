@@ -8,10 +8,12 @@ import os
 from common.util import get_server_public_ip
 from common.secrets import get_secret
 from prod import telegram_logger
+from common.enums import Environment_Place
 
-if os.getenv('ENVIRONMENT') != 'production':
+if os.getenv('ENVIRONMENT') != Environment_Place.AWS:
     from dotenv import load_dotenv
-    load_dotenv()  # Ensure environment variables are loaded
+    env_path = Path(__file__).parent.parent.parent / '.env'
+    load_dotenv(dotenv_path=env_path)  # Ensure environment variables are loaded from .env file
     BASE_LOCAL_URL = "http://localhost:8000/"
     telegram_logger.info(f"Development mode: Using {BASE_LOCAL_URL}")
 else:
