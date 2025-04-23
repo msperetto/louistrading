@@ -66,6 +66,7 @@ def help(update, context):
     msg = "<b>Available commands:</b>\n\n"
     msg += "/start - Start the bot\n"
     msg += "/stop - Stop the bot\n"
+    msg += "/status - Get the bot status\n"
     msg += "/help - Show this help message\n"
     update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
