@@ -1,6 +1,6 @@
 from psycopg import connect, rows
 from config.config import DEV_ENV_CON
-from common.domain.trade import Trade  
+from common.domain.trade import Trade
 
 def get_open_trade_pairs():
     """

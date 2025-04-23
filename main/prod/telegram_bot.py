@@ -9,6 +9,8 @@ from common.util import get_server_public_ip
 from common.secrets import get_secret
 from prod import telegram_logger
 from common.enums import Environment_Place
+from common.dao.trade_dao import get_open_trade_by_pair
+from common.domain.trade import Trade
 
 if os.getenv('ENVIRONMENT') != Environment_Place.AWS:
     from dotenv import load_dotenv
@@ -73,13 +75,16 @@ def status(update, context):
         response = get_request("status")
         msg = f"<b>Status:</b>\n"
         msg += f"Bot enabled: {response.get('enabled', 'Unknown')}\n"
-        msg += f"Current state: {response.get('current_state', 'Unknown')}\n"
         msg += f"Max open orders: {response.get('max_open_orders', 'Unknown')}\n"
         msg += f"Order value: {response.get('order_value', 'Unknown')}\n"
         msg += f"Leverage Long: {response.get('leverage_long', 'Unknown')}\n"
         msg += f"Leverage Short: {response.get('leverage_short', 'Unknown')}\n"
+        msg += f"Active pairs: {', '.join(response.get('active_pairs', []))}\n\n"
+        msg += f"Quantity of open trades: {response.get('open_trades_count', 'Unknown')}\n"
+        msg += f"Open Trade Pairs: {', '.join(response.get('open_trade_pairs', []))} \n"
+        msg += f"Current state: {response.get('current_state', 'Unknown')}\n"
         msg += f"Last execution: {response.get('last_execution', 'Unknown')}\n"
-        msg += f"Active pairs: {', '.join(response.get('active_pairs', []))}\n"
+
         update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
     except Exception as e:
