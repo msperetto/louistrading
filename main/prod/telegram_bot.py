@@ -80,7 +80,7 @@ def status(update, context):
         msg += f"Leverage Long: {response.get('leverage_long', 'Unknown')}\n"
         msg += f"Leverage Short: {response.get('leverage_short', 'Unknown')}\n"
         msg += f"Active pairs: {', '.join(response.get('active_pairs', []))}\n\n"
-        msg += f"Quantity of open trades: {response.get('open_trades_count', 'Unknown')}\n"
+        msg += f"Quantity of open trades: {response.get('open_trade_quantity', 'Unknown')}\n"
         msg += f"Open Trade Pairs: {', '.join(response.get('open_trade_pairs', []))} \n"
         msg += f"Current state: {response.get('current_state', 'Unknown')}\n"
         msg += f"Last execution: {response.get('last_execution', 'Unknown')}\n"
