@@ -249,13 +249,13 @@ class Binance():
         else:
             return position
 
-    def close_position(self, symbol, side, b_id, b_sk):
+    def close_position(self, symbol, entry_quantity, side, b_id, b_sk):
         endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
             'type': 'MARKET',
-            'closePosition': True,
+            'quantity': entry_quantity,
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }

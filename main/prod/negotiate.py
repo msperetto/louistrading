@@ -72,7 +72,9 @@ class Negotiate():
         if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = self._simulate_close_position(side, trade_id)
         else:
-            order_response = Binance().close_position(self.pair, side, self.api_id, self.api_key)
+            trade_data = db.get_order(trade_id)
+            entry_quantity = trade_data['quantity']
+            order_response = Binance().close_position(self.pair, entry_quantity, side, self.api_id, self.api_key)
         
         if order_response is None:
             logger.error(f"Error closing position: {order_response}")
