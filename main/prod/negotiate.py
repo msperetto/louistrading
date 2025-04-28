@@ -73,8 +73,8 @@ class Negotiate():
             order_response = self._simulate_close_position(side, trade_id)
         else:
             trade_data = db.get_order(trade_id)
-            entry_quantity = trade_data['quantity']
-            order_response = Binance().close_position(self.pair, entry_quantity, side, self.api_id, self.api_key)
+            close_quantity = trade_data['quantity']
+            order_response = Binance().close_position(self.pair, close_quantity, side, self.api_id, self.api_key)
         
         if order_response is None:
             logger.error(f"Error closing position: {order_response}")
@@ -116,7 +116,10 @@ class Negotiate():
 
         # Calculates profit, spread and ROI values
         close_price = float(order_response['avgPrice'])
-        close_quantity = order_response['origQty']
+        close_quantity = entry_quantity
+        print(f"close_price: {close_price}, close_quantity: {close_quantity}, entry_price: {entry_price}, entry_quantity: {entry_quantity}")
+        #types of the variables:
+        print(f"close_price: {type(close_price)}, close_quantity: {type(close_quantity)}, entry_price: {type(entry_price)}, entry_quantity: {type(entry_quantity)}")
         profit = (close_price * close_quantity) - (entry_price * entry_quantity)
         spread = (close_price / entry_price) - 1
         roi = self._calculate_roi()
