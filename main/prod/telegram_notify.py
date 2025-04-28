@@ -9,11 +9,11 @@ from common.secrets import get_secret
 
 
 GROUP_ID_ALERTS = os.getenv("GROUP_ID_ALERTS")
-GROUP_ID_OPERATION = os.getenv("GROUP_ID_OPERATION")
+GROUP_ID_OPERATIONS = os.getenv("GROUP_ID_OPERATIONS")
 TELEGRAM_API_KEY = get_secret('TELEGRAM_API_KEY')
 
 URL_BASE_ALERT = f"https://api.telegram.org/bot{TELEGRAM_API_KEY}/sendMessage?chat_id={GROUP_ID_ALERTS}&parse_mode=html"
-URL_BASE_OPERATION = f"https://api.telegram.org/bot{TELEGRAM_API_KEY}/sendMessage?chat_id={GROUP_ID_OPERATION}&parse_mode=html"
+URL_BASE_OPERATION = f"https://api.telegram.org/bot{TELEGRAM_API_KEY}/sendMessage?chat_id={GROUP_ID_OPERATIONS}&parse_mode=html"
 TELEGRAM_BUFFER_SIZE = 40
 
 

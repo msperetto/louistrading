@@ -119,9 +119,7 @@ class Negotiate():
         # Calculates profit, spread and ROI values
         close_price = float(avgPrice)
         close_quantity = entry_quantity
-        print(f"close_price: {close_price}, close_quantity: {close_quantity}, entry_price: {entry_price}, entry_quantity: {entry_quantity}")
         #types of the variables:
-        print(f"close_price: {type(close_price)}, close_quantity: {type(close_quantity)}, entry_price: {type(entry_price)}, entry_quantity: {type(entry_quantity)}")
         profit = (close_price * close_quantity) - (entry_price * entry_quantity)
         spread = (close_price / entry_price) - 1
         roi = self._calculate_roi()

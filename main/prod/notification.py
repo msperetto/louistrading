@@ -14,7 +14,7 @@ class Notification(TelegramNotify):
         order_id
     ):
 
-        msg += f"<b>🆕Opened Trade</b>:\n"
+        msg = f"<b>🆕Opened Trade</b>:\n"
         msg += f"Pair: {pair}\n"
         msg += f"Trade ID: {trade_id}\n"
         msg += f"Side: {side}\n"
