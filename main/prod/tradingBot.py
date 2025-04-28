@@ -29,7 +29,7 @@ from common.util import get_pairs_precision
 
 class TradingBot:
 
-    MINIMUM_BALANCE_INCREMENT = 1.5
+    MINIMUM_BALANCE_INCREMENT = 1.2
 
     def __init__(self, strategies, db, setup, exchange_session):
         # Import all strategies from the released strategies folder.

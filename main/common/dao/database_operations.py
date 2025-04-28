@@ -88,7 +88,7 @@ def get_initial_config():
                 """)
             return cur.fetchone()
    
-def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
+def insert_order_transaction(order_response, operation_type, trade_id, avgPrice,fees = 0.001):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -96,7 +96,7 @@ def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.
                                               status, fees, trade_id)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, (order_response['orderId'], datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['symbol'], operation_type,
-                   Side_Type(order_response['side']).name, order_response['avgPrice'], order_response['origQty'],
+                   Side_Type(order_response['side']).name, avgPrice, order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
 

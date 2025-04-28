@@ -239,6 +239,7 @@ class Binance():
             'side': side, #"BUY" or "SELL"
             'type': 'MARKET',
             'quantity': quantity,
+            'newOrderRespType': 'RESULT',
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
@@ -256,6 +257,7 @@ class Binance():
             'side': side, #"BUY" or "SELL"
             'type': 'MARKET',
             'quantity': entry_quantity,
+            'newOrderRespType': 'RESULT',
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
@@ -265,6 +267,21 @@ class Binance():
             alert_dao.insert_alert(symbol, "Warning", True, f"Error closing position: {position}")
         else:
             return position
+
+    def get_order_by_id(self, symbol, orderId, b_id, b_sk):
+        endpoint = self.ORDER_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'orderId': orderId,
+            'recvWindow': 5000,
+            'timestamp': str(self.get_servertime())
+        }
+        order_info = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        if 'code' in order_info.keys():
+            logger.error(f'Error getting order by id: {order_info}')
+            alert_dao.insert_alert(symbol, "Warning", True, f"Error getting order by id: {order_info}")
+        else:
+            return order_info
 
     def get_open_orders(self, b_id, b_sk):
         endpoint = self.OPEN_ORDER_ENDPOINT

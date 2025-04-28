@@ -103,8 +103,9 @@ class Negotiate():
         return order_response
 
     def _register_open_transaction(self, order_response, strategy_id):
+        avgPrice = self._get_avgPrice(order_response)
         trade_id = db.insert_trade_transaction(strategy_id, True, order_response)
-        db.insert_order_transaction(order_response, Operation_Type.ENTRY, trade_id)
+        db.insert_order_transaction(order_response, Operation_Type.ENTRY, trade_id, avgPrice)
         return trade_id
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
         
@@ -114,8 +115,9 @@ class Negotiate():
         entry_price = trade_data['entry_price']
         entry_quantity = trade_data['quantity']
 
+        avgPrice = self._get_avgPrice(order_response)
         # Calculates profit, spread and ROI values
-        close_price = float(order_response['avgPrice'])
+        close_price = float(avgPrice)
         close_quantity = entry_quantity
         print(f"close_price: {close_price}, close_quantity: {close_quantity}, entry_price: {entry_price}, entry_quantity: {entry_quantity}")
         #types of the variables:
@@ -126,7 +128,7 @@ class Negotiate():
 
         # Updates DB tables.
         db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
-        db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id)
+        db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id, avgPrice)
 
         notify.notify_closed_trade(
             self.pair,
@@ -136,15 +138,24 @@ class Negotiate():
             trade_data['date'],
             trade_data['entry_price'],
             order_response['updateTime'],
-            float(order_response['avgPrice']) * float(order_response['origQty']),
+            avgPrice * float(order_response['origQty']),
             order_response['origQty'],
-            order_response['avgPrice'],
+            avgPrice,
             order_response['orderId'],
             spread,
             profit,
             roi
         )
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
+
+    def _get_avgPrice(self, order_response):
+        """
+        Check if the avgPrice is 0. If it is, it means that the order was not filled and we need to get the avgPrice from the order.
+        """
+        if order_response['avgPrice'] == 0:
+            result = Binance().get_order_by_id(self.pair, order_response['orderId'], self.api_id, self.api_key)
+            return result['avgPrice']
+        return order_response['avgPrice']
         
     # Calculates the correct ROI.    
     def _calculate_roi(self):
