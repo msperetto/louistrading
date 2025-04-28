@@ -24,7 +24,7 @@ import time
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type
 from prod import logger
-from common.util import get_side, get_pairs_precision
+from common.util import get_pairs_precision
 
 
 class TradingBot:

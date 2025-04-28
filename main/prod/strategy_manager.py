@@ -128,7 +128,7 @@ class StrategyManager():
 
     def try_close_position(self, strategy, trade_id):
         # Gets the Side_Type.LONG or Side_Type.SHORT based on the strategy type.
-        side = get_side(self.strategy) 
+        side = get_side(self.strategy, closing=True) 
         if side is None: return False
 
         if self.strategy.shouldClose():
