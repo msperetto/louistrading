@@ -8,6 +8,7 @@ from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type, Side_Type
 from prod import logger, notify
 
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 class Negotiate():
     def __init__(self, pair, pair_precision, api_id, api_key):
@@ -36,7 +37,7 @@ class Negotiate():
             trade_id, 
             side, 
             get_strategy_by_id(strategy_id).name, 
-            order_response['updateTime'], 
+            order_response['updateTime'].strftime(DATETIME_FORMAT),
             float(order_response['avgPrice'])* float(order_response['origQty']),
             order_response['origQty'],
             order_response['avgPrice'],
@@ -68,11 +69,13 @@ class Negotiate():
 
     def close_position(self, side, total_value, strategy_id, trade_id):
         logger.info(f"Closing position: trade_id={trade_id}")
-        
+
+        # get open trade data information
+        trade_data = db.get_order(trade_id)
+
         if NEGOCIATION_ENV == Environment_Type.TEST:
             order_response = self._simulate_close_position(side, trade_id)
         else:
-            trade_data = db.get_order(trade_id)
             close_quantity = trade_data['quantity']
             order_response = Binance().close_position(self.pair, close_quantity, side, self.api_id, self.api_key)
         
@@ -135,7 +138,7 @@ class Negotiate():
             get_strategy_by_id(strategy_id).name,
             trade_data['date'],
             trade_data['entry_price'],
-            order_response['updateTime'],
+            order_response['updateTime'].strftime(DATETIME_FORMAT),
             avgPrice * float(order_response['origQty']),
             order_response['origQty'],
             avgPrice,
