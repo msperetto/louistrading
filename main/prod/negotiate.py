@@ -35,7 +35,7 @@ class Negotiate():
             self.pair, 
             trade_id, 
             side, 
-            get_strategy_by_id(strategy_id)['name'], 
+            get_strategy_by_id(strategy_id).name, 
             order_response['updateTime'], 
             float(order_response['avgPrice'])* float(order_response['origQty']),
             order_response['origQty'],
@@ -44,7 +44,7 @@ class Negotiate():
         )
 
         notify.send_message_alert(
-            f"Trade opened successfully: {order_response['orderId']}, Side: {side}, Quantity: {order_response['origQty']}, Price: {order_response['avgPrice']}"
+            f"Trade opened successfully:\n OrderID: {order_response['orderId']}; \n Side: {side}; \n Quantity: {order_response['origQty']}; \n Price: {order_response['avgPrice']}"
         )
         logger.info(f"Position successfully opened: {order_response}")
         return True
@@ -132,7 +132,7 @@ class Negotiate():
             self.pair,
             trade_id,
             trade_data['side'],
-            get_strategy_by_id(strategy_id)['name'],
+            get_strategy_by_id(strategy_id).name,
             trade_data['date'],
             trade_data['entry_price'],
             order_response['updateTime'],
