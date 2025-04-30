@@ -11,6 +11,7 @@ from prod import telegram_logger
 from common.enums import Environment_Place
 from common.dao.trade_dao import get_open_trade_by_pair
 from common.domain.trade import Trade
+from datetime import datetime
 
 if os.getenv('ENVIRONMENT') != Environment_Place.AWS:
     from dotenv import load_dotenv
@@ -84,7 +85,14 @@ def status(update, context):
         msg += f"Quantity of open trades: {response.get('open_trade_quantity', 'Unknown')}\n"
         msg += f"Open Trade Pairs: {', '.join(response.get('open_trade_pairs', []))} \n"
         msg += f"Current state: {response.get('current_state', 'Unknown')}\n"
-        msg += f"Last execution: {response.get('last_execution', 'Unknown')}\n"
+        last_execution = response.get('last_execution', 'Unknown')
+        if last_execution != 'Unknown':
+            try:
+                last_execution = datetime.fromisoformat(last_execution.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                telegram_logger.error(f"Error parsing last_execution datetime: {last_execution}")
+                last_execution = 'Error'
+        msg += f"Last execution: {last_execution}\n"
 
         update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
