@@ -119,7 +119,7 @@ def get_order(trade_id):
                 """,(trade_id,))
             return cur.fetchone()
 
-def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
+def update_trade_transaction(trade_id, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""

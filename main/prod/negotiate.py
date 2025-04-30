@@ -127,7 +127,7 @@ class Negotiate():
         roi = self._calculate_roi()
 
         # Updates DB tables.
-        db.update_trade_transaction(trade_id, strategy_id, order_response, profit, spread, roi)
+        db.update_trade_transaction(trade_id, order_response, profit, spread, roi)
         db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id, avgPrice)
 
         notify.notify_closed_trade(
