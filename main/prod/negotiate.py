@@ -36,7 +36,7 @@ class Negotiate():
             trade_id, 
             side, 
             get_strategy_by_id(strategy_id).name, 
-            order_response['updateTime'].strftime(DATETIME_FORMAT),
+            datetime.fromtimestamp(order_response['updateTime'] / 1000).strftime(DATETIME_FORMAT),
             float(order_response['avgPrice'])* float(order_response['origQty']),
             order_response['origQty'],
             order_response['avgPrice'],
@@ -137,8 +137,8 @@ class Negotiate():
             get_strategy_by_id(strategy_id).name,
             trade_data['date'],
             trade_data['entry_price'],
-            order_response['updateTime'].strftime(DATETIME_FORMAT),
-            avgPrice * float(order_response['origQty']),
+            datetime.fromtimestamp(order_response['updateTime'] / 1000).strftime(DATETIME_FORMAT),
+            avgPrice * close_quantity,
             order_response['origQty'],
             avgPrice,
             order_response['orderId'],
@@ -154,8 +154,8 @@ class Negotiate():
         """
         if order_response['avgPrice'] == 0:
             result = Binance().get_order_by_id(self.pair, order_response['orderId'], self.api_id, self.api_key)
-            return result['avgPrice']
-        return order_response['avgPrice']
+            return float(result['avgPrice'])
+        return float(order_response['avgPrice'])
         
     # Calculates the correct ROI.    
     def _calculate_roi(self):
