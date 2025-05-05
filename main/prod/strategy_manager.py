@@ -132,5 +132,6 @@ class StrategyManager():
         if side is None: return False
 
         if self.strategy.shouldClose():
-            return self.negotiate.close_position(side, self.order_value, strategy, trade_id)
+            close_strategy = strategy_dao.get_strategy_by_name(strategy.__class__.__name__)
+            return self.negotiate.close_position(side, self.order_value, close_strategy.id, trade_id)
         return False
