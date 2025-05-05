@@ -68,6 +68,7 @@ def help(update, context):
     msg += "/start - Start the bot\n"
     msg += "/stop - Stop the bot\n"
     msg += "/status - Get the bot status\n"
+    msg += "/active_alerts - Get active alerts\n"
     msg += "/help - Show this help message\n"
     update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
@@ -101,6 +102,21 @@ def status(update, context):
         update.message.reply_text("Error getting status", parse_mode=ParseMode.HTML)
 
 
+def active_alerts(update, context):
+    try:
+        response = get_request("active_alerts")
+        msg = "<b>Active Alerts:</b>\n\n"
+        if not response:
+            msg += "No active alerts."
+        else:
+            for alert in response:
+                msg += f"Pair: {alert['pair']} Message: {alert['message']}\n\n"
+        update.message.reply_text(msg, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        telegram_logger.error(f"Error getting active alerts: {e}")
+        update.message.reply_text("Error getting active alerts", parse_mode=ParseMode.HTML)
+
+
 def echo(update, context):
     update.message.reply_text(update.message.text)
 
@@ -116,6 +132,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stop", stop))
     dp.add_handler(CommandHandler("status", status))
+    dp.add_handler(CommandHandler("active_alerts", active_alerts))
     dp.add_handler(CommandHandler("help", help))
 
     # on noncommand i.e message - echo the message on Telegram

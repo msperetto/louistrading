@@ -13,7 +13,7 @@ from datetime import datetime
 import json
 import logging
 from common.dao import alert_dao
-from common.enums import Environment_Type
+from common.enums import Environment_Type, Alert_Level
 from config.config import NEGOCIATION_ENV
 from prod import logger
 
@@ -228,7 +228,7 @@ class Binance():
         leverage = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in leverage.keys():
             logger.error(f'Error changing leverage: {leverage}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error changing leverage: {leverage}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error changing leverage: {leverage}")
         else:
             return leverage
 
@@ -246,7 +246,7 @@ class Binance():
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys(): # erro no servidor binance
             logger.error(f'Error opening position: {position}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error opening position: {position}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error opening position: {position}")
         else:
             return position
 
@@ -264,7 +264,7 @@ class Binance():
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys():
             logger.error(f'Error closing position: {position}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error closing position: {position}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error closing position: {position}")
         else:
             return position
 
@@ -279,7 +279,7 @@ class Binance():
         order_info = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
         if 'code' in order_info.keys():
             logger.error(f'Error getting order by id: {order_info}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error getting order by id: {order_info}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error getting order by id: {order_info}")
         else:
             return order_info
 

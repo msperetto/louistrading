@@ -13,6 +13,12 @@ class Side_Type(str, Enum):
     LONG = "BUY"
     SHORT = "SELL"
 
+class Alert_Level(str, Enum):
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
 # This enum is only utilized in the docker compose files to automatically 
 # identify if the bot is running in a local or AWS environment.
 # So if we want to update it, we need to update the docker compose files as well.

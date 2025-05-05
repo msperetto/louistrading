@@ -8,7 +8,9 @@ from prod import api_logger
 from prod import notify
 from common.dao.database_operations import get_initial_config, get_bot_execution_control, get_active_pairs
 from common.dao.trade_dao import get_open_trade_pairs
+from common.dao.alert_dao import get_active_alerts
 from common.domain.trade import Trade
+from common.domain.alert import Alert
 
 api = FastAPI()
 
@@ -89,6 +91,16 @@ async def status():
     else:
         response["current_state"] = "App not running or bot not initialized"
 
+    return response
+
+@api.get("/active_alerts")
+async def active_alerts():
+    response = []
+    active_alerts = get_active_alerts()
+    for alert in active_alerts:
+        response.append(
+            {"pair": alert.pair, "alert_type": alert.alert_type, "date": alert.date, "message": alert.message}
+        )
     return response
 
 @api.get("/orders")
