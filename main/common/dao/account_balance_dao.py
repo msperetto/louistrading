@@ -37,12 +37,10 @@ def get_account_balance(account_id):
             """, (account_id,))
             row = cur.fetchone()
             if row:
-                return [
-                    AccountBalance(
-                        account_id=row["account_id"],
-                        account_balance=row["usdt_balance"],
-                        margin_ratio=row["margin_ratio"],
-                        date_updated=row["last_update"]
-                    )
-                ]            
+                return AccountBalance(
+                    account_id=row["account_id"],
+                    account_balance=row["usdt_balance"],
+                    margin_ratio=row["margin_ratio"],
+                    date_updated=row["last_update"]
+                )
             return None
