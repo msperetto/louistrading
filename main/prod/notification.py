@@ -1,4 +1,5 @@
 from prod.telegram_notify import TelegramNotify
+from datetime import datetime
 
 class Notification(TelegramNotify):
     def notify_opened_trade(
@@ -21,9 +22,9 @@ class Notification(TelegramNotify):
         msg += f"Strategy: {strategy}\n\n"
 
         msg += f"Operation Time: {operation_time}\n"
-        msg += f"Volume: USDT {volume}\n"
+        msg += f"Volume: USDT {round(volume, 2)}\n"
         msg += f"Quantity: {quantity}\n"
-        msg += f"Average Order Price: USDT {average_price}\n"
+        msg += f"Average Order Price: USDT {round(average_price, 2)}\n"
         msg += f"Order ID: {order_id}\n\n"
 
         self.send_message_operation(msg)
@@ -36,6 +37,9 @@ class Notification(TelegramNotify):
         strategy,
         entry_time,
         entry_price,
+        entry_quantity,
+        entry_order_id,
+        entry_volume,
         operation_time,
         volume,
         quantity,
@@ -53,18 +57,27 @@ class Notification(TelegramNotify):
         msg += f"Strategy: {strategy}\n\n"
 
         msg += f"<i>Entry Details:</i>\n"
-        msg += f"Operation Time: {entry_time}\n"
-        msg += f"Average Order Price Entry: USDT {entry_price}\n\n"
+        operation_time = entry_time
+        try:
+            operation_time = datetime.fromisoformat(operation_time.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            operation_time = 'Error'
+
+        msg += f"Operation Time: {operation_time}\n"
+        msg += f"Volume: USDT {entry_volume}\n"
+        msg += f"Quantity: {entry_quantity}\n"
+        msg += f"Average Order Price: USDT {entry_price}\n"
+        msg += f"Order ID Buy: {entry_order_id}\n\n"
 
         msg += f"<i>Close Details:</i>\n"
         msg += f"Operation Time: {operation_time}\n"
         msg += f"Volume: USDT {volume}\n"
         msg += f"Quantity: {quantity}\n"
-        msg += f"Average Order Price Close: USDT {average_price}\n"
+        msg += f"Average Order Price: USDT {average_price}\n"
         msg += f"Order ID Sell: {order_id}\n\n"
 
-        msg += f"Spread: {spread}\n"
-        msg += f"Profit: {profit}\n"
+        msg += f"Spread: {round(spread*100, 2)}%\n"
+        msg += f"Profit: USDT {round(profit)}\n"
         msg += f"ROI: {ROI}"
 
         self.send_message_operation(msg)
