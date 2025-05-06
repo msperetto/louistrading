@@ -32,8 +32,6 @@ class TelegramNotify:
             elif msg_type == "operation":
                 url_req = URL_BASE_OPERATION
             try:
-                print(f"checking ENVIRONMENT varaible: {os.getenv('ENVIRONMENT')}")
-                print(f"checking url utilized: {url_req}")
                 if os.getenv('ENVIRONMENT') == 'AWS':
                     res = requests.post(url_req, data={"text": msg})
                     if res.status_code == 429:
