@@ -9,8 +9,11 @@ from prod import notify
 from common.dao.database_operations import get_initial_config, get_bot_execution_control, get_active_pairs
 from common.dao.trade_dao import get_open_trade_pairs
 from common.dao.alert_dao import get_active_alerts
+from common.dao.account_balance_dao import get_account_balance
 from common.domain.trade import Trade
 from common.domain.alert import Alert
+from common.domain.account_balance import AccountBalance
+from config.config import ACCOUNT_ID
 
 api = FastAPI()
 
@@ -75,6 +78,7 @@ async def status():
     bot_execution_control = get_bot_execution_control()
     active_pairs = get_active_pairs()
     open_trades_pairs = get_open_trade_pairs()
+    account_balance = get_account_balance(ACCOUNT_ID)
     response["enabled"] = initial_config["opperation_active"]
     response["max_open_orders"] = initial_config["max_open_orders"]
     response["order_value"] = initial_config["order_value"]
@@ -84,6 +88,7 @@ async def status():
     response["open_trade_pairs"] = [trade.pair for trade in open_trades_pairs]
     response["open_trade_quantity"] = len(open_trades_pairs)
     response["active_pairs"] = active_pairs
+    response["balance"] = round(account_balance.account_balance, 2)
     if not bot_ready.is_set():
         response["current_state"] = "Bot is starting..."
     if hasattr(app, 'bot') and app.bot.running:
@@ -101,6 +106,17 @@ async def active_alerts():
         response.append(
             {"pair": alert.pair, "alert_type": alert.alert_type, "date": alert.date, "message": alert.message}
         )
+    return response
+
+@api.get("/account/balance")
+async def account_balance():
+    response = {}
+    account_balance = get_account_balance(ACCOUNT_ID)
+    response = {
+        "balance": account_balance.account_balance,
+        "margin_ratio": account_balance.margin_ratio,
+        "date_updated": account_balance.date_updated,
+    }
     return response
 
 @api.get("/orders")

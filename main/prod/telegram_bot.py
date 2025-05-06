@@ -94,6 +94,7 @@ def status(update, context):
                 telegram_logger.error(f"Error parsing last_execution datetime: {last_execution}")
                 last_execution = 'Error'
         msg += f"Last execution: {last_execution}\n"
+        msg += f"Current balance: USDT {response.get('balance', 'Unknown')}\n"
 
         update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 

@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
-from common.dao import strategy_dao, trade_dao
+from common.dao import strategy_dao, trade_dao, account_balance_dao
 from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
@@ -21,7 +21,7 @@ from prod.binance import Binance
 import os
 import logging
 import time
-from config.config import NEGOCIATION_ENV
+from config.config import NEGOCIATION_ENV, ACCOUNT_ID
 from common.enums import Environment_Type
 from prod import logger
 from common.util import get_pairs_precision
@@ -41,7 +41,16 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
+        # TODO: get margin ratio correctly from the exchange
+        self.margin_ratio = 2
+        
         self.current_balance = self._get_current_balance()
+        # if account balance is not registered in db, insert it, else update it
+        account_balance = account_balance_dao.get_account_balance(ACCOUNT_ID)
+        if account_balance is None:
+            account_balance_dao.insert_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
+        else:
+            account_balance_dao.update_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
         self.running = True
 
         # setting binance initial leverage value
@@ -256,7 +265,9 @@ class TradingBot:
         return now > next_execution_time
     
     def _get_current_balance(self):
-        return float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+        account_balance = float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+        account_balance_dao.update_account_balance(ACCOUNT_ID, account_balance, self.margin_ratio)
+        return account_balance
 
     def _is_balance_below_minimum(self):
         return self.current_balance < (self.setup.order_value * self.MINIMUM_BALANCE_INCREMENT)
