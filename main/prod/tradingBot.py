@@ -25,6 +25,7 @@ from config.config import NEGOCIATION_ENV, ACCOUNT_ID
 from common.enums import Environment_Type
 from prod import logger
 from common.util import get_pairs_precision
+from prod import notify
 
 
 class TradingBot:
@@ -85,6 +86,9 @@ class TradingBot:
                     print("Bot is paused. Waiting for 20 seconds...")
                     time.sleep(20)
             except Exception as e:
+                notify.send_message_alert(
+                    f"An error occurred in the bot: \n {e}. \n Please check the logs for more details."
+                )
                 logger.error(f"An error occurred: {e}")
                 logger.info("Retrying in 2 minutes...")
                 time.sleep(120)
