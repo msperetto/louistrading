@@ -43,9 +43,6 @@ class Negotiate():
             order_response['orderId']
         )
 
-        notify.send_message_alert(
-            f"Trade opened successfully:\n OrderID: {order_response['orderId']}; \n Side: {side}; \n Quantity: {order_response['origQty']}; \n Price: {order_response['avgPrice']}"
-        )
         logger.info(f"Position successfully opened: {order_response}")
         return True
 
