@@ -1,5 +1,6 @@
 from prod.telegram_notify import TelegramNotify
 from datetime import datetime
+from common.util import DATETIME_FORMAT
 
 class Notification(TelegramNotify):
     def notify_opened_trade(
@@ -40,7 +41,7 @@ class Notification(TelegramNotify):
         entry_quantity,
         entry_order_id,
         entry_volume,
-        operation_time,
+        operation_time_close,
         volume,
         quantity,
         average_price,
@@ -57,7 +58,6 @@ class Notification(TelegramNotify):
         msg += f"Strategy: {strategy}\n\n"
 
         msg += f"<i>Entry Details:</i>\n"
-        operation_time = entry_time
         try:
             operation_time = entry_time.strftime(DATETIME_FORMAT)
         except ValueError:
