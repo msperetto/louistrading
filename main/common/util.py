@@ -5,11 +5,10 @@ from common.strategyShort import StrategyShort
 import importlib
 import pkgutil
 import os
-from prod import logger, telegram_logger, aws_logger
+from prod import logger, aws_logger
 from typing import List, Dict
 from prod.binance import Binance
 
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def get_value_by_index(series, index):
     """

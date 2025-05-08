@@ -1,6 +1,5 @@
 from prod.telegram_notify import TelegramNotify
-from datetime import datetime
-from common.util import DATETIME_FORMAT
+from common.constants import DATETIME_FORMAT
 
 class Notification(TelegramNotify):
     def notify_opened_trade(

@@ -7,7 +7,7 @@ from datetime import datetime
 from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type, Side_Type
 from prod import logger, notify
-from common.util import DATETIME_FORMAT
+from common.constants import DATETIME_FORMAT
 
 class Negotiate():
     def __init__(self, pair, pair_precision, api_id, api_key):
