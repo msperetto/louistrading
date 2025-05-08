@@ -59,19 +59,23 @@ class Notification(TelegramNotify):
         msg += f"<i>Entry Details:</i>\n"
         operation_time = entry_time
         try:
-            operation_time = datetime.fromisoformat(operation_time.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+            operation_time = entry_time.strftime(DATETIME_FORMAT)
         except ValueError:
-            operation_time = 'Error'
+            operation_time = 'Error Value'
+        except TypeError:
+            operation_time = 'Error Type'
+        except Exception as e:
+            operation_time = f'Error: {e}'
 
         msg += f"Operation Time: {operation_time}\n"
-        msg += f"Volume: USDT {entry_volume}\n"
+        msg += f"Volume: USDT {round(float(entry_volume), 2)}\n"
         msg += f"Quantity: {entry_quantity}\n"
         msg += f"Average Order Price: USDT {entry_price}\n"
         msg += f"Order ID Buy: {entry_order_id}\n\n"
 
         msg += f"<i>Close Details:</i>\n"
-        msg += f"Operation Time: {operation_time}\n"
-        msg += f"Volume: USDT {volume}\n"
+        msg += f"Operation Time: {operation_time_close}\n"
+        msg += f"Volume: USDT {round(float(volume), 2)}\n"
         msg += f"Quantity: {quantity}\n"
         msg += f"Average Order Price: USDT {average_price}\n"
         msg += f"Order ID Sell: {order_id}\n\n"
