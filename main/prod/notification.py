@@ -22,9 +22,9 @@ class Notification(TelegramNotify):
         msg += f"Strategy: {strategy}\n\n"
 
         msg += f"Operation Time: {operation_time}\n"
-        msg += f"Volume: USDT {round(volume, 2)}\n"
+        msg += f"Volume: USDT {round(float(volume), 2)}\n"
         msg += f"Quantity: {quantity}\n"
-        msg += f"Average Order Price: USDT {round(average_price, 2)}\n"
+        msg += f"Average Order Price: USDT {round(float(average_price), 2)}\n"
         msg += f"Order ID: {order_id}\n\n"
 
         self.send_message_operation(msg)
@@ -76,8 +76,8 @@ class Notification(TelegramNotify):
         msg += f"Average Order Price: USDT {average_price}\n"
         msg += f"Order ID Sell: {order_id}\n\n"
 
-        msg += f"Spread: {round(spread*100, 2)}%\n"
-        msg += f"Profit: USDT {round(profit)}\n"
+        msg += f"Spread: {round(float(spread)*100, 2)}%\n"
+        msg += f"Profit: USDT {round(float(profit), 2)}\n"
         msg += f"ROI: {ROI}"
 
         self.send_message_operation(msg)
