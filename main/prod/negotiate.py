@@ -119,9 +119,9 @@ class Negotiate():
         close_price = float(avgPrice)
         close_quantity = entry_quantity
         #types of the variables:
-        profit = (close_price * close_quantity) - (entry_price * entry_quantity)
-        spread = (close_price / entry_price) - 1
-        roi = self._calculate_roi()
+        profit = self._calculate_profit(trade_data['side'], entry_price, entry_quantity, close_price, close_quantity)
+        spread = self._calculate_spread(trade_data['side'], entry_price, entry_quantity, close_price, close_quantity)
+        roi = self._calculate_roi(trade_data['side'], entry_price, entry_quantity, close_price, close_quantity)
 
         # Updates DB tables.
         db.update_trade_transaction(trade_id, order_response, profit, spread, roi)
@@ -148,6 +148,33 @@ class Negotiate():
         )
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
 
+    def _calculate_profit(self, side, entry_price, entry_quantity, close_price, close_quantity):
+        """
+        Calculate the profit of the trade.
+        """
+        if side == "LONG":
+            return (close_price * close_quantity) - (entry_price * entry_quantity)
+        else:
+            return (entry_price * entry_quantity) - (close_price * close_quantity)
+
+    def _calculate_spread(self, side, entry_price, entry_quantity, close_price, close_quantity):
+        """
+        Calculate the spread of the trade.
+        """
+        if side == "LONG":
+            return (close_price / entry_price) - 1
+        else:
+            return (entry_price / close_price) - 1
+
+    def _calculate_roi(self, side, entry_price, entry_quantity, close_price, close_quantity):
+        """
+        Calculate the ROI of the trade.
+        """
+        if side == "LONG":
+            return (close_price - entry_price) / entry_price
+        else:
+            return (entry_price - close_price) / entry_price
+
     def _get_avgPrice(self, order_response):
         """
         Check if the avgPrice is 0. If it is, it means that the order was not filled and we need to get the avgPrice from the order.
@@ -156,11 +183,6 @@ class Negotiate():
             result = Binance().get_order_by_id(self.pair, order_response['orderId'], self.api_id, self.api_key)
             return float(result['avgPrice'])
         return float(order_response['avgPrice'])
-        
-    # Calculates the correct ROI.    
-    def _calculate_roi(self):
-        # TODO: Figure out how to calculate the ROI. 
-        return 1
     
     def alert_open_transaction():
         pass
