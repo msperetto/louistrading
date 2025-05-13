@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from prod import telegram_notify_logger
 from common.secrets import get_secret
+from common.enums import Environment_Place
 
 
 GROUP_ID_ALERTS = os.getenv("GROUP_ID_ALERTS")
@@ -32,7 +33,7 @@ class TelegramNotify:
             elif msg_type == "operation":
                 url_req = URL_BASE_OPERATION
             try:
-                if os.getenv('ENVIRONMENT') == 'AWS':
+                if os.getenv('ENVIRONMENT') == Environment_Place.AWS:
                     res = requests.post(url_req, data={"text": msg})
                     if res.status_code == 429:
                         retry_after = int(res.headers["Retry-After"])

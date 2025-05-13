@@ -47,8 +47,7 @@ class TradingBot:
         
         self.current_balance = self._get_current_balance()
         # if account balance is not registered in db, insert it, else update it
-        account_balance = account_balance_dao.get_account_balance(ACCOUNT_ID)
-        if account_balance is None:
+        if account_balance_dao.get_account_balance(ACCOUNT_ID) is None:
             account_balance_dao.insert_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
         else:
             account_balance_dao.update_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
