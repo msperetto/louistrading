@@ -98,22 +98,3 @@ class Notification(TelegramNotify):
 
         self.send_message_alert(msg)
 
-
-    def notify_open_orders(self, open_orders):
-
-        if not open_orders:
-            self.send_message_alert("No open orders (Mercado).")
-            return
-
-        msg = "<b>Open Orders - Mercado</b>\n\n"
-
-        for order in open_orders:
-            msg += "Pair: {}\n".format(order["symbol"])
-            msg += "ID: {}\n".format(order["id"])
-            msg += "Status: {}\n".format(order["status"])
-            msg += "Amount: {}\n".format(order["amount"])
-            msg += "Filled: {}\n".format(order["filled"])
-            msg += "\n"
-
-        self.send_message_alert(msg)
-
