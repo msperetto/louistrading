@@ -174,11 +174,7 @@ class TradingBot:
                     # Updates the last run time
                     self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()
 
-                    if NEGOCIATION_ENV == Environment_Type.TEST:
-                        final_dataset = self.create_combined_dataset(pair, strategy)
-                        final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-                    else:
-                        final_dataset = self.create_combined_dataset(pair, strategy)
+                    final_dataset = self._prepare_final_dataset(pair, strategy)
 
                     #logging for debugging
                     logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
@@ -229,11 +225,7 @@ class TradingBot:
                 logger.debug(f"handle_opened_trades - pair: {trade.pair}")
                 logger.debug(f"current balance: {self.current_balance}")
 
-                if NEGOCIATION_ENV == Environment_Type.TEST:
-                    final_dataset = self.create_combined_dataset(trade.pair, strategy)
-                    final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-                else:
-                    final_dataset = self.create_combined_dataset(trade.pair, strategy)
+                final_dataset = self._prepare_final_dataset(trade.pair, strategy)
 
                 #logging for debugging
                 logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")
@@ -282,6 +274,12 @@ class TradingBot:
 
         # Only executes if the required time has already passed.
         return now > next_execution_time
+
+    def _prepare_final_dataset(self, pair, strategy):
+        dataset = self.create_combined_dataset(pair, strategy)
+        if NEGOCIATION_ENV == Environment_Type.TEST:
+            return TestNegociationMain().add_fake_row(dataset)
+        return dataset
     
     def _get_current_balance(self):
         account_balance = float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
