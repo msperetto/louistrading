@@ -172,7 +172,7 @@ class TradingBot:
                         return
 
                     # Updates the last run time
-                    self.last_executions[(pair, strategy)] = datetime.now()
+                    self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()
 
                     if NEGOCIATION_ENV == Environment_Type.TEST:
                         final_dataset = self.create_combined_dataset(pair, strategy)
@@ -262,7 +262,7 @@ class TradingBot:
         """
         Check whether the strategy should be executed based on the interval.
         """
-        last_execution = self.last_executions.get((pair, strategy))
+        last_execution = self.last_executions.get((pair, strategy.__class__.__name__))
         logger.debug(f"last_execution: {last_execution}")
         # If it has never been run, it should run.
         if not last_execution:
