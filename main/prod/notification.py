@@ -21,7 +21,7 @@ class Notification(TelegramNotify):
         msg += f"Side: {side}\n"
         msg += f"Strategy: {strategy}\n\n"
 
-        msg += f"Operation Time: {operation_time}\n"
+        msg += f"Operation Time (UTC): {operation_time}\n"
         msg += f"Volume: USDT {round(float(volume), 2)}\n"
         msg += f"Quantity: {quantity}\n"
         msg += f"Average Order Price: USDT {round(float(average_price), 2)}\n"
@@ -66,14 +66,14 @@ class Notification(TelegramNotify):
         except Exception as e:
             operation_time = f'Error: {e}'
 
-        msg += f"Operation Time: {operation_time}\n"
+        msg += f"Operation Time (UTC): {operation_time}\n"
         msg += f"Volume: USDT {round(float(entry_volume), 2)}\n"
         msg += f"Quantity: {entry_quantity}\n"
         msg += f"Average Order Price: USDT {entry_price}\n"
         msg += f"Order ID Buy: {entry_order_id}\n\n"
 
         msg += f"<i>Close Details:</i>\n"
-        msg += f"Operation Time: {operation_time_close}\n"
+        msg += f"Operation Time (UTC): {operation_time_close}\n"
         msg += f"Volume: USDT {round(float(volume), 2)}\n"
         msg += f"Quantity: {quantity}\n"
         msg += f"Average Order Price: USDT {average_price}\n"
