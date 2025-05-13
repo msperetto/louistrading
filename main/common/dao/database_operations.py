@@ -96,7 +96,7 @@ def insert_order_transaction(order_response, operation_type, trade_id, avgPrice,
                                               status, fees, trade_id)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, (order_response['orderId'], datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['symbol'], operation_type,
-                   Side_Type(order_response['side']).name, avgPrice, order_response['origQty'],
+                   Side_Type(order_response['side']).value.lower(), avgPrice, order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
 
