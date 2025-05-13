@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
-from common.dao import strategy_dao, trade_dao, account_balance_dao
+from common.dao import strategy_dao, trade_dao, account_balance_dao, alert_dao
 from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
@@ -22,7 +22,7 @@ import os
 import logging
 import time
 from config.config import NEGOCIATION_ENV, ACCOUNT_ID
-from common.enums import Environment_Type
+from common.enums import Environment_Type, Alert_Level
 from prod import logger
 from common.util import get_pairs_precision
 from prod import notify
@@ -196,6 +196,13 @@ class TradingBot:
                         break
                 except Exception as e:
                     logger.error(f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}")
+                    alert_dao.insert_alert(
+                        pair,
+                        Alert_Level.ERROR,
+                        True,
+                        f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}"
+                    )
+                    # Notify the user about the error
                     notify.send_message_alert(
                         f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}"
                     )
@@ -244,6 +251,12 @@ class TradingBot:
                     self.current_balance = self._get_current_balance()
             except Exception as e:
                 logger.error(f"An error occurred while trying to close position for trade {trade.id}: {e}")
+                alert_dao.insert_alert(
+                    trade.pair,
+                    Alert_Level.ERROR,
+                    True,
+                    f"An error occurred while trying to close position for trade {trade.id}: {e}"
+                )
                 notify.send_message_alert(
                     f"An error occurred while trying to close position for trade {trade.id}: {e}"
                 )
