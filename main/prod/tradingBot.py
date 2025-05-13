@@ -250,6 +250,7 @@ class TradingBot:
         Check whether the strategy should be executed based on the interval.
         """
         last_execution = self.last_executions.get((pair, strategy))
+        logger.debug(f"last_execution: {last_execution}")
         # If it has never been run, it should run.
         if not last_execution:
             return True
@@ -264,6 +265,7 @@ class TradingBot:
         # The solution below it works only when intraday_interval is at least 1h. If the interval is minutes, then it won't work.
         next_execution_time = last_execution + timedelta(minutes=intraday_interval)
         next_execution_time = next_execution_time.replace(minute=0, second=0)
+        logger.debug(f"next_execution_time: {next_execution_time}")
 
         # Only executes if the required time has already passed.
         return now > next_execution_time
