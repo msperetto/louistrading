@@ -113,6 +113,7 @@ class Negotiate():
         trade_data = db.get_order(trade_id)
         entry_price = trade_data['entry_price']
         entry_quantity = trade_data['quantity']
+        entry_volume = trade_data['entry_price'] * trade_data['quantity']
 
         avgPrice = self._get_avgPrice(order_response)
         # Calculates profit, spread and ROI values
@@ -133,10 +134,10 @@ class Negotiate():
             trade_data['side'],
             get_strategy_by_id(strategy_id).name,
             trade_data['date'],
-            trade_data['entry_price'],
-            trade_data['quantity'],
+            entry_price,
+            entry_quantity,
             trade_data['order_id'],
-            trade_data['entry_price'] * trade_data['quantity'],
+            entry_volume,
             datetime.fromtimestamp(order_response['updateTime'] / 1000).strftime(DATETIME_FORMAT),
             avgPrice * close_quantity,
             order_response['origQty'],
