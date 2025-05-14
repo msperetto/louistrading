@@ -172,7 +172,7 @@ class TradingBot:
                         return
 
                     # Updates the last run time
-                    self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()
+                    self._update_last_execution(pair, strategy)
 
                     final_dataset = self._prepare_final_dataset(pair, strategy)
 
@@ -231,6 +231,9 @@ class TradingBot:
 
                 logger.debug(f"handle_opened_trades - pair: {trade.pair}")
                 logger.debug(f"current balance: {self.current_balance}")
+
+                # Updates the last run time
+                self._update_last_execution(trade.pair, strategy)
 
                 final_dataset = self._prepare_final_dataset(trade.pair, strategy)
 
@@ -307,3 +310,9 @@ class TradingBot:
     def _set_leverage(self, pair, leverage):
         if NEGOCIATION_ENV == Environment_Type.PROD:
             Binance().change_initial_leverage(pair, int(leverage), self.exchange_session.e_id, self.exchange_session.e_sk)
+
+    def _update_last_execution(self, pair, strategy):
+        """
+        Update the last execution time for the given pair and strategy.
+        """
+        self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()
