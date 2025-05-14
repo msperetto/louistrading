@@ -271,6 +271,8 @@ class TradingBot:
         logger.debug(f"last_execution: {last_execution}")
         # If it has never been run, it should run.
         if not last_execution:
+            logger.debug(f"pair and strategy class name being searched: {(pair, strategy.__class__.__name__)}")
+            logger.debug(f"all last_executions: {self.last_executions}")
             return True
 
         # Calculates the minimum required interval.
