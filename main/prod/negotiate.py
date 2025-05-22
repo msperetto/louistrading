@@ -153,7 +153,7 @@ class Negotiate():
         """
         Calculate the profit of the trade.
         """
-        if side == "LONG":
+        if side == Side_Type.LONG.value.lower():
             return (close_price * close_quantity) - (entry_price * entry_quantity)
         else:
             return (entry_price * entry_quantity) - (close_price * close_quantity)
@@ -162,7 +162,7 @@ class Negotiate():
         """
         Calculate the spread of the trade.
         """
-        if side == "LONG":
+        if side == Side_Type.LONG.value.lower():
             return (close_price / entry_price) - 1
         else:
             return (entry_price / close_price) - 1
@@ -171,7 +171,7 @@ class Negotiate():
         """
         Calculate the ROI of the trade.
         """
-        if side == "LONG":
+        if side == Side_Type.LONG.value.lower():
             return (close_price - entry_price) / entry_price
         else:
             return (entry_price - close_price) / entry_price
