@@ -63,12 +63,24 @@ def stop(update, context):
         update.message.reply_text("Error stopping the bot", parse_mode=ParseMode.HTML)
 
 
+def hard_reset(update, context):
+    try:
+        response = post_request("hard_reset")
+        # Check if response contains status key
+        message = response.get('msg', 'Unknown response')
+        update.message.reply_text(message, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        telegram_logger.error(f"Error hard resetting the bot: {e}")
+        update.message.reply_text("Error hard resetting the bot", parse_mode=ParseMode.HTML)
+
+
 def help(update, context):
     msg = "<b>Available commands:</b>\n\n"
     msg += "/start - Start the bot\n"
     msg += "/stop - Stop the bot\n"
     msg += "/status - Get the bot status\n"
     msg += "/active_alerts - Get active alerts\n"
+    msg += "/hard_reset - Hard reset the bot\n"
     msg += "/help - Show this help message\n"
     update.message.reply_text(msg, parse_mode=ParseMode.HTML)
 
@@ -132,6 +144,7 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("hard_reset", hard_reset))
     dp.add_handler(CommandHandler("status", status))
     dp.add_handler(CommandHandler("active_alerts", active_alerts))
     dp.add_handler(CommandHandler("help", help))

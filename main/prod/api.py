@@ -14,6 +14,7 @@ from common.domain.trade import Trade
 from common.domain.alert import Alert
 from common.domain.account_balance import AccountBalance
 from config.config import ACCOUNT_ID
+from time import sleep
 
 api = FastAPI()
 
@@ -70,6 +71,26 @@ async def stop_app():
         return {"status": "App stopped"}
     else:
         return {"status": "App not running or bot not initialized"}
+
+@api.post("/hard_reset")
+async def hard_reset():
+    try:
+        import os
+
+        if hasattr(app, 'bot') and app.bot.running:
+            app.bot.stop()
+            notify.send_message_alert("Bot stopped...")
+            while not app.bot.stopped:
+                sleep(0.5)
+            
+            notify.send_message_alert("Attempting to hard reset...")
+            os._exit(1)
+            return {"msg": "attempting to hard reset...", "error": False}
+    except Exception as e:
+        api_logger.error(f"Error during hard reset: {e}")
+        return {"msg": f"Error during hard reset: {e}", "error": True}
+
+            
 
 @api.get("/status")
 async def status():

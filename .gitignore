@@ -19,3 +19,5 @@ main/prod/logs/*
 *.key
 /run/secrets/*
 docker-compose.override.yml
+decrypt_secret.txt
+*secret.txt

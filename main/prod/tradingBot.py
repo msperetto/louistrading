@@ -52,6 +52,7 @@ class TradingBot:
         else:
             account_balance_dao.update_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
         self.running = True
+        self.stopped = False # variable to control if the bot is fully stopped, so we can handle the shutdown/hardreset process correctly 
 
         # setting binance initial leverage value
         for pair in self.db.get_active_pairs():
@@ -71,6 +72,7 @@ class TradingBot:
     def run(self):
         while self.running:
             try:
+                self.stopped = False
                 # register execution time to monitor bot alive status:
                 db.update_bot_execution_control()
 
@@ -82,6 +84,7 @@ class TradingBot:
                 # Pause the loop for 1 minute before trying again
                 time.sleep(60)
                 while not self.running:
+                    self.stopped = True
                     print("Bot is paused. Waiting for 20 seconds...")
                     time.sleep(20)
             except Exception as e:

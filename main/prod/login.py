@@ -11,7 +11,9 @@ class Login():
         self.exchange = exchange
 
     def create_cryptography_key(self):
-        password_provided = getpass("Enter your cryptography password: ")
+        # password_provided = getpass("Enter your cryptography password: ")
+        with open('/run/secrets/decrypt_secret') as f:
+            password_provided = f.read().strip()
         password = password_provided.encode()
         salt = b'\xb5\x17H1\xbf\x9c\xe9\tp\xa8j_vcr='
         kdf = PBKDF2HMAC(

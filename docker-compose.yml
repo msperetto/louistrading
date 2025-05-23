@@ -5,7 +5,7 @@
 # Enter database via terminal:
 # docker exec -it noshirt-postgres psql -U postgres -d noshirt
 
-services:
+services: 
   app:
     build: .
     container_name: noshirt_app
@@ -26,6 +26,7 @@ services:
   api:
     build: .
     container_name: noshirt_api
+    restart: always
     volumes:
       - .:/noshirt
     environment:
@@ -38,6 +39,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
+    secrets:
+      - decrypt_secret
     command: uvicorn main.prod.api:api --reload --host=0.0.0.0
     ports:
       - "8000:8000"
@@ -94,5 +97,8 @@ services:
       - "5431:5432"
     # entrypoint: ["bin/bash", "/resources/init-db.sh"]
 
+secrets:
+  decrypt_secret:
+    file: ./decrypt_secret.txt
 volumes:
   noshirt_postgres_data:
