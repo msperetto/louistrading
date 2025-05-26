@@ -82,9 +82,13 @@ class TradingBot:
                 self.handle_new_trades()
 
                 # Pause the loop for 1 minute before trying again
-                time.sleep(60)
+                time.sleep(30)
+                logger.debug(f"Bot running after sleep. self.stopped: {self.stopped}")
+                logger.debug(f"Bot running status: {self.running}")
                 while not self.running:
+                    logger.info("Bot is paused. Waiting for 20 seconds...")
                     self.stopped = True
+                    logger.debug(f"Bot stopped status: {self.stopped}")
                     print("Bot is paused. Waiting for 20 seconds...")
                     time.sleep(20)
             except Exception as e:

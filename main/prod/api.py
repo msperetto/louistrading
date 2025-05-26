@@ -80,7 +80,9 @@ async def hard_reset():
         if hasattr(app, 'bot') and app.bot.running:
             app.bot.stop()
             notify.send_message_alert("Bot stopped...")
+            api_logger.debug(f"bot.stopped status: {app.bot.stopped}")
             while not app.bot.stopped:
+                api_logger.debug(f"bot.stopped inside while loop: {app.bot.stopped}")
                 sleep(0.5)
             
             notify.send_message_alert("Attempting to hard reset...")
