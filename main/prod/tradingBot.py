@@ -82,7 +82,7 @@ class TradingBot:
                 self.handle_new_trades()
 
                 # Pause the loop for 1 minute before trying again
-                time.sleep(30)
+                time.sleep(2)
                 logger.debug(f"Bot running after sleep. self.stopped: {self.stopped}")
                 logger.debug(f"Bot running status: {self.running}")
                 while not self.running:
