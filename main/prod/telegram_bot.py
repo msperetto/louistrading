@@ -65,9 +65,9 @@ def stop(update, context):
 
 def hard_reset(update, context):
     try:
-        response = post_request("hard_reset")
+        response = post_request("hardreset")
         # Check if response contains status key
-        message = response.get('msg', 'Unknown response')
+        message = response.get('status', 'Unknown response')
         update.message.reply_text(message, parse_mode=ParseMode.HTML)
     except Exception as e:
         telegram_logger.error(f"Error hard resetting the bot: {e}")
