@@ -41,7 +41,7 @@ services:
       - POSTGRES_HOST=db
     secrets:
       - decrypt_secret
-    command: uvicorn main.prod.api:api --reload --host=0.0.0.0
+    command: uvicorn main.prod.api:api --host=0.0.0.0
     ports:
       - "8000:8000"
     depends_on:
