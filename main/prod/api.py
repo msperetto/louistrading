@@ -15,6 +15,8 @@ from common.domain.alert import Alert
 from common.domain.account_balance import AccountBalance
 from config.config import ACCOUNT_ID
 from time import sleep
+import threading
+import os
 
 api = FastAPI()
 
@@ -87,7 +89,11 @@ async def hardreset():
                 sleep(0.5)
             
             notify.send_message_alert("Attempting to hard reset...")
-            os._exit(1)
+
+            def delayed_exit():
+                sleep(3) # Time enough for response to be sent
+                os._exit(1)
+            threading.Thread(target=delayed_exit, daemon=True).start()
             return {"status": "attempting to hard reset...", "error": False}
     except Exception as e:
         api_logger.error(f"Error during hard reset: {e}")
