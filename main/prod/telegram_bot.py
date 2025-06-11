@@ -12,12 +12,12 @@ from common.enums import Environment_Place
 from common.dao.trade_dao import get_open_trade_by_pair
 from common.domain.trade import Trade
 from datetime import datetime
+from config.config import BASE_LOCAL_URL
 
 if os.getenv('ENVIRONMENT') != Environment_Place.AWS:
     from dotenv import load_dotenv
     env_path = Path(__file__).parent.parent.parent / '.env'
     load_dotenv(dotenv_path=env_path)  # Ensure environment variables are loaded from .env file
-    BASE_LOCAL_URL = "http://localhost:8000/"
     telegram_logger.info(f"Development mode: Using {BASE_LOCAL_URL}")
 else:
     EC2_IP = get_server_public_ip("EC2_PUBLIC_IP")
