@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Backtest Results Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet"/>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 p-4">
+  <div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-4 text-center">Backtest Results Dashboard</h1>
+
+    <!-- Filter Section -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <select id="filter_pair" class="p-2 rounded border border-gray-300">
+        <option value="">Filter by Coin</option>
+      </select>
+      <select id="filter_strategy" class="p-2 rounded border border-gray-300">
+        <option value="">Filter by Strategy</option>
+      </select>
+      <select id="filter_period" class="p-2 rounded border border-gray-300">
+        <option value="">Filter by Period</option>
+      </select>
+      <input type="date" id="filter_date" class="p-2 rounded border border-gray-300"/>
+    </div>
+
+    <!-- Charts -->
+    <div id="chart_div" class="mb-8"></div>
+
+    <!-- Table -->
+    <table id="results_table" class="display w-full text-sm"></table>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
