@@ -250,11 +250,44 @@ class Binance():
         else:
             return position
 
+    def create_stop_loss_order(self, symbol, quantity, side, stop_loss_price, b_id, b_sk):
+        """
+        Create a stop loss order for a given symbol.
+
+        Args:
+            symbol (str): The trading pair symbol.
+            quantity (float): The quantity of the asset to trade.
+            side (str): The side of the order, either "BUY" or "SELL".
+            stop_loss_price (float): The price at which the stop loss order will be triggered.
+            b_id (str): Binance API ID.
+            b_sk (str): Binance API Secret Key.
+
+        Returns:
+            dict: The response from the Binance API.
+        """
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'side': side.upper(),  # "BUY" or "SELL"
+            'type': 'STOP_MARKET',
+            'quantity': quantity,
+            'stopPrice': stop_loss_price,
+            'newOrderRespType': 'RESULT',
+            'timestamp': str(self.get_servertime()),
+            'recvWindow': 3000
+        }
+        position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
+        if 'code' in position.keys():
+            logger.error(f'Error creating stop loss order: {position}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error creating stop loss order: {position}")
+        else:
+            return position
+
     def close_position(self, symbol, entry_quantity, side, b_id, b_sk):
         endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
-            'side': side, #"BUY" or "SELL"
+            'side': side.upper(), #"BUY" or "SELL"
             'type': 'MARKET',
             'quantity': entry_quantity,
             'newOrderRespType': 'RESULT',
