@@ -50,6 +50,9 @@ aws_logger = setup_logger('aws', 'aws.log')
 # Setup API logger
 api_logger = setup_logger('api', 'api.log')
 
+# Setup Marlin Stop logger
+marlin_stop_logger = setup_logger('marlin_stop', 'marlin_stop.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()
