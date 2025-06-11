@@ -8,6 +8,8 @@ from config.config import NEGOCIATION_ENV
 from common.enums import Environment_Type, Side_Type
 from prod import logger, notify
 from common.constants import DATETIME_FORMAT
+from marlinStop.stopLogic import StopManager
+from config.config import USE_STOP_ORDERS
 
 class Negotiate():
     def __init__(self, pair, pair_precision, api_id, api_key):
@@ -24,11 +26,12 @@ class Negotiate():
         else:
             order_quantity = round(total_value/float(Binance().get_symbol_price(self.pair)), self.pair_precision)
             order_response = Binance().open_position(self.pair, order_quantity, side, self.api_id, self.api_key)
-
+            
         if order_response is None:
             logger.error(f"Error opening position: {order_response}")
             return False
 
+        
         trade_id = self._register_open_transaction(order_response, strategy_id)
         # Notify the user about the opened trade
         notify.notify_opened_trade(
@@ -44,6 +47,11 @@ class Negotiate():
         )
 
         logger.info(f"Position successfully opened: {order_response}")
+
+        if USE_STOP_ORDERS:
+            stop_manager = StopManager(self.api_id, self.api_key)
+            stop_order = stop_manager.create_stop_order(order_response)
+
         return True
 
     def _simulate_test_order(self, side, total_value):
