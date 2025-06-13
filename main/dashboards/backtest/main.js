@@ -2,7 +2,7 @@ let data = [];
 
 async function loadData() {
   try {
-    const response = await fetch("http://16.171.16.170:8000/backtest_results");
+    const response = await fetch("http://16.171.16.170:8000/backtests");
     if (!response.ok) throw new Error("Network response was not ok");
     data = await response.json();
     populateFilters(data);
