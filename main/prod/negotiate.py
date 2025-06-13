@@ -49,9 +49,11 @@ class Negotiate():
         logger.info(f"Position successfully opened: {order_response}")
 
         if USE_STOP_ORDERS:
-            stop_manager = StopManager(self.api_id, self.api_key)
-            stop_order = stop_manager.create_stop_order(order_response)
-
+            try:
+                stop_manager = StopManager(self.api_id, self.api_key)
+                stop_order = stop_manager.create_stop_order(order_response)
+            except Exception as e:
+                logger.error(f"Error creating stop order: {e}")
         return True
 
     def _simulate_test_order(self, side, total_value):
