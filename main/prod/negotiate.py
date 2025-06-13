@@ -54,6 +54,9 @@ class Negotiate():
                 stop_order = stop_manager.create_stop_order(order_response)
             except Exception as e:
                 logger.error(f"Error creating stop order: {e}")
+                notify.send_message_alert(
+                    f"Error creating stop order for {self.pair}: {e}"
+                )
         return True
 
     def _simulate_test_order(self, side, total_value):

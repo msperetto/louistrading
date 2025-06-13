@@ -70,6 +70,8 @@ class StopManager():
         stop_price = order["price"] * \
             (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else order["price"] * \
             (1 + STOP_LOSS_PERCENTAGE / 100)
+
+        marlin_stop_logger.info(f"Stop loss price calculated: {stop_price}")
         
         try:
             stop_order = Binance().create_stop_loss_order(
