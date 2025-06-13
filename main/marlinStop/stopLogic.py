@@ -67,8 +67,8 @@ class StopManager():
             It's
         """
         marlin_stop_logger.info(f"Creating stop order for: {order}")
-        stop_price = order["price"] * \
-            (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else order["price"] * \
+        stop_price = float(order["avgPrice"]) * \
+            (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else float(order["avgPrice"]) * \
             (1 + STOP_LOSS_PERCENTAGE / 100)
 
         marlin_stop_logger.info(f"Stop loss price calculated: {stop_price}")
