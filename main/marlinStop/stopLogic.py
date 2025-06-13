@@ -66,8 +66,9 @@ class StopManager():
             order (dict): A dictionary containing order details such as 'symbol', 'side', 'origQty', and 'price'.
             It's
         """
+        marlin_stop_logger.info(f"Creating stop order for: {order}")
         stop_price = order["price"] * \
-            (1 - STOP_LOSS_PERCENTAGE / 100) if order.side == Side_Type.LONG else order.entry_price * \
+            (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else order["price"] * \
             (1 + STOP_LOSS_PERCENTAGE / 100)
         
         try:
