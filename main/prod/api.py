@@ -9,10 +9,12 @@ from prod import notify
 from common.dao.database_operations import get_initial_config, get_bot_execution_control, get_active_pairs
 from common.dao.trade_dao import get_open_trade_pairs
 from common.dao.alert_dao import get_active_alerts
+from common.dao.backtest_dao import get_backtests
 from common.dao.account_balance_dao import get_account_balance
 from common.domain.trade import Trade
 from common.domain.alert import Alert
 from common.domain.account_balance import AccountBalance
+from common.domain.backtest import Backtest
 from config.config import ACCOUNT_ID
 from time import sleep
 import threading
@@ -147,6 +149,44 @@ async def account_balance():
         "margin_ratio": account_balance.margin_ratio,
         "date_updated": account_balance.date_updated,
     }
+    return response
+
+@api.get("/backtests")
+async def get_backtests():
+    response = {}
+    backtest_results = get_backtests()
+    for backtest in backtest_results:
+        response.append(
+            {
+                "test_id": backtest.test_id,
+                "start_time": backtest.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": backtest.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "pair": backtest.pair,
+                "period": backtest.period,
+                "return_percent": backtest.return_percent,
+                "return_buy_hold": backtest.return_buy_hold,
+                "win_rate": backtest.win_rate,
+                "sharpe_ratio": backtest.sharpe_ratio,
+                "max_drawdown": backtest.max_drawdown,
+                "best_indicators_combination": backtest.best_indicators_combination,
+                "filter_buy": backtest.filter_buy,
+                "trigger_buy": backtest.trigger_buy,
+                "trade_buy": backtest.trade_buy,
+                "filter_sell": backtest.filter_sell,
+                "trigger_sell": backtest.trigger_sell,
+                "trade_sell": backtest.trade_sell,
+                "total_trades": backtest.total_trades,
+                "best_trade": backtest.best_trade,
+                "worst_trade": backtest.worst_trade,
+                "average_trade": backtest.average_trade,
+                "profit_factor": backtest.profit_factor,
+                "created_at": backtest.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "label_period": backtest.label_period,
+                "period_trend": backtest.period_trend,
+                "trend_class": backtest.trend_class,
+                "strategy_class": backtest.strategy_class
+            }
+        )
     return response
 
 @api.get("/orders")
