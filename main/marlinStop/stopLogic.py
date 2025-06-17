@@ -68,13 +68,13 @@ class StopManager():
         """
         marlin_stop_logger.info(f"Creating stop order for: {order}")
         stop_price = float(order["avgPrice"]) * \
-            (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else float(order["avgPrice"]) * \
-            (1 + STOP_LOSS_PERCENTAGE / 100)
+            (1 - STOP_LOSS_PERCENTAGE) if order["side"] == Side_Type.LONG.value else float(order["avgPrice"]) * \
+            (1 + STOP_LOSS_PERCENTAGE)
 
         stop_price = round(stop_price, pair_precision)
 
-        marlin_stop_logger.info(f"Stop loss price calculated: {stop_price}")
-        
+        marlin_stop_logger.info(f"Stop price calculated: {stop_price}; Side_type.long.value: {Side_Type.LONG.value}, pair_precision: {pair_precision}")
+
         try:
             stop_order = Binance().create_stop_loss_order(
                 symbol=order["symbol"],
