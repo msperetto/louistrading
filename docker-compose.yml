@@ -64,6 +64,21 @@ services:
     command: python main/prod/telegram_bot.py
     depends_on:
       - db
+  
+  stop:
+    build: .
+    container_name: noshirt_stop
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/marlinStop/stopService.py
+    depends_on:
+      - db
     
   backtest:
     build: .
