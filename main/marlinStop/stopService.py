@@ -2,13 +2,15 @@ from queue import Queue
 from threading import Thread
 from binance_ws import BinanceWebSocketListener
 from stopLogic import StopManager
-from prod import marlin_stop_logger
+from prod import stop_thread_logger
 from prod.login import Login
 
 def process_filled_stops(stop_filled_queue, stop_manager: StopManager):
     while True:
         order = stop_filled_queue.get()
-        marlin_stop_logger.info(f"Processing filled stop order: {order}")
+        if order is None:
+            break
+        stop_thread_logger.info(f"Processing filled stop order: {order}")
         stop_manager.register_filled_stop_order(order)
         stop_filled_queue.task_done()
 
@@ -35,7 +37,7 @@ def main():
     processor_thread = Thread(target=process_filled_stops, args=(stop_filled_queue, stop_manager), daemon=True)
     processor_thread.start()
 
-    marlin_stop_logger.info("Stop service running. Waiting for filled stop orders...")
+    stop_thread_logger.info("Stop service running. Waiting for filled stop orders...")
     ws_thread.join()
     processor_thread.join()
     stop_event.set()  # Stop the keep-alive thread when exiting

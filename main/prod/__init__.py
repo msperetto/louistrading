@@ -53,6 +53,9 @@ api_logger = setup_logger('api', 'api.log')
 # Setup Marlin Stop logger
 marlin_stop_logger = setup_logger('marlin_stop', 'marlin_stop.log')
 
+# Setup Stop Thread logger
+stop_thread_logger = setup_logger('stop_thread', 'stop_thread.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()
