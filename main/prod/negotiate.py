@@ -51,7 +51,7 @@ class Negotiate():
         if USE_STOP_ORDERS:
             try:
                 stop_manager = StopManager(self.api_id, self.api_key)
-                stop_order = stop_manager.create_stop_order(order_response)
+                stop_order = stop_manager.create_stop_order(order_response, self.pair_precision)
             except Exception as e:
                 logger.error(f"Error creating stop order: {e}")
                 notify.send_message_alert(

@@ -59,7 +59,7 @@ class StopManager():
                 raise Exception(f"Error processing stop request: {e}")
             
 
-    def create_stop_order(self, order: Dict) -> Dict:
+    def create_stop_order(self, order: Dict, pair_precision) -> Dict:
         """
         Create a stop order based on the order already executed.
         Args:
@@ -71,12 +71,14 @@ class StopManager():
             (1 - STOP_LOSS_PERCENTAGE / 100) if order["side"] == Side_Type.LONG else float(order["avgPrice"]) * \
             (1 + STOP_LOSS_PERCENTAGE / 100)
 
+        stop_price = round(stop_price, pair_precision)
+
         marlin_stop_logger.info(f"Stop loss price calculated: {stop_price}")
         
         try:
             stop_order = Binance().create_stop_loss_order(
                 symbol=order["symbol"],
-                quantity=order["origQty"],
+                quantity=round(order["origQty"], pair_precision),
                 side=order["side"],
                 stop_loss_price=stop_price,
                 b_id=self.api_id,
