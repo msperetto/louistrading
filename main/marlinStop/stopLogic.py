@@ -30,7 +30,8 @@ class StopManager():
         #     "stop_loss_percentage": float
         # }
         self.stops_queue = Queue(maxsize=STOP_BUFFER_SIZE)
-        self.thread = threading.Thread(target=self._process_from_queue, daemon=True)
+        self.thread = threading.Thread(
+            target=self._process_from_queue, daemon=True)
         # self.thread.start()
 
     def _process_from_queue(self, order):
@@ -53,11 +54,12 @@ class StopManager():
                 if os.getenv('ENVIRONMENT') == Environment_Place.AWS:
                     res = requests.post(req_url, data={stop_order})
                 else:
-                    print(f"Simulating request to {req_url} with data: {stop_order}")
+                    print(
+                        f"Simulating request to {req_url} with data: {stop_order}")
             except requests.exceptions.RequestException as e:
-                marlin_stop_logger.error(f"Error sending request to {req_url}: {e}")
+                marlin_stop_logger.error(
+                    f"Error sending request to {req_url}: {e}")
                 raise Exception(f"Error processing stop request: {e}")
-            
 
     def create_stop_order(self, order: Dict, pair_precision) -> Dict:
         """
@@ -71,7 +73,7 @@ class StopManager():
             (1 - STOP_LOSS_PERCENTAGE) if order["side"] == Side_Type.LONG.value else float(order["avgPrice"]) * \
             (1 + STOP_LOSS_PERCENTAGE)
 
-        stop_price = round(stop_price, pair_precision)
+        stop_price = round(stop_price, 2)
 
         marlin_stop_logger.info(f"Stop price calculated: {stop_price}; Side_type.long.value: {Side_Type.LONG.value}, pair_precision: {pair_precision}")
 
