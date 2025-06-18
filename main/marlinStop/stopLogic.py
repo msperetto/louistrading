@@ -81,7 +81,8 @@ class StopManager():
             stop_order = Binance().create_stop_loss_order(
                 symbol=order["symbol"],
                 quantity=round(float(order["origQty"]), pair_precision),
-                side=order["side"],
+                # The side is inverted for stop orders
+                side=Side_Type.SHORT.value if order["side"] == Side_Type.LONG.value else Side_Type.LONG.value,
                 stop_loss_price=stop_price,
                 b_id=self.api_id,
                 b_sk=self.api_key
