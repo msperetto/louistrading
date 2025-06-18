@@ -86,10 +86,12 @@ class StopManager():
                 b_id=self.api_id,
                 b_sk=self.api_key
             )
+            marlin_stop_logger.info(f"Stop order created: {stop_order}")
             
             # TODO: checar codigo de retorno para saber se houve algum erro e notificar no telegram
             return stop_order
         except Exception as e:
+            marlin_stop_logger.error(f"Error creating stop order: {e}")
             # TODO: notificar no telegram tambem
             return {"status": "error", "message": str(e)}
 
