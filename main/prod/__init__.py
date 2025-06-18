@@ -56,6 +56,9 @@ marlin_stop_logger = setup_logger('marlin_stop', 'marlin_stop.log')
 # Setup Stop Thread logger
 stop_thread_logger = setup_logger('stop_thread', 'stop_thread.log')
 
+# Setup Binance logger
+binance_logger = setup_logger('binance', 'binance.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()

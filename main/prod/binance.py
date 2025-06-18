@@ -15,7 +15,7 @@ import logging
 from common.dao import alert_dao
 from common.enums import Environment_Type, Alert_Level
 from config.config import NEGOCIATION_ENV
-from prod import logger
+from prod import logger, binance_logger
 
 
 class Binance():
@@ -276,7 +276,9 @@ class Binance():
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
+        binance_logger.info(f'Creating stop loss order details: {params}')
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
+        binance_logger.info(f'Creating stop loss order response: {position}')
         if 'code' in position.keys():
             logger.error(f'Error creating stop loss order: {position}')
             alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error creating stop loss order: {position}")
