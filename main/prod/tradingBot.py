@@ -24,7 +24,7 @@ import time
 from config.config import NEGOCIATION_ENV, ACCOUNT_ID
 from common.enums import Environment_Type, Alert_Level
 from prod import logger
-from common.util import get_pairs_precision
+from common.util import get_pairs_precision, get_pairs_price_precision
 from prod import notify
 
 
@@ -60,6 +60,7 @@ class TradingBot:
 
         # getting decimal precision by pair:
         self.pairs_precision = get_pairs_precision(self.db.get_active_pairs())
+        self.pairs_price_precision = get_pairs_price_precision(self.db.get_active_pairs())
 
     def stop(self):
         logger.info("Stopping bot...")
@@ -190,6 +191,7 @@ class TradingBot:
                     manager = StrategyManager(
                         pair,
                         self.pairs_precision[pair],
+                        self.pairs_price_precision[pair],
                         final_dataset,
                         self.exchange_session.e_id,
                         self.exchange_session.e_sk,
@@ -251,6 +253,7 @@ class TradingBot:
                 manager = StrategyManager(
                     trade.pair,
                     self.pairs_precision[trade.pair],
+                    self.pairs_price_precision[trade.pair],
                     final_dataset,
                     self.exchange_session.e_id,
                     self.exchange_session.e_sk,

@@ -16,7 +16,8 @@ class StopManager():
     A class to handle stop order logic in a trading system.
     """
 
-    def __init__(self, api_id, api_key):
+    def __init__(self, pair_price_precision, api_id, api_key):
+        self.pair_price_precision = pair_price_precision
         self.api_id = api_id
         self.api_key = api_key
         # The queue will hold dictionaries with the following structure:
@@ -73,7 +74,7 @@ class StopManager():
             (1 - STOP_LOSS_PERCENTAGE) if order["side"] == Side_Type.LONG.value else float(order["avgPrice"]) * \
             (1 + STOP_LOSS_PERCENTAGE)
 
-        stop_price = round(stop_price, 2)
+        stop_price = round(stop_price, self.pair_price_precision)
 
         marlin_stop_logger.info(f"Stop price calculated: {stop_price}; Side_type.long.value: {Side_Type.LONG.value}, pair_precision: {pair_precision}")
 

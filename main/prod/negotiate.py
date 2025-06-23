@@ -12,9 +12,10 @@ from marlinStop.stopLogic import StopManager
 from config.config import USE_STOP_ORDERS
 
 class Negotiate():
-    def __init__(self, pair, pair_precision, api_id, api_key):
+    def __init__(self, pair, pair_precision, pair_price_precision, api_id, api_key):
         self.pair = pair
         self.pair_precision = pair_precision
+        self.pair_price_precision = pair_price_precision
         self.api_id = api_id
         self.api_key = api_key
     
@@ -50,7 +51,7 @@ class Negotiate():
 
         if USE_STOP_ORDERS:
             try:
-                stop_manager = StopManager(self.api_id, self.api_key)
+                stop_manager = StopManager(self.pair_price_precision, self.api_id, self.api_key)
                 stop_order = stop_manager.create_stop_order(order_response, self.pair_precision)
             except Exception as e:
                 logger.error(f"Error creating stop order: {e}")
