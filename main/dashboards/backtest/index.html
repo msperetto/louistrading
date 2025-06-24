@@ -9,32 +9,60 @@
   <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <style>
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .plotly-graph-div { background: white; border-radius: 0.5rem; padding: 1rem; }
+    .top10-list { background: white; border-radius: 0.5rem; padding: 1rem; }
+  </style>
 </head>
 <body class="bg-gray-100 p-4">
   <div class="container mx-auto">
     <h1 class="text-3xl font-bold mb-4 text-center">Backtest Results Dashboard</h1>
 
     <!-- Filter Section -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <select id="filter_pair" class="p-2 rounded border border-gray-300">
-        <option value="">Filter by Coin</option>
+        <option value="">All Coins</option>
       </select>
-      <select id="filter_strategy" class="p-2 rounded border border-gray-300">
-        <option value="">Filter by Strategy</option>
+      <input type="date" id="filter_start" class="p-2 rounded border border-gray-300" placeholder="Start Date"/>
+      <input type="date" id="filter_end" class="p-2 rounded border border-gray-300" placeholder="End Date"/>
+      <select id="filter_metric" class="p-2 rounded border border-gray-300">
+        <option value="return_percent">Return %</option>
+        <option value="sharpe_ratio">Sharpe Ratio</option>
+        <option value="win_rate">Win Rate</option>
+        <option value="profit_factor">Profit Factor</option>
+        <option value="max_drawdown">Max Drawdown</option>
       </select>
-      <select id="filter_period" class="p-2 rounded border border-gray-300">
-        <option value="">Filter by Period</option>
-      </select>
-      <input type="date" id="filter_date" class="p-2 rounded border border-gray-300"/>
     </div>
 
-    <!-- Charts -->
-    <div id="chart_div" class="mb-8"></div>
+    <div class="dashboard-grid mb-8">
+      <div class="plotly-graph-div">
+        <h2 class="text-xl font-semibold mb-2">Return % vs Win Rate (Bubble Chart)</h2>
+        <div id="bubble_chart"></div>
+      </div>
+      <div class="top10-list">
+        <h2 class="text-xl font-semibold mb-2">Top 10 Strategies</h2>
+        <ul id="top10_list" class="list-decimal pl-5"></ul>
+      </div>
+    </div>
 
-    <!-- Table -->
-    <table id="results_table" class="display w-full text-sm"></table>
+    <div class="dashboard-grid mb-8">
+      <div class="plotly-graph-div">
+        <h2 class="text-xl font-semibold mb-2">Bar Chart (Sorted by Metric)</h2>
+        <div id="bar_chart"></div>
+      </div>
+      <div class="plotly-graph-div">
+        <h2 class="text-xl font-semibold mb-2">Return % Over Time</h2>
+        <div id="line_chart"></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded p-4">
+      <h2 class="text-xl font-semibold mb-2">All Results</h2>
+      <table id="results_table" class="display w-full text-sm"></table>
+    </div>
   </div>
-
   <script src="main.js"></script>
 </body>
 </html>

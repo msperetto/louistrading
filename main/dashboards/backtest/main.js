@@ -6,7 +6,7 @@ async function loadData() {
     if (!response.ok) throw new Error("Network response was not ok");
     data = await response.json();
     populateFilters(data);
-    updateView();
+    updateDashboard();
   } catch (error) {
     console.error("Failed to load data:", error);
   }
@@ -14,57 +14,139 @@ async function loadData() {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
-  document.querySelectorAll("select, input").forEach(el => {
-    el.addEventListener("change", updateView);
+  document.querySelectorAll("#filter_pair, #filter_start, #filter_end, #filter_metric").forEach(el => {
+    el.addEventListener("change", updateDashboard);
   });
 });
 
 function populateFilters(data) {
   const uniquePairs = [...new Set(data.map(row => row.pair))];
-  const uniqueStrategies = [...new Set(data.map(row => row.strategy_class))];
-  const uniquePeriods = [...new Set(data.map(row => row.period))];
-
-  const addOptions = (id, values) => {
-    const select = document.getElementById(id);
-    values.forEach(val => {
-      const opt = document.createElement("option");
-      opt.value = val;
-      opt.textContent = val;
-      select.appendChild(opt);
-    });
-  };
-
-  addOptions("filter_pair", uniquePairs);
-  addOptions("filter_strategy", uniqueStrategies);
-  addOptions("filter_period", uniquePeriods);
+  const pairSelect = document.getElementById("filter_pair");
+  uniquePairs.forEach(val => {
+    const opt = document.createElement("option");
+    opt.value = val;
+    opt.textContent = val;
+    pairSelect.appendChild(opt);
+  });
 }
 
 function filterData() {
   const pair = document.getElementById("filter_pair").value;
-  const strategy = document.getElementById("filter_strategy").value;
-  const period = document.getElementById("filter_period").value;
-  const date = document.getElementById("filter_date").value;
+  const start = document.getElementById("filter_start").value;
+  const end = document.getElementById("filter_end").value;
 
   return data.filter(row => {
+    const rowDate = row.created_at.slice(0, 10);
     return (!pair || row.pair === pair) &&
-           (!strategy || row.strategy_class === strategy) &&
-           (!period || row.period === period) &&
-           (!date || new Date(row.created_at).toISOString().slice(0,10) === date);
+           (!start || rowDate >= start) &&
+           (!end || rowDate <= end);
   });
 }
 
-function renderCharts(filteredData) {
-  const x = filteredData.map(d => d.test_id);
-  const returnPercent = filteredData.map(d => d.return_percent);
-  const sharpe = filteredData.map(d => d.sharpe_ratio);
-  const winRate = filteredData.map(d => d.win_rate);
+function updateDashboard() {
+  const filtered = filterData();
+  renderBubbleChart(filtered);
+  renderTop10List(filtered);
+  renderBarChart(filtered);
+  renderLineChart(filtered);
+  renderTable(filtered);
+}
 
-  const layout = { title: "Performance Comparison", barmode: "group" };
-  const trace1 = { x, y: returnPercent, name: 'Return %', type: 'bar' };
-  const trace2 = { x, y: sharpe, name: 'Sharpe Ratio', type: 'bar' };
-  const trace3 = { x, y: winRate, name: 'Win Rate', type: 'bar' };
+function renderBubbleChart(filteredData) {
+  const trace = {
+    x: filteredData.map(d => d.return_percent),
+    y: filteredData.map(d => d.win_rate),
+    text: filteredData.map(d => `
+      <b>Test ID:</b> ${d.test_id}<br>
+      <b>Pair:</b> ${d.pair}<br>
+      <b>Period:</b> ${d.period}<br>
+      <b>Strategy:</b> ${d.strategy_class}<br>
+      <b>Return %:</b> ${d.return_percent}<br>
+      <b>Win Rate:</b> ${d.win_rate}<br>
+      <b>Sharpe Ratio:</b> ${d.sharpe_ratio}<br>
+      <b>Profit Factor:</b> ${d.profit_factor}<br>
+      <b>Max DD:</b> ${d.max_drawdown}<br>
+      <b>Total Trades:</b> ${d.total_trades}
+    `),
+    mode: 'markers',
+    marker: {
+      size: filteredData.map(d => Math.max(10, Math.abs(d.return_percent))),
+      sizemode: 'area',
+      sizeref: 2.0 * Math.max(...filteredData.map(d => Math.abs(d.return_percent))) / (100**2),
+      color: filteredData.map(d => d.sharpe_ratio),
+      colorscale: 'Viridis',
+      showscale: true,
+      colorbar: { title: "Sharpe Ratio" }
+    },
+    hoverinfo: 'text'
+  };
+  const layout = {
+    xaxis: { title: "Return %" },
+    yaxis: { title: "Win Rate" },
+    title: "",
+    height: 400,
+    margin: { t: 30 }
+  };
+  Plotly.newPlot('bubble_chart', [trace], layout, {responsive: true});
+}
 
-  Plotly.newPlot('chart_div', [trace1, trace2, trace3], layout);
+function renderTop10List(filteredData) {
+  const metric = document.getElementById("filter_metric").value;
+  const top10 = [...filteredData]
+    .sort((a, b) => (metric === "max_drawdown" ? a[metric] - b[metric] : b[metric] - a[metric]))
+    .slice(0, 10);
+
+  const ul = document.getElementById("top10_list");
+  ul.innerHTML = "";
+  top10.forEach((d, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <b>${d.strategy_class}</b> (${d.pair}, ${d.period})<br>
+      <span class="text-xs">Return: <b>${d.return_percent}</b> | Sharpe: <b>${d.sharpe_ratio}</b> | Win Rate: <b>${d.win_rate}</b> | PF: <b>${d.profit_factor}</b> | Max DD: <b>${d.max_drawdown}</b></span>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+function renderBarChart(filteredData) {
+  const metric = document.getElementById("filter_metric").value;
+  const sorted = [...filteredData].sort((a, b) => (metric === "max_drawdown" ? a[metric] - b[metric] : b[metric] - a[metric]));
+  const trace = {
+    x: sorted.map(d => d.strategy_class + " (" + d.pair + ")"),
+    y: sorted.map(d => d[metric]),
+    text: sorted.map(d => `Test ID: ${d.test_id}<br>Return: ${d.return_percent}<br>Sharpe: ${d.sharpe_ratio}<br>Win Rate: ${d.win_rate}`),
+    type: 'bar',
+    marker: { color: 'rgba(37,99,235,0.7)' },
+    hoverinfo: 'text'
+  };
+  const layout = {
+    xaxis: { title: "Strategy (Pair)", tickangle: -45, automargin: true },
+    yaxis: { title: metric.replace("_", " ").toUpperCase() },
+    height: 400,
+    margin: { t: 30, b: 120 }
+  };
+  Plotly.newPlot('bar_chart', [trace], layout, {responsive: true});
+}
+
+function renderLineChart(filteredData) {
+  // Optional: Return % over time for the filtered set
+  const sorted = [...filteredData].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  const trace = {
+    x: sorted.map(d => d.created_at),
+    y: sorted.map(d => d.return_percent),
+    mode: 'lines+markers',
+    text: sorted.map(d => `Test ID: ${d.test_id}<br>Return: ${d.return_percent}`),
+    line: { color: 'rgba(16,185,129,1)', width: 2 },
+    marker: { size: 6 },
+    hoverinfo: 'text'
+  };
+  const layout = {
+    xaxis: { title: "Created At" },
+    yaxis: { title: "Return %" },
+    height: 400,
+    margin: { t: 30 }
+  };
+  Plotly.newPlot('line_chart', [trace], layout, {responsive: true});
 }
 
 function renderTable(filteredData) {
@@ -72,7 +154,6 @@ function renderTable(filteredData) {
     $('#results_table').DataTable().clear().rows.add(filteredData).draw();
     return;
   }
-
   $('#results_table').DataTable({
     data: filteredData,
     columns: [
@@ -88,23 +169,14 @@ function renderTable(filteredData) {
       { title: "Max DD", data: "max_drawdown" },
       { title: "Best", data: "best_trade" },
       { title: "Worst", data: "worst_trade" },
-      { title: "Average", data: "average_trade" }
+      { title: "Average", data: "average_trade" },
+      { title: "Total Trades", data: "total_trades" },
+      { title: "Start", data: "start_time" },
+      { title: "End", data: "end_time" },
+      { title: "Indicators", data: "best_indicators_combination" },
+      { title: "Trend", data: "trend_class" }
     ],
-    pageLength: 10
+    pageLength: 10,
+    destroy: true
   });
 }
-
-function updateView() {
-  const filtered = filterData();
-  renderCharts(filtered);
-  renderTable(filtered);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  populateFilters(data);
-  updateView();
-
-  document.querySelectorAll("select, input").forEach(el => {
-    el.addEventListener("change", updateView);
-  });
-});
