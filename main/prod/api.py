@@ -19,6 +19,7 @@ from config.config import ACCOUNT_ID
 from time import sleep
 import threading
 import os
+import math
 
 api = FastAPI()
 
@@ -154,41 +155,9 @@ async def account_balance():
 @api.get("/backtests")
 async def get_backtest_results():
     api_logger.debug("Fetching backtest results")
-    response = []
     backtest_results = get_backtests()
     api_logger.debug(f"Backtest results fetched: {len(backtest_results)} records found")
-    for backtest in backtest_results:
-        response.append(
-            {
-                "test_id": backtest.test_id,
-                "start_time": backtest.start_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "end_time": backtest.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                "pair": backtest.pair,
-                "period": backtest.period,
-                "return_percent": backtest.return_percent,
-                "return_buy_hold": backtest.return_buy_hold,
-                "win_rate": backtest.win_rate,
-                "sharpe_ratio": backtest.sharpe_ratio,
-                "max_drawdown": backtest.max_drawdown,
-                "best_indicators_combination": backtest.best_indicators_combination,
-                "filter_buy": backtest.filter_buy,
-                "trigger_buy": backtest.trigger_buy,
-                "trade_buy": backtest.trade_buy,
-                "filter_sell": backtest.filter_sell,
-                "trigger_sell": backtest.trigger_sell,
-                "trade_sell": backtest.trade_sell,
-                "total_trades": backtest.total_trades,
-                "best_trade": backtest.best_trade,
-                "worst_trade": backtest.worst_trade,
-                "average_trade": backtest.average_trade,
-                "profit_factor": backtest.profit_factor,
-                "created_at": backtest.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "label_period": backtest.label_period,
-                "period_trend": backtest.period_trend,
-                "trend_class": backtest.trend_class,
-                "strategy_class": backtest.strategy_class
-            }
-        )
+    response = [_sanitize_backtest(backtest) for backtest in backtest_results]
     return response
 
 @api.get("/orders")
@@ -202,3 +171,40 @@ def get_balance():
 @api.get("/test") 
 def test():
     return {"status": "OK"}
+
+
+def _sanitize_backtest(backtest):
+    d = {
+        "test_id": backtest.test_id,
+        "start_time": backtest.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "end_time": backtest.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "pair": backtest.pair,
+        "period": backtest.period,
+        "return_percent": backtest.return_percent,
+        "return_buy_hold": backtest.return_buy_hold,
+        "win_rate": backtest.win_rate,
+        "sharpe_ratio": backtest.sharpe_ratio,
+        "max_drawdown": backtest.max_drawdown,
+        "best_indicators_combination": backtest.best_indicators_combination,
+        "filter_buy": backtest.filter_buy,
+        "trigger_buy": backtest.trigger_buy,
+        "trade_buy": backtest.trade_buy,
+        "filter_sell": backtest.filter_sell,
+        "trigger_sell": backtest.trigger_sell,
+        "trade_sell": backtest.trade_sell,
+        "total_trades": backtest.total_trades,
+        "best_trade": backtest.best_trade,
+        "worst_trade": backtest.worst_trade,
+        "average_trade": backtest.average_trade,
+        "profit_factor": backtest.profit_factor,
+        "created_at": backtest.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "label_period": backtest.label_period,
+        "period_trend": backtest.period_trend,
+        "trend_class": backtest.trend_class,
+        "strategy_class": backtest.strategy_class
+    }
+    # Replace non-JSON-compliant floats with None or a string
+    for k, v in d.items():
+        if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+            d[k] = None  # or str(v)
+    return d
