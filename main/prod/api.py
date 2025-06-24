@@ -152,7 +152,7 @@ async def account_balance():
     return response
 
 @api.get("/backtests")
-async def get_backtests():
+async def get_backtest_results():
     response = {}
     backtest_results = get_backtests()
     for backtest in backtest_results:
