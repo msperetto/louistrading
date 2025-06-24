@@ -8,7 +8,7 @@ def get_backtests():
             cur.execute("""
                 SELECT * FROM optmization_tests;
             """)
-            rows = cur.fetchall()
-            if rows is None:
+            result_rows = cur.fetchall()
+            if result_rows is None:
                 return []
-            return [Backtest(**row) for row in rows]
+            return [Backtest(**row) for row in result_rows]
