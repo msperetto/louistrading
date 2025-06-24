@@ -153,8 +153,10 @@ async def account_balance():
 
 @api.get("/backtests")
 async def get_backtest_results():
-    response = {}
+    api_logger.debug("Fetching backtest results")
+    response = []
     backtest_results = get_backtests()
+    api_logger.debug(f"Backtest results fetched: {len(backtest_results)} records found")
     for backtest in backtest_results:
         response.append(
             {
