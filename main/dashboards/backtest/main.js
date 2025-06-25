@@ -5,6 +5,7 @@ async function loadData() {
     const response = await fetch("http://16.171.16.170:8000/backtests");
     if (!response.ok) throw new Error("Network response was not ok");
     data = await response.json();
+    console.log("Loaded data:", data);
     populateFilters(data);
     updateDashboard();
   } catch (error) {
