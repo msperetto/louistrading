@@ -54,6 +54,7 @@ function updateDashboard() {
 }
 
 function renderBubbleChart(filteredData) {
+  const maxReturn = Math.max(...filteredData.map(d => Math.abs(d.return_percent)), 1);
   const trace = {
     x: filteredData.map(d => d.return_percent),
     y: filteredData.map(d => d.win_rate),
@@ -71,9 +72,10 @@ function renderBubbleChart(filteredData) {
     `),
     mode: 'markers',
     marker: {
-      size: filteredData.map(d => Math.max(10, Math.abs(d.return_percent))),
+      size: filteredData.map(d => Math.max(6, Math.abs(d.return_percent))), // smaller minimum
       sizemode: 'area',
-      sizeref: 2.0 * Math.max(...filteredData.map(d => Math.abs(d.return_percent))) / (100**2),
+      sizeref: 4.0 * maxReturn / (70**2), // increase divisor for smaller bubbles
+      opacity: 0.5, // more transparent
       color: filteredData.map(d => d.sharpe_ratio),
       colorscale: 'Viridis',
       showscale: true,
