@@ -95,6 +95,9 @@ class Negotiate():
 
         self._register_close_transaction(order_response, strategy_id, trade_id)
         logger.info(f"Position successfully closed: {order_response}")
+
+        # Cancelling all open orders for the pair (specially for stop orders)
+        Binance().cancel_all_open_orders(self.pair, self.api_id, self.api_key)
         return True
 
     def _simulate_close_position(self, side, trade_id):

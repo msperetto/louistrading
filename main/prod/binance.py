@@ -31,6 +31,7 @@ class Binance():
     ORDER_ENDPOINT = '/fapi/v1/order'
     OPEN_ORDER_ENDPOINT = '/fapi/v1/openOrders'
     ACCOUNT_ENDPOINT = '/fapi/v2/account'
+    ALL_OPEN_ORDERS_ENDPOINT = '/fapi/v1/allOpenOrders'
 
     def get_servertime(self):
         request_path = self.SERVERTIME_ENDPOINT
@@ -70,16 +71,18 @@ class Binance():
                 # params['timestamp'] = str(serverTime)
                 # params.pop('signature')
                 # self.sign_request(params, b_id, b_sk)
+        elif type_req == 'delete':
+            try:
+                return requests.delete(self.BASE_ENDPOINT + path, params=params,
+                                       headers={"X-MBX-APIKEY": api_id}).json()
+            except Exception as e:
+                logger.error(f'Signed request error: {e}')
         else:
             try:
                 return requests.post(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
                 logger.error(f'Signed request error: {e}')
-                # serverTime = self.get_servertime()
-                # params['timestamp'] = str(serverTime)
-                # params.pop('signature')
-                # self.sign_request(params, b_id, b_sk)
 
 
     def get_all_symbols(self):
@@ -353,3 +356,16 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
         return self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+
+    def cancel_all_open_orders(self, symbol, b_id, b_sk):
+        endpoint = self.ALL_OPEN_ORDERS_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'timestamp': str(self.get_servertime())
+        }
+        response = self.run_signed_request(endpoint, params, 'delete', b_id, b_sk)
+        if 'code' in response.keys():
+            logger.error(f'Error deleting all open orders for symbol {symbol}: {response}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error deleting all open orders: {response}")
+        else:
+            return response
