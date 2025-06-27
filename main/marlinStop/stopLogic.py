@@ -110,7 +110,7 @@ class StopManager():
         """
         try:
             closed_orders = Binance().query_account_trade_list(
-                symbol=self.pair, startTime, b_id=self.api_id, b_sk=self.api_key)
+                symbol=self.pair, startTime=startTime, b_id=self.api_id, b_sk=self.api_key)
             return closed_orders
         except Exception as e:
             marlin_stop_logger.error(f"Error checking closed stop orders: {e}")
