@@ -47,7 +47,8 @@ class Notification(TelegramNotify):
         order_id,
         spread,
         profit,
-        ROI
+        ROI,
+        trade_type
     ):
 
         msg = f"<b>✅Closed Trade</b>:\n"

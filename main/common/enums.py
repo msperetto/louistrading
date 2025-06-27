@@ -8,6 +8,7 @@ class Environment_Type(str, Enum):
 class Operation_Type(str, Enum):
     ENTRY = "Entry"
     CLOSE = "Close"
+    STOP = "Stop"
 
 class Side_Type(str, Enum):
     LONG = "BUY"

@@ -51,7 +51,7 @@ class Negotiate():
 
         if USE_STOP_ORDERS:
             try:
-                stop_manager = StopManager(self.pair_price_precision, self.api_id, self.api_key)
+                stop_manager = StopManager(self.pair, self.pair_price_precision, self.api_id, self.api_key)
                 stop_order = stop_manager.create_stop_order(order_response, self.pair_precision)
             except Exception as e:
                 logger.error(f"Error creating stop order: {e}")
@@ -93,7 +93,7 @@ class Negotiate():
             logger.error(f"Error closing position: {order_response}")
             return False
 
-        self._register_close_transaction(order_response, strategy_id, trade_id)
+        self.register_close_transaction(order_response, strategy_id, trade_id)
         logger.info(f"Position successfully closed: {order_response}")
 
         # Cancelling all open orders for the pair (specially for stop orders)
@@ -124,13 +124,29 @@ class Negotiate():
         db.insert_order_transaction(order_response, Operation_Type.ENTRY, trade_id, avgPrice)
         return trade_id
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
+
+    def _update_order_response_when_stopped(self, order_response):
+        """
+        Updates the order response when a stop order is triggered.
+        This method sets the avgPrice, updateTime, origQty, and status fields.
+        """
+        order_response['avgPrice'] = order_response['price']
+        order_response['updateTime'] = order_response['time']
+        order_response['origQty'] = order_response['qty']
+        order_response['status'] = 'filled'
+        return order_response
         
-    def _register_close_transaction(self, order_response, strategy_id, trade_id):
+    def register_close_transaction(self, order_response, strategy_id, trade_id, close_type=Operation_Type.CLOSE.value):
         # TODO: Refactor to call order_dao.get_order_by_trade_id. Ideally, it should return an "order" object.
         trade_data = db.get_order(trade_id)
         entry_price = trade_data['entry_price']
         entry_quantity = trade_data['quantity']
         entry_volume = trade_data['entry_price'] * trade_data['quantity']
+
+        # add missing fields to order_response if order stopped
+        if close_type == Operation_Type.STOP:
+            logger.info(f"Closing position with stop order: {order_response}")
+            order_response = self._update_order_response_when_stopped(order_response)
 
         avgPrice = self._get_avgPrice(order_response)
         # Calculates profit, spread and ROI values
@@ -162,7 +178,8 @@ class Negotiate():
             order_response['orderId'],
             spread,
             profit,
-            roi
+            roi,
+            close_type
         )
         #TODO: Atualizar saldo corrent do mercado futuro numa tabela nova de saldos.
 

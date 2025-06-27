@@ -16,7 +16,8 @@ class StopManager():
     A class to handle stop order logic in a trading system.
     """
 
-    def __init__(self, pair_price_precision, api_id, api_key):
+    def __init__(self, pair, pair_price_precision=0, api_id=None, api_key=None):
+        self.pair = pair
         self.pair_price_precision = pair_price_precision
         self.api_id = api_id
         self.api_key = api_key
@@ -96,6 +97,24 @@ class StopManager():
             marlin_stop_logger.error(f"Error creating stop order: {e}")
             # TODO: notificar no telegram tambem
             return {"status": "error", "message": str(e)}
+
+    def check_closed_stop_order(self, symbol, startTime=0):
+        """
+        Check if there are any closed stop orders for the given symbol.
+
+        Args:
+            symbol (str): The trading pair symbol to check for closed stop orders.
+
+        Returns:
+            list: A list of closed stop orders for the given symbol.
+        """
+        try:
+            closed_orders = Binance().query_account_trade_list(
+                symbol=self.pair, startTime, b_id=self.api_id, b_sk=self.api_key)
+            return closed_orders
+        except Exception as e:
+            marlin_stop_logger.error(f"Error checking closed stop orders: {e}")
+            return []
 
     def register_filled_stop_order(self, order):
         marlin_stop_logger.info(f"Order filled by stop: {order}")

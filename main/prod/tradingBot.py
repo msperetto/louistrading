@@ -21,11 +21,13 @@ from prod.binance import Binance
 import os
 import logging
 import time
-from config.config import NEGOCIATION_ENV, ACCOUNT_ID
+from config.config import NEGOCIATION_ENV, ACCOUNT_ID, USE_STOP_ORDERS
 from common.enums import Environment_Type, Alert_Level
 from prod import logger
 from common.util import get_pairs_precision, get_pairs_price_precision
 from prod import notify
+from prod.negotiate import Negotiate
+from marlinStop.stopLogic import StopManager
 
 
 class TradingBot:
@@ -228,6 +230,31 @@ class TradingBot:
         # We might want to continue processing the for loop and try to close the next trade. 
         for trade in opened_trades:
             try:
+                # First check if current trade was closed by a stop order:
+                if USE_STOP_ORDERS:
+                    stop_manager = StopManager(trade.pair, self.pairs_price_precision[trade.pair], self.exchange_session.e_id, self.exchange_session.e_sk)
+                    # transform trade.open_time to milliseconds
+                    start_time = int(trade.open_time.timestamp() * 1000)
+                    closed_stop_orders = stop_manager.check_closed_stop_order(trade.pair, start_time)
+                    if closed_stop_orders:
+                        # register and notify the user about the closed stop order
+                        negotiate = Negotiate(
+                            trade.pair,
+                            self.pairs_precision[trade.pair],
+                            self.pairs_price_precision[trade.pair],
+                            self.exchange_session.e_id,
+                            self.exchange_session.e_sk
+                        )
+
+                        negotiate.register_close_transaction(
+                            closed_stop_orders[0],
+                            trade.strategy_id,
+                            trade.id,
+                            "Stop"
+                        )
+                        # Go to the next opened trade
+                        continue
+
                 strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
                 strategyClassName = globals().get(strategyObject.name)
                 #instantiate the strategy class:

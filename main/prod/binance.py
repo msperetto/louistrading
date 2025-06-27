@@ -32,6 +32,7 @@ class Binance():
     OPEN_ORDER_ENDPOINT = '/fapi/v1/openOrders'
     ACCOUNT_ENDPOINT = '/fapi/v2/account'
     ALL_OPEN_ORDERS_ENDPOINT = '/fapi/v1/allOpenOrders'
+    USER_TRADES_ENDPOINT = '/fapi/v1/userTrades'
 
     def get_servertime(self):
         request_path = self.SERVERTIME_ENDPOINT
@@ -348,6 +349,21 @@ class Binance():
             logger.error(f'erro query_order {order_info} coin: {symbol}')
         else:
             return order_info
+
+    def query_account_trade_list(self, symbol, startTime, b_id, b_sk):
+        endpoint = self.USER_TRADES_ENDPOINT
+
+        params = {
+            'symbol': symbol,
+            'startTime': startTime,
+            'timestamp': str(self.get_servertime())
+        }
+        trades = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        if 'code' in trades.keys():
+            logger.error(f'Error querying account trade list: {trades}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error querying account trade list: {trades}")
+        else:
+            return trades
 
     def get_account_info(self, b_id, b_sk):
         endpoint = self.ACCOUNT_ENDPOINT
