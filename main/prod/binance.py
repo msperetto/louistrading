@@ -380,7 +380,7 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
         response = self.run_signed_request(endpoint, params, 'delete', b_id, b_sk)
-        if 'code' in response.keys():
+        if response['code'] != 200:
             logger.error(f'Error deleting all open orders for symbol {symbol}: {response}')
             alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error deleting all open orders: {response}")
         else:
