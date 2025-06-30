@@ -63,7 +63,7 @@ class StopManager():
                     f"Error sending request to {req_url}: {e}")
                 raise Exception(f"Error processing stop request: {e}")
 
-    def create_stop_order(self, order: Dict, pair_precision) -> Dict:
+    def create_stop_order(self, order: Dict, pair_precision: int) -> Dict:
         """
         Create a stop order based on the order already executed.
         Args:
@@ -71,28 +71,34 @@ class StopManager():
             It's
         """
         marlin_stop_logger.info(f"Creating stop order for: {order}")
-        stop_price = float(order["avgPrice"]) * \
-            (1 - STOP_LOSS_PERCENTAGE) if order["side"] == Side_Type.LONG.value else float(order["avgPrice"]) * \
-            (1 + STOP_LOSS_PERCENTAGE)
-
-        stop_price = round(stop_price, self.pair_price_precision)
-
-        marlin_stop_logger.info(f"Stop price calculated: {stop_price}; Side_type.long.value: {Side_Type.LONG.value}, pair_precision: {pair_precision}")
+        avg_price = float(order["avgPrice"])
+        quantity = round(float(order["origQty"]), pair_precision)
+        original_side = order["side"]
+        stop_side = Side_Type.LONG.value if original_side == Side_Type.SHORT.value else Side_Type.SHORT.value
 
         try:
+            stop_price = self._calculate_stop_price(
+                avg_price,
+                original_side,
+                STOP_LOSS_PERCENTAGE,
+                self.pair_price_precision
+            )
+
+            marlin_stop_logger.info(
+                f"Stop price calculated: {stop_price}; Side_type.long.value: {Side_Type.LONG.value}, pair_precision: {pair_precision}")
+
             stop_order = Binance().create_stop_loss_order(
                 symbol=order["symbol"],
-                quantity=round(float(order["origQty"]), pair_precision),
-                # The side is inverted for stop orders
-                side=Side_Type.SHORT.value if order["side"] == Side_Type.LONG.value else Side_Type.LONG.value,
+                quantity=quantity,
+                side=stop_side,
                 stop_loss_price=stop_price,
                 b_id=self.api_id,
                 b_sk=self.api_key
             )
             marlin_stop_logger.info(f"Stop order created: {stop_order}")
-            
-            # TODO: checar codigo de retorno para saber se houve algum erro e notificar no telegram
+
             return stop_order
+
         except Exception as e:
             marlin_stop_logger.error(f"Error creating stop order: {e}")
             # TODO: notificar no telegram tambem
@@ -121,3 +127,24 @@ class StopManager():
         # TODO: Update database;
         # log
         # telegram
+
+    def _calculate_stop_price(self, avg_price: float, side: str, stop_loss_percentage: float, price_precision: int) -> float:
+        """
+        Calculate the stop price based on the average entry price, side of the trade, and stop loss percentage.
+        Args:
+            avg_price (float): average price.
+            side (str): 'LONG' or 'SHORT' (Side_Type.value).
+            stop_loss_percentage (float): stop percentage (ex: 0.01 para 1%).
+            price_precision (int): decimal places precision for the price.
+
+        Returns:
+            float: rounded stop price.
+        """
+        if side == Side_Type.LONG.value:
+            stop_price = avg_price * (1 - stop_loss_percentage)
+        elif side == Side_Type.SHORT.value:
+            stop_price = avg_price * (1 + stop_loss_percentage)
+        else:
+            raise ValueError(f"Invalid side: {side}")
+
+        return round(stop_price, price_precision)
