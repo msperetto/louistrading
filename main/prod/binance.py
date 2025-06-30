@@ -356,6 +356,7 @@ class Binance():
         params = {
             'symbol': symbol,
             'startTime': startTime,
+            'recvWindow': 5000,
             'timestamp': str(self.get_servertime())
         }
         trades = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
