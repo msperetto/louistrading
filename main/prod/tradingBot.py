@@ -22,7 +22,7 @@ import os
 import logging
 import time
 from config.config import NEGOCIATION_ENV, ACCOUNT_ID, USE_STOP_ORDERS
-from common.enums import Environment_Type, Alert_Level
+from common.enums import Environment_Type, Alert_Level, Operation_Type
 from prod import logger
 from common.util import get_pairs_precision, get_pairs_price_precision
 from prod import notify
@@ -232,26 +232,10 @@ class TradingBot:
             try:
                 # First check if current trade was closed by a stop order:
                 if USE_STOP_ORDERS:
-                    stop_manager = StopManager(trade.pair, self.pairs_price_precision[trade.pair], self.exchange_session.e_id, self.exchange_session.e_sk)
-                    # transform trade.open_time to milliseconds
-                    start_time = int(trade.open_time.timestamp() * 1000)
-                    closed_stop_orders = stop_manager.check_closed_stop_order(trade.pair, start_time)
-                    if closed_stop_orders:
-                        # register and notify the user about the closed stop order
-                        negotiate = Negotiate(
-                            trade.pair,
-                            self.pairs_precision[trade.pair],
-                            self.pairs_price_precision[trade.pair],
-                            self.exchange_session.e_id,
-                            self.exchange_session.e_sk
-                        )
-
-                        negotiate.register_close_transaction(
-                            closed_stop_orders[0],
-                            trade.strategy_id,
-                            trade.id,
-                            "Stop"
-                        )
+                    closed_stop_order = self._get_closed_stop_order(trade)
+                    if closed_stop_order:
+                        # Handle the closed stop order
+                        self._handle_closed_stop_order(trade, closed_stop_order)
                         # Go to the next opened trade
                         continue
 
@@ -349,3 +333,38 @@ class TradingBot:
         Update the last execution time for the given pair and strategy.
         """
         self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()
+
+    def _get_closed_stop_order(self, trade):
+        """
+        Check if there are any closed stop orders for the given trade.
+        Returns a dictionary with the closed stop orders if any, otherwise None.
+        """
+        stop_manager = StopManager(
+            trade.pair, 
+            self.pairs_price_precision[trade.pair], 
+            self.exchange_session.e_id, 
+            self.exchange_session.e_sk)
+
+        start_time = int(trade.open_time.timestamp() * 1000)
+        closed_stop_orders = stop_manager.check_closed_stop_order(trade.pair, start_time)
+        return closed_stop_orders[0] if closed_stop_orders else None
+
+    def _handle_closed_stop_order(self, trade, closed_stop_order):
+        """
+        Handle the closed stop order by registering the close transaction and notifying the user.
+        """
+        negotiate = Negotiate(
+            trade.pair,
+            self.pairs_precision[trade.pair],
+            self.pairs_price_precision[trade.pair],
+            self.exchange_session.e_id,
+            self.exchange_session.e_sk
+        )
+
+        # Register the close transaction
+        negotiate.register_close_transaction(
+            closed_stop_order,
+            trade.strategy_id,
+            trade.id,
+            Operation_Type.STOP.value
+        )
