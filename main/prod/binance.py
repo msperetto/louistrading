@@ -67,7 +67,7 @@ class Binance():
                 return requests.get(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                logger.error(f'Signed request error: {e}')
+                binance_logger.error(f'Signed request error: {e}')
                 # serverTime = self.get_servertime()
                 # params['timestamp'] = str(serverTime)
                 # params.pop('signature')
@@ -77,13 +77,13 @@ class Binance():
                 return requests.delete(self.BASE_ENDPOINT + path, params=params,
                                        headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                logger.error(f'Signed request error: {e}')
+                binance_logger.error(f'Signed request error: {e}')
         else:
             try:
                 return requests.post(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                logger.error(f'Signed request error: {e}')
+                binance_Logger.error(f'Signed request error: {e}')
 
 
     def get_all_symbols(self):
