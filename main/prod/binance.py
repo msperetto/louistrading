@@ -352,6 +352,7 @@ class Binance():
 
     def query_account_trade_list(self, symbol, startTime, b_id, b_sk):
         endpoint = self.USER_TRADES_ENDPOINT
+        binance_logger.debug(f'Query account trade list for symbol: {symbol} with startTime: {startTime}')
 
         params = {
             'symbol': symbol,
