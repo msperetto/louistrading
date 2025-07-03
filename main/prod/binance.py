@@ -65,8 +65,10 @@ class Binance():
         if type_req == 'get':
             try:
                 binance_logger.debug(f'Signed request {path}, params: {params}')
-                return requests.get(self.BASE_ENDPOINT + path, params=params,
-                                    headers={"X-MBX-APIKEY": api_id}).json()
+                response = requests.get(self.BASE_ENDPOINT + path, params=params,
+                                        headers={"X-MBX-APIKEY": api_id}).json()
+                binance_logger.debug(f'Signed request response: {response}')
+                return response
             except Exception as e:
                 binance_logger.error(f'Signed request error: {e}')
                 # serverTime = self.get_servertime()
@@ -353,7 +355,7 @@ class Binance():
 
     def query_account_trade_list(self, symbol, startTime, b_id, b_sk):
         endpoint = self.USER_TRADES_ENDPOINT
-        binance_logger.debug(f'Query account trade list for symbol: {symbol} with startTime: {startTime}')
+        binance_logger.debug(f'Query account trade list for symbol: {symbol} with startTime: {startTime}, b_id: {b_id}')
 
         params = {
             'symbol': symbol,
