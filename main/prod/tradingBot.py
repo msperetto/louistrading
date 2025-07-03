@@ -340,13 +340,14 @@ class TradingBot:
         Returns a dictionary with the closed stop orders if any, otherwise None.
         """
         stop_manager = StopManager(
+            self.setup,
             trade.pair, 
             self.pairs_price_precision[trade.pair], 
             self.exchange_session.e_id, 
             self.exchange_session.e_sk)
 
         start_time = int(trade.open_time.timestamp() * 1000)
-        closed_stop_orders = stop_manager.check_closed_stop_order(trade.pair, start_time)
+        closed_stop_orders = stop_manager.check_closed_stop_order(start_time)
         return closed_stop_orders[0] if closed_stop_orders else None
 
     def _handle_closed_stop_order(self, trade, closed_stop_order):

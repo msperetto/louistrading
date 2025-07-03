@@ -105,21 +105,20 @@ class StopManager():
             # TODO: notificar no telegram tambem
             return {"status": "error", "message": str(e)}
 
-    def check_closed_stop_order(self, symbol, startTime=0):
+    def check_closed_stop_order(self, startTime=0):
         """
         Check if there are any closed stop orders for the given symbol.
 
         Args:
-            symbol (str): The trading pair symbol to check for closed stop orders.
 
         Returns:
             list: A list of closed stop orders for the given symbol.
         """
         try:
-            marlin_stop_logger.debug(f"Checking closed stop orders for symbol: {symbol} self.pair: {self.pair} with startTime: {startTime}")
+            marlin_stop_logger.debug(f"Checking closed stop orders for symbol: {self.pair} with startTime: {startTime}")
             closed_orders = Binance().query_account_trade_list(
-                symbol=symbol, startTime=startTime, b_id=self.api_id, b_sk=self.api_key)
-            marlin_stop_logger.debug(f"Closed orders for {symbol}: {closed_orders}")
+                symbol=self.pair, startTime=startTime, b_id=self.api_id, b_sk=self.api_key)
+            marlin_stop_logger.debug(f"Closed orders for {self.pair}: {closed_orders}")
             return closed_orders
         except Exception as e:
             marlin_stop_logger.error(f"Error checking closed stop orders: {e}")
