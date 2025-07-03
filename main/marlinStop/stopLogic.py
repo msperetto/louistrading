@@ -116,7 +116,7 @@ class StopManager():
             list: A list of closed stop orders for the given symbol.
         """
         try:
-            marlin_stop_logger.debug(f"Checking closed stop orders for symbol: {symbol} with startTime: {startTime}")
+            marlin_stop_logger.debug(f"Checking closed stop orders for symbol: {symbol} self.pair: {self.pair} with startTime: {startTime}")
             closed_orders = Binance().query_account_trade_list(
                 symbol=symbol, startTime=startTime, b_id=self.api_id, b_sk=self.api_key)
             marlin_stop_logger.debug(f"Closed orders for {symbol}: {closed_orders}")
