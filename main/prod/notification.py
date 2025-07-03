@@ -78,7 +78,8 @@ class Notification(TelegramNotify):
         msg += f"Volume: USDT {round(float(volume), 2)}\n"
         msg += f"Quantity: {quantity}\n"
         msg += f"Average Order Price: USDT {average_price}\n"
-        msg += f"Order ID Sell: {order_id}\n\n"
+        msg += f"Order ID Sell: {order_id}\n"
+        msg += f"Trade Type: {trade_type}\n\n"
 
         msg += f"Spread: {round(float(spread)*100, 2)}%\n"
         msg += f"Profit: USDT {round(float(profit), 2)}\n"
