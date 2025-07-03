@@ -360,8 +360,10 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
         trades = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        binance_logger.debug(f'Query account trade list response: {trades}')
         # check if trades is a dict and contains 'code' key, which indicates an error
         if isinstance(trades, dict) and 'code' in trades:
+            binance_logger.debug(f'Error querying account trade list: {trades}')
             logger.error(f'Error querying account trade list: {trades}')
             alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error querying account trade list: {trades}")
         else:
