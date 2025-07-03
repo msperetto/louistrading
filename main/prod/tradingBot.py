@@ -355,6 +355,7 @@ class TradingBot:
         Handle the closed stop order by registering the close transaction and notifying the user.
         """
         negotiate = Negotiate(
+            self.setup,
             trade.pair,
             self.pairs_precision[trade.pair],
             self.pairs_price_precision[trade.pair],
