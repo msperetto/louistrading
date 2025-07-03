@@ -16,7 +16,8 @@ class StopManager():
     A class to handle stop order logic in a trading system.
     """
 
-    def __init__(self, pair, pair_price_precision=0, api_id=None, api_key=None):
+    def __init__(self, setup, pair, pair_price_precision=0, api_id=None, api_key=None):
+        self.setup = setup
         self.pair = pair
         self.pair_price_precision = pair_price_precision
         self.api_id = api_id
@@ -80,7 +81,7 @@ class StopManager():
             stop_price = self._calculate_stop_price(
                 avg_price,
                 original_side,
-                STOP_LOSS_PERCENTAGE,
+                self.setup.stop_loss_percentage,
                 self.pair_price_precision
             )
 

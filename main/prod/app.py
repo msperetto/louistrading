@@ -16,7 +16,7 @@ class Main():
         import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
 
         base_config = db.get_initial_config()
-        self.setup = Env_setup(base_config["max_open_orders"], base_config["order_value"], base_config["max_risk"], base_config["opperation_active"], base_config["leverage_long_value"], base_config["leverage_short_value"])
+        self.setup = Env_setup(base_config)
         self.exchange_session = Login("binance")
         self.exchange_session.login_database()
         self.strategies = [Strategy_B2(), Strategy_SH7()]

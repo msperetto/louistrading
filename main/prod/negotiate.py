@@ -9,10 +9,10 @@ from common.enums import Environment_Type, Side_Type
 from prod import logger, notify
 from common.constants import DATETIME_FORMAT
 from marlinStop.stopLogic import StopManager
-from config.config import USE_STOP_ORDERS
 
 class Negotiate():
-    def __init__(self, pair, pair_precision, pair_price_precision, api_id, api_key):
+    def __init__(self, setup, pair, pair_precision, pair_price_precision, api_id, api_key):
+        self.setup = setup
         self.pair = pair
         self.pair_precision = pair_precision
         self.pair_price_precision = pair_price_precision
@@ -49,9 +49,9 @@ class Negotiate():
 
         logger.info(f"Position successfully opened: {order_response}")
 
-        if USE_STOP_ORDERS:
+        if self.setup.use_stop_loss_orders:
             try:
-                stop_manager = StopManager(self.pair, self.pair_price_precision, self.api_id, self.api_key)
+                stop_manager = StopManager(self.setup, self.pair, self.pair_price_precision, self.api_id, self.api_key)
                 stop_order = stop_manager.create_stop_order(order_response, self.pair_precision)
             except Exception as e:
                 logger.error(f"Error creating stop order: {e}")

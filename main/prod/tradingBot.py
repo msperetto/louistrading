@@ -21,7 +21,7 @@ from prod.binance import Binance
 import os
 import logging
 import time
-from config.config import NEGOCIATION_ENV, ACCOUNT_ID, USE_STOP_ORDERS
+from config.config import NEGOCIATION_ENV, ACCOUNT_ID
 from common.enums import Environment_Type, Alert_Level, Operation_Type
 from prod import logger
 from common.util import get_pairs_precision, get_pairs_price_precision
@@ -197,7 +197,7 @@ class TradingBot:
                         final_dataset,
                         self.exchange_session.e_id,
                         self.exchange_session.e_sk,
-                        self.setup.order_value,
+                        self.setup,
                         strategy
                     )
                     if manager.try_open_position():
@@ -231,7 +231,7 @@ class TradingBot:
         for trade in opened_trades:
             try:
                 # First check if current trade was closed by a stop order:
-                if USE_STOP_ORDERS:
+                if self.setup.use_stop_loss_orders:
                     closed_stop_order = self._get_closed_stop_order(trade)
                     if closed_stop_order:
                         # Handle the closed stop order
@@ -268,7 +268,7 @@ class TradingBot:
                     final_dataset,
                     self.exchange_session.e_id,
                     self.exchange_session.e_sk,
-                    self.setup.order_value,
+                    self.setup,
                     strategy
                 )
                 if manager.try_close_position(strategy, trade.id):
