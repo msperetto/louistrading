@@ -7,8 +7,6 @@ from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.login import Login
 import logging
 from prod import logger
-from prod.binance import Binance
-from time import sleep
 
 
 #  TODO: 
@@ -23,16 +21,6 @@ class Main():
         self.exchange_session = Login("binance")
         self.exchange_session.login_database()
         
-
-        check_last_trades = Binance().query_account_trade_list(
-            symbol='XRPUSDT', 
-            startTime=1751550880232, 
-            b_id=self.exchange_session.e_id, 
-            b_sk=self.exchange_session.e_sk
-        )
-        logger.info(f"Check last trades: {check_last_trades}")
-        sleep(10)
-
         self.strategies = [Strategy_B2(), Strategy_SH7()]
 
         self.bot = TradingBot(self.strategies, db, self.setup, self.exchange_session)
