@@ -59,6 +59,9 @@ stop_thread_logger = setup_logger('stop_thread', 'stop_thread.log')
 # Setup Binance logger
 binance_logger = setup_logger('binance', 'binance.log')
 
+# Setup test logger
+test_logger = setup_logger('test', 'test.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()
