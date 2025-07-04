@@ -23,7 +23,11 @@ CREATE TABLE IF NOT EXISTS public.initial_config (
     max_risk real,
     opperation_active boolean,
     leverage_long_value real,
-    leverage_short_value real
+    leverage_short_value real,
+    use_stop_loss_orders boolean,
+    stop_loss_percentage real,
+    use_stop_gain_orders boolean,
+    stop_gain_percentage real,
 );
 
 -- Tabela pair
@@ -129,6 +133,8 @@ BEGIN
             status CHARACTER VARYING(15) NOT NULL,
             fees REAL,
             trade_id INTEGER NOT NULL,
+            loss_stopped BOOLEAN DEFAULT FALSE,
+            gain_stopped BOOLEAN DEFAULT FALSE,
             PRIMARY KEY (id)
         );
 
