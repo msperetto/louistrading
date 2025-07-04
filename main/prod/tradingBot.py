@@ -235,7 +235,7 @@ class TradingBot:
                     closed_stop_order = self._get_closed_stop_order(trade)
                     if closed_stop_order:
                         # Handle the closed stop order
-                        self._handle_closed_stop_order(trade, closed_stop_order)
+                        self._handle_closed_stop_order(trade, closed_stop_order, loss_stopped=True)
                         # Go to the next opened trade
                         continue
 
@@ -350,7 +350,7 @@ class TradingBot:
         closed_stop_orders = stop_manager.check_closed_stop_order(start_time)
         return closed_stop_orders[0] if closed_stop_orders else None
 
-    def _handle_closed_stop_order(self, trade, closed_stop_order):
+    def _handle_closed_stop_order(self, trade, closed_stop_order, loss_stopped=False, gain_stopped=False):
         """
         Handle the closed stop order by registering the close transaction and notifying the user.
         """
@@ -368,5 +368,7 @@ class TradingBot:
             closed_stop_order,
             trade.strategy_id,
             trade.id,
-            Operation_Type.STOP.value
+            Operation_Type.STOP.value,
+            loss_stopped,
+            gain_stopped
         )

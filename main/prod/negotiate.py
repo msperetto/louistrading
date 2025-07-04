@@ -133,10 +133,10 @@ class Negotiate():
         order_response['avgPrice'] = order_response['price']
         order_response['updateTime'] = order_response['time']
         order_response['origQty'] = order_response['qty']
-        order_response['status'] = 'filled'
+        order_response['status'] = 'FILLED'
         return order_response
         
-    def register_close_transaction(self, order_response, strategy_id, trade_id, close_type=Operation_Type.CLOSE.value):
+    def register_close_transaction(self, order_response, strategy_id, trade_id, close_type=Operation_Type.CLOSE.value, loss_stopped=False, gain_stopped=False):
         # TODO: Refactor to call order_dao.get_order_by_trade_id. Ideally, it should return an "order" object.
         trade_data = db.get_order(trade_id)
         entry_price = trade_data['entry_price']
@@ -159,7 +159,7 @@ class Negotiate():
 
         # Updates DB tables.
         db.update_trade_transaction(trade_id, order_response, profit, spread, roi)
-        db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id, avgPrice)
+        db.insert_order_transaction(order_response, Operation_Type.CLOSE, trade_id, avgPrice, loss_stopped, gain_stopped)
 
         notify.notify_closed_trade(
             self.pair,
