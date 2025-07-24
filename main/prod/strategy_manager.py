@@ -23,8 +23,9 @@ from common.indicators_catalog import indicators_catalog
 class StrategyManager():
 
     #modificar aqui para ser somente uma estratégia
-    def __init__(self, pair, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
+    def __init__(self, pair, pair_precision, dataset, api_id, api_key, order_value, strategy, stop_loss = None, take_profit = None):
         self.pair = pair
+        self.pair_precision = pair_precision
         self.data = dataset
         self.api_id = api_id
         self.api_key = api_key
@@ -32,7 +33,7 @@ class StrategyManager():
         self.strategy = strategy
         self.stop_loss = stop_loss
         self.take_profit = take_profit
-        self.negotiate = Negotiate(self.pair, self.api_id, self.api_key)
+        self.negotiate = Negotiate(self.pair, self.pair_precision, self.api_id, self.api_key)
         self.classes = {}
         self.set_support_objects()
 
@@ -127,9 +128,10 @@ class StrategyManager():
 
     def try_close_position(self, strategy, trade_id):
         # Gets the Side_Type.LONG or Side_Type.SHORT based on the strategy type.
-        side = get_side(self.strategy) 
+        side = get_side(self.strategy, closing=True) 
         if side is None: return False
 
         if self.strategy.shouldClose():
-            return self.negotiate.close_position(side, self.order_value, strategy, trade_id)
+            close_strategy = strategy_dao.get_strategy_by_name(strategy.__class__.__name__)
+            return self.negotiate.close_position(side, self.order_value, close_strategy.id, trade_id)
         return False

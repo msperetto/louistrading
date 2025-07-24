@@ -13,10 +13,10 @@ from datetime import datetime
 import json
 import logging
 from common.dao import alert_dao
-from common.enums import Environment_Type
+from common.enums import Environment_Type, Alert_Level
 from config.config import NEGOCIATION_ENV
+from prod import logger
 
-logger = logging.getLogger(__name__)
 
 class Binance():
 
@@ -96,6 +96,16 @@ class Binance():
 
         
         return result
+
+    def get_exchange_info(self):
+        endpoint = self.EXCHANGEINFO_ENDPOINT
+        try:
+            exchange_info = requests.get(
+                self.BASE_ENDPOINT + endpoint).json()
+        except Exception as e:
+            logger.error(f'Error getting exchange info: {e}')
+        
+        return exchange_info
 
     
 
@@ -218,7 +228,7 @@ class Binance():
         leverage = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in leverage.keys():
             logger.error(f'Error changing leverage: {leverage}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error changing leverage: {leverage}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error changing leverage: {leverage}")
         else:
             return leverage
 
@@ -229,32 +239,49 @@ class Binance():
             'side': side, #"BUY" or "SELL"
             'type': 'MARKET',
             'quantity': quantity,
+            'newOrderRespType': 'RESULT',
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys(): # erro no servidor binance
             logger.error(f'Error opening position: {position}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error opening position: {position}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error opening position: {position}")
         else:
             return position
 
-    def close_position(self, symbol, side, b_id, b_sk):
+    def close_position(self, symbol, entry_quantity, side, b_id, b_sk):
         endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
             'side': side, #"BUY" or "SELL"
             'type': 'MARKET',
-            'closePosition': True,
+            'quantity': entry_quantity,
+            'newOrderRespType': 'RESULT',
             'timestamp': str(self.get_servertime()),
             'recvWindow': 3000
         }
         position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
         if 'code' in position.keys():
             logger.error(f'Error closing position: {position}')
-            alert_dao.insert_alert(symbol, "Warning", True, f"Error closing position: {position}")
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error closing position: {position}")
         else:
             return position
+
+    def get_order_by_id(self, symbol, orderId, b_id, b_sk):
+        endpoint = self.ORDER_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'orderId': orderId,
+            'recvWindow': 5000,
+            'timestamp': str(self.get_servertime())
+        }
+        order_info = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        if 'code' in order_info.keys():
+            logger.error(f'Error getting order by id: {order_info}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error getting order by id: {order_info}")
+        else:
+            return order_info
 
     def get_open_orders(self, b_id, b_sk):
         endpoint = self.OPEN_ORDER_ENDPOINT

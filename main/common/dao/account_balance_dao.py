@@ -1,6 +1,6 @@
 from psycopg import connect, rows
 from config.config import DEV_ENV_CON
-from common.domain.account_balance import Account_balance
+from common.domain.account_balance import AccountBalance
 
 def insert_account_balance(account_id, account_balance, margin_ratio):
     with connect(DEV_ENV_CON) as conn:
@@ -37,12 +37,10 @@ def get_account_balance(account_id):
             """, (account_id,))
             row = cur.fetchone()
             if row:
-                return [
-                    Account_balance(
-                        account_id=row["account_id"],
-                        account_balance=row["usdt_balance"],
-                        margin_ratio=row["margin_ratio"],
-                        date_updated=row["date_updated"]
-                    )
-                ]            
+                return AccountBalance(
+                    account_id=row["account_id"],
+                    account_balance=row["usdt_balance"],
+                    margin_ratio=row["margin_ratio"],
+                    date_updated=row["last_update"]
+                )
             return None

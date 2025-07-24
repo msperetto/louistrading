@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from collections import OrderedDict
-from common.dao import strategy_dao, trade_dao
+from common.dao import strategy_dao, trade_dao, account_balance_dao, alert_dao
 from common.dao import database_operations as db
 from common import management
 from prod.dataset import Dataset
@@ -21,14 +21,16 @@ from prod.binance import Binance
 import os
 import logging
 import time
-from config.config import NEGOCIATION_ENV
-from common.enums import Environment_Type
+from config.config import NEGOCIATION_ENV, ACCOUNT_ID
+from common.enums import Environment_Type, Alert_Level
+from prod import logger
+from common.util import get_pairs_precision
+from prod import notify
 
-logger = logging.getLogger(__name__)
 
 class TradingBot:
 
-    MINIMUM_BALANCE_INCREMENT = 1.5
+    MINIMUM_BALANCE_INCREMENT = 1.2
 
     def __init__(self, strategies, db, setup, exchange_session):
         # Import all strategies from the released strategies folder.
@@ -40,12 +42,24 @@ class TradingBot:
         self.exchange_session = exchange_session
         # dict to track last execution by pair and strategy. Dict structure: { (pair, strategy): datetime }
         self.last_executions = {}
+        # TODO: get margin ratio correctly from the exchange
+        self.margin_ratio = 2
+        
         self.current_balance = self._get_current_balance()
+        # if account balance is not registered in db, insert it, else update it
+        if account_balance_dao.get_account_balance(ACCOUNT_ID) is None:
+            account_balance_dao.insert_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
+        else:
+            account_balance_dao.update_account_balance(ACCOUNT_ID, self.current_balance, self.margin_ratio)
         self.running = True
+        self.stopped = False # variable to control if the bot is fully stopped, so we can handle the shutdown/hardreset process correctly 
 
         # setting binance initial leverage value
         for pair in self.db.get_active_pairs():
             self._set_leverage(pair, self.setup.leverage_long_value)
+
+        # getting decimal precision by pair:
+        self.pairs_precision = get_pairs_precision(self.db.get_active_pairs())
 
     def stop(self):
         logger.info("Stopping bot...")
@@ -58,6 +72,7 @@ class TradingBot:
     def run(self):
         while self.running:
             try:
+                self.stopped = False
                 # register execution time to monitor bot alive status:
                 db.update_bot_execution_control()
 
@@ -67,11 +82,19 @@ class TradingBot:
                 self.handle_new_trades()
 
                 # Pause the loop for 1 minute before trying again
-                time.sleep(60)
+                time.sleep(2)
+                logger.debug(f"Bot running after sleep. self.stopped: {self.stopped}")
+                logger.debug(f"Bot running status: {self.running}")
                 while not self.running:
+                    logger.info("Bot is paused. Waiting for 20 seconds...")
+                    self.stopped = True
+                    logger.debug(f"Bot stopped status: {self.stopped}")
                     print("Bot is paused. Waiting for 20 seconds...")
                     time.sleep(20)
             except Exception as e:
+                notify.send_message_alert(
+                    f"An error occurred in the bot main loop(run): \n {e}. \n Please check the logs for more details."
+                )
                 logger.error(f"An error occurred: {e}")
                 logger.info("Retrying in 2 minutes...")
                 time.sleep(120)
@@ -139,46 +162,58 @@ class TradingBot:
 
                 # TODO: Checar "saldo" (talvez collateral) numa tabela interna?.
                 # Prevenir novas operações caso não tenha saldo suficiente.
-                
-                # Check if the strategy has been executed recently
-                if not self.should_run_strategy(pair, strategy):
-                    # Jump to the next strategy for this pair.
-                    continue
+
+                try:
                     
-                logger.debug(f"handle_new_trades - pair: {pair} - strategy: {strategy}")
-                logger.debug(f"current balance: {self.current_balance}")
+                    # Check if the strategy has been executed recently
+                    if not self.should_run_strategy(pair, strategy):
+                        # Jump to the next strategy for this pair.
+                        continue
+                        
+                    logger.debug(f"handle_new_trades - pair: {pair} - strategy: {strategy}")
+                    logger.debug(f"current balance: {self.current_balance}")
 
-                #Check balance; Stop new trades if balance is below the minimum required.
-                if self._is_balance_below_minimum():
-                    logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
-                    return
+                    #Check balance; Stop new trades if balance is below the minimum required.
+                    if self._is_balance_below_minimum():
+                        logger.info(f"Current balance is below the minimum required. Current balance: {self.current_balance}")
+                        return
 
-                # Updates the last run time
-                self.last_executions[(pair, strategy)] = datetime.now()
+                    # Updates the last run time
+                    self._update_last_execution(pair, strategy)
 
-                if NEGOCIATION_ENV == Environment_Type.TEST:
-                    final_dataset = self.create_combined_dataset(pair, strategy)
-                    final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-                else:
-                    final_dataset = self.create_combined_dataset(pair, strategy)
+                    final_dataset = self._prepare_final_dataset(pair, strategy)
 
-                #logging for debugging
-                logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
-                logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
+                    #logging for debugging
+                    logger.info(f"TRYING TO OPEN POSITION - Pair: {pair}")
+                    logger.debug(f"Pair: {pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
 
-                manager = StrategyManager(
-                    pair,
-                    final_dataset,
-                    self.exchange_session.e_id,
-                    self.exchange_session.e_sk,
-                    self.setup.order_value,
-                    strategy
-                )
-                if manager.try_open_position():
-                    available_orders -= 1
-                    self.current_balance = self._get_current_balance()
-                    # If the position was opened, then jump to the next pair.
-                    break
+                    manager = StrategyManager(
+                        pair,
+                        self.pairs_precision[pair],
+                        final_dataset,
+                        self.exchange_session.e_id,
+                        self.exchange_session.e_sk,
+                        self.setup.order_value,
+                        strategy
+                    )
+                    if manager.try_open_position():
+                        available_orders -= 1
+                        self.current_balance = self._get_current_balance()
+                        # If the position was opened, then jump to the next pair.
+                        break
+                except Exception as e:
+                    logger.error(f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}")
+                    alert_dao.insert_alert(
+                        pair,
+                        Alert_Level.ERROR,
+                        True,
+                        f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}"
+                    )
+                    # Notify the user about the error
+                    notify.send_message_alert(
+                        f"An error occurred while trying to open position for pair {pair} with strategy {strategy}: {e}"
+                    )
+                    continue
 
 
     def handle_opened_trades(self):
@@ -190,47 +225,59 @@ class TradingBot:
         # TODO: What if an exception occurs in a specific trade?
         # We might want to continue processing the for loop and try to close the next trade. 
         for trade in opened_trades:
-            strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
-            strategyClassName = globals().get(strategyObject.name)
-            #instantiate the strategy class:
-            strategy = strategyClassName()
+            try:
+                strategyObject = strategy_dao.get_strategy_by_id(trade.strategy_id)
+                strategyClassName = globals().get(strategyObject.name)
+                #instantiate the strategy class:
+                strategy = strategyClassName()
 
-            # Check if the strategy has been opened in the last candle
-            if not self.should_run_strategy(trade.pair, strategy):
-                # Jump to the next opened trade.
+                # Check if the strategy has been opened in the last candle
+                if not self.should_run_strategy(trade.pair, strategy):
+                    # Jump to the next opened trade.
+                    continue
+
+                logger.debug(f"handle_opened_trades - pair: {trade.pair}")
+                logger.debug(f"current balance: {self.current_balance}")
+
+                # Updates the last run time
+                self._update_last_execution(trade.pair, strategy)
+
+                final_dataset = self._prepare_final_dataset(trade.pair, strategy)
+
+                #logging for debugging
+                logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")
+                logger.debug(f"Pair: {trade.pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
+
+                manager = StrategyManager(
+                    trade.pair,
+                    self.pairs_precision[trade.pair],
+                    final_dataset,
+                    self.exchange_session.e_id,
+                    self.exchange_session.e_sk,
+                    self.setup.order_value,
+                    strategy
+                )
+                if manager.try_close_position(strategy, trade.id):
+                    self.current_balance = self._get_current_balance()
+            except Exception as e:
+                logger.error(f"An error occurred while trying to close position for trade {trade.id}: {e}")
+                alert_dao.insert_alert(
+                    trade.pair,
+                    Alert_Level.ERROR,
+                    True,
+                    f"An error occurred while trying to close position for trade {trade.id}: {e}"
+                )
+                notify.send_message_alert(
+                    f"An error occurred while trying to close position for trade {trade.id}: {e}"
+                )
                 continue
-
-            logger.debug(f"handle_opened_trades - pair: {trade.pair}")
-            logger.debug(f"current balance: {self.current_balance}")
-
-            if NEGOCIATION_ENV == Environment_Type.TEST:
-                final_dataset = self.create_combined_dataset(trade.pair, strategy)
-                final_dataset = TestNegociationMain().add_fake_row(final_dataset)
-            else:
-                final_dataset = self.create_combined_dataset(trade.pair, strategy)
-
-            #logging for debugging
-            logger.info(f"TRYING TO CLOSE POSITION - Pair: {trade.pair}")
-            logger.debug(f"Pair: {trade.pair} - datetime: {datetime.now()} - final_dataset:\n{final_dataset}")
-
-            manager = StrategyManager(
-                trade.pair,
-                final_dataset,
-                self.exchange_session.e_id,
-                self.exchange_session.e_sk,
-                self.setup.order_value,
-                strategy
-            )
-            if manager.try_close_position(strategy, trade.id):
-                self.current_balance = self._get_current_balance()
-
 
 
     def should_run_strategy(self, pair, strategy):
         """
         Check whether the strategy should be executed based on the interval.
         """
-        last_execution = self.last_executions.get((pair, strategy))
+        last_execution = self.last_executions.get((pair, strategy.__class__.__name__))
         # If it has never been run, it should run.
         if not last_execution:
             return True
@@ -248,9 +295,17 @@ class TradingBot:
 
         # Only executes if the required time has already passed.
         return now > next_execution_time
+
+    def _prepare_final_dataset(self, pair, strategy):
+        dataset = self.create_combined_dataset(pair, strategy)
+        if NEGOCIATION_ENV == Environment_Type.TEST:
+            return TestNegociationMain().add_fake_row(dataset)
+        return dataset
     
     def _get_current_balance(self):
-        return float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+        account_balance = float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
+        account_balance_dao.update_account_balance(ACCOUNT_ID, account_balance, self.margin_ratio)
+        return account_balance
 
     def _is_balance_below_minimum(self):
         return self.current_balance < (self.setup.order_value * self.MINIMUM_BALANCE_INCREMENT)
@@ -258,3 +313,9 @@ class TradingBot:
     def _set_leverage(self, pair, leverage):
         if NEGOCIATION_ENV == Environment_Type.PROD:
             Binance().change_initial_leverage(pair, int(leverage), self.exchange_session.e_id, self.exchange_session.e_sk)
+
+    def _update_last_execution(self, pair, strategy):
+        """
+        Update the last execution time for the given pair and strategy.
+        """
+        self.last_executions[(pair, strategy.__class__.__name__)] = datetime.now()

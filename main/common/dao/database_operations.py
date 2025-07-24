@@ -2,6 +2,7 @@ import psycopg
 import csv
 from datetime import datetime
 from config.config import DEV_ENV_CON
+from common.enums import Side_Type
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
 def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = ""):
@@ -71,6 +72,14 @@ def get_exchange_config(exchange: str):
                 """,(exchange,))
             return cur.fetchone()
 
+def get_bot_execution_control():
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT * FROM bot_execution_control WHERE line = 1;
+                """)
+            return cur.fetchone()
+
 def get_initial_config():
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
@@ -79,15 +88,15 @@ def get_initial_config():
                 """)
             return cur.fetchone()
    
-def insert_order_transaction(order_response, operation_type, trade_id, fees = 0.001):
+def insert_order_transaction(order_response, operation_type, trade_id, avgPrice,fees = 0.001):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO order_control(order_id, date, pair, operation_type, side, entry_price, quantity,
                                               status, fees, trade_id)
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-            """, (order_response['orderId'], order_response['updateTime'], order_response['symbol'], operation_type,
-                   order_response['positionSide'], order_response['avgPrice'], order_response['origQty'],
+            """, (order_response['orderId'], datetime.fromtimestamp(order_response['updateTime'] / 1000), order_response['symbol'], operation_type,
+                   Side_Type(order_response['side']).value.lower(), avgPrice, order_response['origQty'],
                    order_response['status'], fees, trade_id))
             conn.commit()
 
@@ -98,7 +107,7 @@ def insert_trade_transaction(strategy_id, open, order_response, profit = None, s
                 INSERT INTO trade(open, open_time, side, pair, strategy_id)
                 VALUES(%s, %s, %s, %s, %s)
                 RETURNING id, pair;
-            """, (open, order_response['updateTime'], order_response['positionSide'], order_response['symbol'], strategy_id))
+            """, (open, datetime.fromtimestamp(order_response['updateTime'] / 1000), Side_Type(order_response['side']).name, order_response['symbol'], strategy_id))
             conn.commit()
             return cur.fetchone()[0]
 
@@ -110,7 +119,7 @@ def get_order(trade_id):
                 """,(trade_id,))
             return cur.fetchone()
 
-def update_trade_transaction(trade_id, strategy_id, order_response, profit = None, spread=None, roi=None):
+def update_trade_transaction(trade_id, order_response, profit = None, spread=None, roi=None):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -121,7 +130,7 @@ def update_trade_transaction(trade_id, strategy_id, order_response, profit = Non
                     spread = %s,
                     roi = %s
                 WHERE id = %s;
-            """, (False, order_response['updateTime'], profit, spread, roi, trade_id))
+            """, (False, datetime.fromtimestamp(order_response['updateTime'] / 1000), profit, spread, roi, trade_id))
             conn.commit()
 
 

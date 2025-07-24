@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class Account_balance:
+class AccountBalance:
     def __init__(self,
                  account_id: int,
                  account_balance: float,

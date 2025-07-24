@@ -9,6 +9,7 @@ main/common/python/__pycache__/
 main/prod/__pycache__/
 main/prod/python/__pycache__/
 main/prod/logs/*
+*.log
 *.pyc
 .DS_Store
 .dockerignore
@@ -18,3 +19,5 @@ main/prod/logs/*
 *.key
 /run/secrets/*
 docker-compose.override.yml
+decrypt_secret.txt
+*secret.txt

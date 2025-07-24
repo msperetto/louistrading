@@ -1,11 +1,11 @@
 # Commands to run services below:
 # docker-compose run --rm --service-ports app
-# docker-compose up -d db
+# docker compose up -d db
 # docker-compose run --rm backtest
 # Enter database via terminal:
 # docker exec -it noshirt-postgres psql -U postgres -d noshirt
 
-services:
+services: 
   app:
     build: .
     container_name: noshirt_app
@@ -26,15 +26,22 @@ services:
   api:
     build: .
     container_name: noshirt_api
+    restart: always
     volumes:
       - .:/noshirt
     environment:
+      - ENVIRONMENT=AWS
       - PYTHONPATH=/noshirt/main
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - GROUP_ID_OPERATIONS=${GROUP_ID_OPERATIONS}
+      - GROUP_ID_ALERTS=${GROUP_ID_ALERTS}
       - POSTGRES_DB=noshirt
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
-    command: uvicorn main.prod.api:api --reload --host=0.0.0.0
+    secrets:
+      - decrypt_secret
+    command: uvicorn main.prod.api:api --host=0.0.0.0
     ports:
       - "8000:8000"
     depends_on:
@@ -46,7 +53,7 @@ services:
     volumes:
       - .:/noshirt
     environment:
-      - ENVIRONMENT=production
+      - ENVIRONMENT=AWS
       - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
       - EC2_PUBLIC_IP=${EC2_PUBLIC_IP}
       - PYTHONPATH=/noshirt/main
@@ -90,5 +97,8 @@ services:
       - "5431:5432"
     # entrypoint: ["bin/bash", "/resources/init-db.sh"]
 
+secrets:
+  decrypt_secret:
+    file: ./decrypt_secret.txt
 volumes:
   noshirt_postgres_data:
