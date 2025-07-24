@@ -187,34 +187,6 @@ class Main():
             )
             self.save_report(stats)
 
-    def run_intraday_trend_optimization(self, bt):
-        combinations = product(
-            self.filter_buy_classes,
-            self.trigger_buy_classes,
-            self.trade_buy_classes,
-            self.filter_sell_classes,
-            self.trigger_sell_classes,
-            self.trade_sell_classes,
-            self.trend_classes
-        )
-
-        for combination in combinations:
-            filter_buy_class, trigger_buy_class, trade_buy_class, filter_sell_class, trigger_sell_class, trade_sell_class, trend_class = combination
-            stats, heatmap = bt.optimize(
-                **self.get_optimization_params(),
-                filter_buy_class=filter_buy_class,
-                trigger_buy_class=trigger_buy_class,
-                trade_buy_class=trade_buy_class,
-                filter_sell_class=filter_sell_class,
-                trigger_sell_class=trigger_sell_class,
-                trade_sell_class=trade_sell_class,
-                trend_class=trend_class,
-                operation_type=self.config["operation_type"],
-                maximize = custom_score_optimization,
-                return_heatmap=True
-            )
-            self.save_report(stats)
-
     def get_strategy_class_name(self, strategy):
         return strategy.__class__.__name__
 
