@@ -15,7 +15,7 @@ import logging
 from common.dao import alert_dao
 from common.enums import Environment_Type, Alert_Level
 from config.config import NEGOCIATION_ENV
-from prod import logger
+from prod import logger, binance_logger
 
 
 class Binance():
@@ -31,6 +31,8 @@ class Binance():
     ORDER_ENDPOINT = '/fapi/v1/order'
     OPEN_ORDER_ENDPOINT = '/fapi/v1/openOrders'
     ACCOUNT_ENDPOINT = '/fapi/v2/account'
+    ALL_OPEN_ORDERS_ENDPOINT = '/fapi/v1/allOpenOrders'
+    USER_TRADES_ENDPOINT = '/fapi/v1/userTrades'
 
     def get_servertime(self):
         request_path = self.SERVERTIME_ENDPOINT
@@ -62,24 +64,29 @@ class Binance():
         api_id = self.sign_request(params, b_id, b_sk)
         if type_req == 'get':
             try:
-                return requests.get(self.BASE_ENDPOINT + path, params=params,
-                                    headers={"X-MBX-APIKEY": api_id}).json()
+                binance_logger.debug(f'Signed request {path}, params: {params}')
+                response = requests.get(self.BASE_ENDPOINT + path, params=params,
+                                        headers={"X-MBX-APIKEY": api_id}).json()
+                binance_logger.debug(f'Signed request response: {response}')
+                return response
             except Exception as e:
-                logger.error(f'Signed request error: {e}')
+                binance_logger.error(f'Signed request error: {e}')
                 # serverTime = self.get_servertime()
                 # params['timestamp'] = str(serverTime)
                 # params.pop('signature')
                 # self.sign_request(params, b_id, b_sk)
+        elif type_req == 'delete':
+            try:
+                return requests.delete(self.BASE_ENDPOINT + path, params=params,
+                                       headers={"X-MBX-APIKEY": api_id}).json()
+            except Exception as e:
+                binance_logger.error(f'Signed request error: {e}')
         else:
             try:
                 return requests.post(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                logger.error(f'Signed request error: {e}')
-                # serverTime = self.get_servertime()
-                # params['timestamp'] = str(serverTime)
-                # params.pop('signature')
-                # self.sign_request(params, b_id, b_sk)
+                binance_Logger.error(f'Signed request error: {e}')
 
 
     def get_all_symbols(self):
@@ -250,11 +257,46 @@ class Binance():
         else:
             return position
 
+    def create_stop_loss_order(self, symbol, quantity, side, stop_loss_price, b_id, b_sk):
+        """
+        Create a stop loss order for a given symbol.
+
+        Args:
+            symbol (str): The trading pair symbol.
+            quantity (float): The quantity of the asset to trade.
+            side (str): The side of the order, either "BUY" or "SELL".
+            stop_loss_price (float): The price at which the stop loss order will be triggered.
+            b_id (str): Binance API ID.
+            b_sk (str): Binance API Secret Key.
+
+        Returns:
+            dict: The response from the Binance API.
+        """
+        endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'side': side.upper(),  # "BUY" or "SELL"
+            'type': 'STOP_MARKET',
+            'quantity': quantity,
+            'stopPrice': stop_loss_price,
+            'newOrderRespType': 'RESULT',
+            'timestamp': str(self.get_servertime()),
+            'recvWindow': 3000
+        }
+        binance_logger.info(f'Creating stop loss order details: {params}')
+        position = self.run_signed_request(endpoint, params, 'post', b_id, b_sk)
+        binance_logger.info(f'Creating stop loss order response: {position}')
+        if 'code' in position.keys():
+            logger.error(f'Error creating stop loss order: {position}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error creating stop loss order: {position}")
+        else:
+            return position
+
     def close_position(self, symbol, entry_quantity, side, b_id, b_sk):
         endpoint = self.ORDER_ENDPOINT if NEGOCIATION_ENV == Environment_Type.PROD else self.ORDER_TEST_ENDPOINT
         params = {
             'symbol': symbol,
-            'side': side, #"BUY" or "SELL"
+            'side': side.upper(), #"BUY" or "SELL"
             'type': 'MARKET',
             'quantity': entry_quantity,
             'newOrderRespType': 'RESULT',
@@ -311,6 +353,26 @@ class Binance():
         else:
             return order_info
 
+    def query_account_trade_list(self, symbol, startTime, b_id, b_sk):
+        endpoint = self.USER_TRADES_ENDPOINT
+        binance_logger.debug(f'Query account trade list for symbol: {symbol} with startTime: {startTime}, b_id: {b_id}')
+
+        params = {
+            'symbol': symbol,
+            'startTime': startTime,
+            'recvWindow': 5000,
+            'timestamp': str(self.get_servertime())
+        }
+        trades = self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+        binance_logger.debug(f'Query account trade list response: {trades}')
+        # check if trades is a dict and contains 'code' key, which indicates an error
+        if isinstance(trades, dict) and 'code' in trades:
+            binance_logger.debug(f'Error querying account trade list: {trades}')
+            logger.error(f'Error querying account trade list: {trades}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error querying account trade list: {trades}")
+        else:
+            return trades
+
     def get_account_info(self, b_id, b_sk):
         endpoint = self.ACCOUNT_ENDPOINT
 
@@ -318,3 +380,16 @@ class Binance():
             'timestamp': str(self.get_servertime())
         }
         return self.run_signed_request(endpoint, params, 'get', b_id, b_sk)
+
+    def cancel_all_open_orders(self, symbol, b_id, b_sk):
+        endpoint = self.ALL_OPEN_ORDERS_ENDPOINT
+        params = {
+            'symbol': symbol,
+            'timestamp': str(self.get_servertime())
+        }
+        response = self.run_signed_request(endpoint, params, 'delete', b_id, b_sk)
+        if response['code'] != 200:
+            logger.error(f'Error deleting all open orders for symbol {symbol}: {response}')
+            alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error deleting all open orders: {response}")
+        else:
+            return response

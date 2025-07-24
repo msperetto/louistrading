@@ -1,8 +1,8 @@
 -- Inserção de dados nas tabelas do banco de dados
 
 -- Tabela initial_config
-INSERT INTO public.initial_config (max_open_orders, order_value, max_risk, opperation_active, leverage_long_value, leverage_short_value)
-VALUES (5, 100, 10, 't', 1, 1);
+INSERT INTO public.initial_config (max_open_orders, order_value, max_risk, opperation_active, leverage_long_value, leverage_short_value, use_stop_loss_orders, stop_loss_percentage, use_stop_gain_orders, stop_gain_percentage)
+VALUES (5, 100, 10, 't', 1, 1, 't', 0.02, 't', 0.05);
 
 
 -- Tabela pair

@@ -50,6 +50,18 @@ aws_logger = setup_logger('aws', 'aws.log')
 # Setup API logger
 api_logger = setup_logger('api', 'api.log')
 
+# Setup Marlin Stop logger
+marlin_stop_logger = setup_logger('marlin_stop', 'marlin_stop.log')
+
+# Setup Stop Thread logger
+stop_thread_logger = setup_logger('stop_thread', 'stop_thread.log')
+
+# Setup Binance logger
+binance_logger = setup_logger('binance', 'binance.log')
+
+# Setup test logger
+test_logger = setup_logger('test', 'test.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()

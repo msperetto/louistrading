@@ -75,3 +75,23 @@ def get_pairs_precision(pairs: List) -> Dict:
     except Exception as e:
         logger.error(f"Error retrieving precision for {pair}: {e}")
         return None
+
+def get_pairs_price_precision(pairs: List) -> Dict:
+    """
+    Returns the price precision of the given list of pairs.
+    So when passing the price of an order to the exchange, the decimal places are correct.
+    """
+    price_precision_result = {}
+    try:
+        exchange_info = Binance().get_exchange_info()
+        for pair in pairs:
+            pair_result = {pair: symbol['pricePrecision'] for symbol in exchange_info['symbols'] if symbol['symbol'] == pair}
+            if pair_result:
+                price_precision_result.update(pair_result)
+            else:
+                logger.warning(f"Pair {pair} not found in exchange info.")
+        return price_precision_result
+
+    except Exception as e:
+        logger.error(f"Error retrieving price precision for {pair}: {e}")
+        return None

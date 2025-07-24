@@ -7,6 +7,7 @@ import os
 from prod import telegram_notify_logger
 from common.secrets import get_secret
 from common.enums import Environment_Place
+from common.constants import TELEGRAM_BUFFER_SIZE
 
 
 GROUP_ID_ALERTS = os.getenv("GROUP_ID_ALERTS")
@@ -15,7 +16,6 @@ TELEGRAM_API_KEY = get_secret('TELEGRAM_API_KEY')
 
 URL_BASE_ALERT = f"https://api.telegram.org/bot{TELEGRAM_API_KEY}/sendMessage?chat_id={GROUP_ID_ALERTS}&parse_mode=html"
 URL_BASE_OPERATION = f"https://api.telegram.org/bot{TELEGRAM_API_KEY}/sendMessage?chat_id={GROUP_ID_OPERATIONS}&parse_mode=html"
-TELEGRAM_BUFFER_SIZE = 40
 
 
 class TelegramNotify:
