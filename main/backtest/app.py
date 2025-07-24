@@ -7,6 +7,7 @@ from common.util import import_all_strategies
 from common import STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT
 from backtest import Json_type
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
+from backtest.backtest_manager_intraday_trend import BacktestManagerIntradayTrend
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
 from backtest.backtest_manager_portfolio import BacktestManagerPortfolio
 from backtesting import Backtest
@@ -51,7 +52,8 @@ class Main():
         self.json_paths = {
             Json_type.INTRADAY: "main/backtest/resources/intraday_params.json",
             Json_type.STRATEGY: "main/backtest/resources/strategy_params.json",
-            Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json"
+            Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json",
+            Json_type.INTRADAY_TREND: "main/backtest/resources/intraday_trend_params.json"
         }
 
         # Prepare to generate output files.
@@ -135,6 +137,9 @@ class Main():
             "intraday_rsi_layer_cheap": range(5, 20, 1),
             "intraday_rsi_layer_expensive": 80,
             "intraday_rsi": range(3, 7, 1),
+            "trend_ema_short" : range(6, 10, 1),
+            "trend_sma_medium" : range(17, 22, 1),
+            "trend_sma_long" : range(48, 52, 1),
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
@@ -177,6 +182,34 @@ class Main():
                 trade_sell_class=trade_sell_class,
                 operation_type=self.config["operation_type"],
                 # maximize='Equity Final [$]',
+                maximize = custom_score_optimization,
+                return_heatmap=True
+            )
+            self.save_report(stats)
+
+    def run_intraday_trend_optimization(self, bt):
+        combinations = product(
+            self.filter_buy_classes,
+            self.trigger_buy_classes,
+            self.trade_buy_classes,
+            self.filter_sell_classes,
+            self.trigger_sell_classes,
+            self.trade_sell_classes,
+            self.trend_classes
+        )
+
+        for combination in combinations:
+            filter_buy_class, trigger_buy_class, trade_buy_class, filter_sell_class, trigger_sell_class, trade_sell_class, trend_class = combination
+            stats, heatmap = bt.optimize(
+                **self.get_optimization_params(),
+                filter_buy_class=filter_buy_class,
+                trigger_buy_class=trigger_buy_class,
+                trade_buy_class=trade_buy_class,
+                filter_sell_class=filter_sell_class,
+                trigger_sell_class=trigger_sell_class,
+                trade_sell_class=trade_sell_class,
+                trend_class=trend_class,
+                operation_type=self.config["operation_type"],
                 maximize = custom_score_optimization,
                 return_heatmap=True
             )
@@ -257,6 +290,11 @@ class Main():
         match self.config["json_type"]:
             case Json_type.INTRADAY:
                 self.run_intraday_optimization(bt)
+                return
+            case Json_type.INTRADAY_TREND:
+                # The INTRADAY_TREND mode is used when we want to run backtest for intraday strategies with trend analysis.
+                # It will use the BacktestManagerIntradayTrend class.
+                self.run_intraday_trend_optimization(bt)
                 return
             case Json_type.STRATEGY:
                 # TODO: Define backtest using BacktestManagerStrategy.   
