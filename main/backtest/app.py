@@ -284,7 +284,11 @@ class Main():
     def start(self):
         self.set_common_variables()
 
-        dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        self.run_backtest_for_period(self.startTime, self.endTime)
+
+    # Runs the backtest for a specific period defined by start_date and end_date.
+    def run_backtest_for_period(self, start_date, end_date):
+        dataset = binance().get_extended_kline(self.pair, self.interval, start_date, end_date)
         bt = Backtest(dataset, self.get_backtest_manager(), cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
