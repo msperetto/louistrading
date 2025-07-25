@@ -1,3 +1,5 @@
+import datetime
+from typing import List, Tuple
 import pandas_ta as ta
 import pandas as pd
 from common import management
@@ -5,8 +7,9 @@ from common.dao import database_operations as db
 from common.enums import Side_Type
 from common.util import import_all_strategies
 from common import STRATEGIES_PATH_BT, STRATEGIES_MODULE_BT
-from backtest import Json_type
+from backtest import Json_type, BacktestSplitMode
 from backtest.backtest_manager_intraday import BacktestManagerIntraday
+from backtest.backtest_manager_intraday_trend import BacktestManagerIntradayTrend
 from backtest.backtest_manager_strategy import BacktestManagerStrategy
 from backtest.backtest_manager_portfolio import BacktestManagerPortfolio
 from backtesting import Backtest
@@ -44,14 +47,18 @@ class Main():
             "strategy_optimizer_mode": False,
             "should_plot_chart": True,
             "should_generate_CSV_trades": False,
-            "should_run_portfolio_strategies": False
+            "should_run_portfolio_strategies": False,
+            "should_run_portfolio_strategies": False,
+            "split_mode": BacktestSplitMode.FULL,  # FULL, MONTLY or CUSTOM_DAYS
+            "split_days": 7  # used only for split_mode= CUSTOM_DAYS
         }
 
         # Paths for JSONs
         self.json_paths = {
             Json_type.INTRADAY: "main/backtest/resources/intraday_params.json",
             Json_type.STRATEGY: "main/backtest/resources/strategy_params.json",
-            Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json"
+            Json_type.PORTFOLIO: "main/backtest/resources/portfolio_params.json",
+            Json_type.INTRADAY_TREND: "main/backtest/resources/intraday_trend_params.json"
         }
 
         # Prepare to generate output files.
@@ -135,6 +142,9 @@ class Main():
             "intraday_rsi_layer_cheap": range(5, 20, 1),
             "intraday_rsi_layer_expensive": 80,
             "intraday_rsi": range(3, 7, 1),
+            "trend_ema_short" : range(6, 10, 1),
+            "trend_sma_medium" : range(17, 22, 1),
+            "trend_sma_long" : range(48, 52, 1),
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
@@ -251,12 +261,63 @@ class Main():
     def start(self):
         self.set_common_variables()
 
-        dataset = binance().get_extended_kline(self.pair, self.interval, self.startTime, self.endTime)
+        # Get the range of dates to run the backtest.
+        date_ranges = self.split_date_range(self.startTime, self.endTime)
+
+        # Iterate through each date range and run the backtest.
+        # This will allow us to run the backtest for each month or custom days as defined in the config.
+        for range_start, range_end in date_ranges:
+            print(f"Running backtest from {range_start.date()} to {range_end.date()}")
+            self.run_backtest_for_period(range_start, range_end)    
+
+    # Splits the date range based on the split mode defined in the config.
+    def split_date_range(self, start_date: datetime, end_date: datetime) -> List[Tuple[datetime, datetime]]: # type: ignore
+        mode = self.config.get("split_mode", BacktestSplitMode.FULL)
+        split_days = self.config.get("split_days", 0)
+        ranges = []
+
+        if mode == BacktestSplitMode.FULL:
+            return [(start_date, end_date)]
+
+        if mode == BacktestSplitMode.MONTHLY:
+            current = start_date.replace(day=1)
+            while current < end_date:
+                # Trick to get the first day of the next month, even for months with fewer than 31 days
+                next_month = (current.replace(day=28) + datetime.timedelta(days=4)).replace(day=1)
+                # Get the last day of the current month, or end_date if it comes earlier
+                range_end = min(next_month - datetime.timedelta(days=1), end_date)
+                # Ensure the start of the range does not go before start_date
+                range_start = max(current, start_date)
+
+                ranges.append((range_start, range_end))
+                
+                # Move to the first day of the next month
+                current = next_month
+
+        elif mode == BacktestSplitMode.CUSTOM_DAYS:
+            if split_days <= 1:
+                raise ValueError("split_days should be greater than 1 for CUSTOM_DAYS mode.")
+            current = start_date
+            while current <= end_date:
+                range_end = min(current + datetime.timedelta(days=split_days - 1), end_date)
+                ranges.append((current, range_end))
+                current = range_end + datetime.timedelta(days=1)
+
+        return ranges
+
+    # Runs the backtest for a specific period defined by start_date and end_date.
+    def run_backtest_for_period(self, start_date, end_date):
+        dataset = binance().get_extended_kline(self.pair, self.interval, start_date, end_date)
         bt = Backtest(dataset, self.get_backtest_manager(), cash=CASH, commission=COMISSION)
 
         match self.config["json_type"]:
             case Json_type.INTRADAY:
                 self.run_intraday_optimization(bt)
+                return
+            case Json_type.INTRADAY_TREND:
+                # The INTRADAY_TREND mode is used when we want to run backtest for intraday strategies with trend analysis.
+                # It will use the BacktestManagerIntradayTrend class.
+                self.run_intraday_trend_optimization(bt)
                 return
             case Json_type.STRATEGY:
                 # TODO: Define backtest using BacktestManagerStrategy.   
