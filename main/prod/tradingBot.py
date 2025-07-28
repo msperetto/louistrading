@@ -104,7 +104,7 @@ class TradingBot:
 
     def create_combined_dataset(self, pair, strategy):
         # calculating de date for the first candle of the dataset
-        start_date = management.calc_start_date(strategy)
+        start_date = management.calc_start_date(strategy=strategy)
 
         # getting intraday candle dataset from binance
         intraday_data = CandleData(

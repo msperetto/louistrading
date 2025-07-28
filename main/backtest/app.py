@@ -310,8 +310,9 @@ class Main():
         # Iterate through each date range and run the backtest.
         # This will allow us to run the backtest for each month or custom days as defined in the config.
         for range_start, range_end in date_ranges:
+            extended_start_time = management.calc_start_date(trend_period=self.trend_interval, longest_indicator=self._get_longest_trend_indicator_from_params(), base_start_date=range_start)
             print(f"Running backtest from {range_start.date()} to {range_end.date()}")
-            self.run_backtest_for_period(range_start, range_end)    
+            self.run_backtest_for_period(extended_start_time, range_end)    
 
     # Splits the date range based on the split mode defined in the config.
     def split_date_range(self, start_date: datetime, end_date: datetime) -> List[Tuple[datetime, datetime]]: # type: ignore
