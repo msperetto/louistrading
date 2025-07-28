@@ -41,7 +41,7 @@ class Main():
 
         # Main config to run the Backtest:
         self.config = {
-            "json_type": Json_type.PORTFOLIO,
+            "json_type": Json_type.INTRADAY_TREND,
             "operation_type": Side_Type.LONG,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
@@ -49,7 +49,7 @@ class Main():
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False,
             "should_run_portfolio_strategies": False,
-            "split_mode": BacktestSplitMode.FULL,  # FULL, MONTLY or CUSTOM_DAYS
+            "split_mode": BacktestSplitMode.CUSTOM_DAYS,  # FULL, MONTHLY or CUSTOM_DAYS
             "split_days": 7  # used only for split_mode= CUSTOM_DAYS
         }
 
@@ -136,20 +136,35 @@ class Main():
             # "intraday_rsi_layer_cheap": 10,
             # "intraday_rsi_layer_expensive": 80,
             # "intraday_rsi": 4,
-            "intraday_ema_short": range(6, 10, 1),
-            "intraday_sma_medium": range(17, 22, 1),
-            "intraday_sma_long": range(48, 52, 1),
-            "intraday_rsi_layer_cheap": range(5, 20, 1),
+            "intraday_ema_short": range(8, 10, 1),
+            "intraday_sma_medium": range(17, 18, 1),
+            "intraday_sma_long": range(51, 52, 1),
+            "intraday_rsi_layer_cheap": range(19, 20, 1),
             "intraday_rsi_layer_expensive": 80,
-            "intraday_rsi": range(3, 7, 1),
-            "trend_ema_short" : range(6, 10, 1),
-            "trend_sma_medium" : range(17, 22, 1),
-            "trend_sma_long" : range(48, 52, 1),
+            "intraday_rsi": range(6, 7, 1),
+            "trend_ema_short" : range(9, 10, 1),
+            "trend_sma_medium" : range(21, 22, 1),
+            "trend_sma_long" : range(51, 52, 1),
             # "intraday_max_candles_buy": range(5, 6, 1),
             # "intraday_max_candles_sell": range(5, 6, 1),
             "intraday_interval": self.interval,
             "trend_interval": self.trend_interval
         }
+
+    def _get_longest_trend_indicator_from_params(self):
+        params = self.get_optimization_params()
+        max_value = None
+        for k, v in params.items():
+            if k.startswith("trend") and k != "trend_interval":
+                if isinstance(v, range):
+                    value = max(v)
+                elif isinstance(v, int):
+                    value = v
+                else:
+                    continue
+                if max_value is None or value > max_value:
+                    max_value = value
+        return max_value
 
     def get_filename(self, strategy):
         return self.period_label+"-"+self.pair+"-"+self.interval+"-"+self.trend_interval+"-"+strategy
