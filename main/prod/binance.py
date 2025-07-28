@@ -187,7 +187,7 @@ class Binance():
         startTime_offset = management.time_intervals_to_seconds(interval)*1000
 
         #endtime to get all candles but the last one
-        endTime = management.date_to_ms(endTime) if isinstance(endTime, str) else endTime
+        endTime = management.date_to_ms(endTime)
         if period_type == "intraday":
             endTime -= startTime_offset
 

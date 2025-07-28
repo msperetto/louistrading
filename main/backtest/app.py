@@ -116,8 +116,9 @@ class Main():
         self.interval = strategy_info.get("intraday_period", None)
         self.trend_interval = strategy_info.get("trend_period", None)
         self.period_label = strategy_info.get("period_label", None)
-        self.startTime = strategy_info.get("startTime", None)
-        self.endTime = strategy_info.get("endTime", None)
+        #transform startTime and endTime to datetime objects (pattern = day.month.year):
+        self.startTime = datetime.datetime.strptime(strategy_info.get("startTime", "01.01.2025"), "%d.%m.%Y")
+        self.endTime = datetime.datetime.strptime(strategy_info.get("endTime", "01.03.2025"), "%d.%m.%Y")
         self.filter_buy_classes = strategy_info.get("filter_buy_classes", None)
         self.trigger_buy_classes = strategy_info.get("trigger_buy_classes", None)
         self.trade_buy_classes = strategy_info.get("trade_buy_classes", None)
@@ -315,7 +316,7 @@ class Main():
             self.run_backtest_for_period(extended_start_time, range_end)    
 
     # Splits the date range based on the split mode defined in the config.
-    def split_date_range(self, start_date: datetime, end_date: datetime) -> List[Tuple[datetime, datetime]]: # type: ignore
+    def split_date_range(self, start_date: str, end_date: str) -> List[Tuple[datetime, datetime]]: # type: ignore
         mode = self.config.get("split_mode", BacktestSplitMode.FULL)
         split_days = self.config.get("split_days", 0)
         ranges = []
