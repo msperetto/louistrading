@@ -295,6 +295,8 @@ class Main():
         match self.config["json_type"]:
             case Json_type.INTRADAY:
                 return BacktestManagerIntraday
+            case Json_type.INTRADAY_TREND:
+                return BacktestManagerIntradayTrend
             case Json_type.STRATEGY:
                 return BacktestManagerStrategy
             case Json_type.PORTFOLIO:
