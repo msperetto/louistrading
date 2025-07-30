@@ -1,0 +1,30 @@
+{
+    "pair": "BTCUSDT",
+    "startTime": "01.03.2025",
+    "endTime": "01.07.2025",
+    "period_label": "intraday-2024-mar-july-long-optimize",
+    "intraday_period": "2h",
+    "trend_period": "D",
+    "_comment": "trend period possibilities: 'W', 'W-SUN', 'D', 'h', '4h', '2h30min' ", 
+    "filter_buy_classes": [
+        "FilterBuy_RSI"
+    ],
+    "trigger_buy_classes": [
+        "TriggeredState_alwaysTrue"
+    ],
+    "trade_buy_classes": [
+        "TradeBuy_High_x_HighLastCandle"
+            ],
+    "filter_sell_classes": [
+        "Filter_alwaysTrue"
+    ],
+    "trigger_sell_classes": [
+        "TriggeredState_alwaysTrue"
+    ],
+    "trade_sell_classes": [
+        "TradeSell_LowLastCandle"
+    ],
+    "trend_classes": [
+        "UpTrend_EMAshort_gt_SMAlong"
+    ]
+}

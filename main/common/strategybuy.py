@@ -10,5 +10,7 @@ class StrategyBuy():
         else: self.triggeredState.reset(False)
 
         if self.triggeredState.isStillValid():
-            if self.trade.buyConfirmation(): return True
+            if self.trade.buyConfirmation():
+                self.triggeredState.reset(True)
+                return True
  

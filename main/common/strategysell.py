@@ -10,4 +10,6 @@ class StrategySell():
         else: self.triggeredState.reset(False)
 
         if self.triggeredState.isStillValid():
-            if self.trade.sellConfirmation(): return True
+            if self.trade.sellConfirmation():
+                self.triggeredState.reset(True)
+                return True
