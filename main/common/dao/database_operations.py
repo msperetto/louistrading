@@ -5,7 +5,7 @@ from config.config import DEV_ENV_CON
 from common.enums import Side_Type
 
 # def insert_report(start_time, end_time, pair, strategy_name, return_percent, return_buy_hold, win_rate, sharpe_ratio, max_drawdown, best_indicators_combination):
-def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = ""):
+def insert_report(pair, period, stats, best_indicators_combination, period_label, trend_period, strategy_class = "", side = None):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -14,14 +14,14 @@ def insert_report(pair, period, stats, best_indicators_combination, period_label
                                               best_indicators_combination, filter_buy, trigger_buy, trade_buy,
                                               filter_sell, trigger_sell, trade_sell, total_trades, best_trade,
                                               worst_trade, average_trade, profit_factor, label_period, period_trend,
-                                              trend_class, strategy_class)
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                                              trend_class, strategy_class, side)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, (stats['Start'], stats['End'],pair, period, round(stats['Return [%]'],2), round(stats['Buy & Hold Return [%]'],2),
                   round(stats['Win Rate [%]'], 2), round(stats['Sharpe Ratio'],2), round(stats['Max. Drawdown [%]'],2), best_indicators_combination,
                   stats._strategy.classes['filter_buy'], stats._strategy.classes['trigger_buy'], stats._strategy.classes['trade_buy'],
                   stats._strategy.classes['filter_sell'], stats._strategy.classes['trigger_sell'], stats._strategy.classes['trade_sell'],
                   stats['# Trades'], round(stats['Best Trade [%]'],2), round(stats['Worst Trade [%]'],2), round(stats['Avg. Trade [%]'],2),
-                  round(stats['Profit Factor'],2), period_label, trend_period, stats._strategy.classes['trend'], strategy_class))
+                  round(stats['Profit Factor'],2), period_label, trend_period, stats._strategy.classes['trend'], strategy_class, side))
             conn.commit()
 
 def insert_class(class_name, class_code):

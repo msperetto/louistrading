@@ -100,9 +100,10 @@ class Main():
     # Runs the logic to save a row in the Optimization_test table.
     # It will save only if the global "should_save_report" flag is True.
     def save_report(self, stats, strategy_class = ""):
+        side = self.config["operation_type"].name if self.config["operation_type"] else None
         if self.config["should_save_report"]:
             cut_long_string = str(stats["_strategy"]).find(",filter_buy_class")
-            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy_class)
+            db.insert_report(self.pair, str(self.interval), stats, str(stats["_strategy"])[:cut_long_string]+")", self.period_label, self.trend_interval, strategy_class, side=side)
 
     def set_common_variables(self):
         # Load the JSON based on the configured json_type 
