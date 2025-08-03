@@ -5,6 +5,7 @@
 
 -- Deleta tabelas.
 DROP TABLE IF EXISTS public.optmization_tests CASCADE;
+DROP TABLE IF EXISTS public.optimization_tests CASCADE;
 
 
 -- Deleta sequences.
