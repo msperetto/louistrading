@@ -27,7 +27,3 @@ BEGIN
         RAISE NOTICE 'Column order_id has been successfully updated to type bigint.';
     END IF;
 END $$;
-
--- 2. Altering table public.optmization_tests to add column side (long or short):
-ALTER TABLE public.optmization_tests
-ADD COLUMN IF NOT EXISTS side VARCHAR(5);
