@@ -10,6 +10,6 @@ def get_secret(secret_name: str) -> str:
         print(f"Loading environment variables from {env_path}")
         load_dotenv(dotenv_path=env_path)  # Load environment variables from .env file
     if not os.getenv(secret_name):
-        raise ValueError(f"{secret_name} environment variable not set")
+        # raise ValueError(f"{secret_name} environment variable not set")
         return None
     return os.getenv(secret_name)

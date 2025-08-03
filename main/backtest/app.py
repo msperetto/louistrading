@@ -45,11 +45,11 @@ class Main():
             "operation_type": Side_Type.LONG,
             "should_save_report": True,
             "strategy_optimizer_mode": False,
-            "should_plot_chart": True,
+            "should_plot_chart": False,
             "should_generate_CSV_trades": False,
             "should_run_portfolio_strategies": False,
             "should_run_portfolio_strategies": False,
-            "split_mode": BacktestSplitMode.CUSTOM_DAYS,  # FULL, MONTHLY or CUSTOM_DAYS
+            "split_mode": BacktestSplitMode.MONTHLY,  # FULL, MONTHLY or CUSTOM_DAYS
             "split_days": 7  # used only for split_mode= CUSTOM_DAYS
         }
 
@@ -139,16 +139,16 @@ class Main():
             # "intraday_rsi_layer_expensive": 80,
             # "intraday_rsi": 4,
             "intraday_ema_short": range(8, 10, 1),
-            "intraday_sma_medium": range(17, 18, 1),
+            "intraday_sma_medium": range(18, 21, 1),
             "intraday_sma_long": range(51, 52, 1),
             "intraday_rsi_layer_cheap": range(19, 20, 1),
             "intraday_rsi_layer_expensive": 80,
             "intraday_rsi": range(6, 7, 1),
-            "trend_ema_short" : range(9, 10, 1),
-            "trend_sma_medium" : range(21, 22, 1),
+            "trend_ema_short" : range(8, 10, 1),
+            "trend_sma_medium" : range(18, 21, 1),
             "trend_sma_long" : range(51, 52, 1),
-            # "intraday_max_candles_buy": range(5, 6, 1),
-            # "intraday_max_candles_sell": range(5, 6, 1),
+            "intraday_max_candles_buy": range(4, 6, 1),
+            "intraday_max_candles_sell": range(4, 6, 1),
             "intraday_interval": self.interval,
             "trend_interval": self.trend_interval
         }
