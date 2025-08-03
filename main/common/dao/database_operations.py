@@ -9,7 +9,7 @@ def insert_report(pair, period, stats, best_indicators_combination, period_label
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO optmization_tests(start_time, end_time, pair, period, return_percent,
+                INSERT INTO optimization_tests(start_time, end_time, pair, period, return_percent,
                                               return_buy_hold, win_rate, sharpe_ratio, max_drawdown, 
                                               best_indicators_combination, filter_buy, trigger_buy, trade_buy,
                                               filter_sell, trigger_sell, trade_sell, total_trades, best_trade,
@@ -138,10 +138,10 @@ def export_to_csv():
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT * FROM optmization_tests;
+                SELECT * FROM optimization_tests;
                 """)
             keys = ""
-            with open('noshirt_optmization.csv', 'w', newline='') as csvfile:
+            with open('noshirt_optimization.csv', 'w', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, cur.fetchone().keys())
                 writer.writeheader()
                 writer.writerows(cur.fetchall())
