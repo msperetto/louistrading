@@ -314,6 +314,11 @@ class Main():
         # Iterate through each date range and run the backtest.
         # This will allow us to run the backtest for each month or custom days as defined in the config.
         for range_start, range_end in date_ranges:
+
+            # Updates period_label with a human-readable date range for the current backtest.
+            # Helps clarify which period is being processed during result analysis.
+            self.period_label = f"from {range_start.date()} to {range_end.date()}"
+
             longest_indicator = self._get_longest_trend_indicator_from_params()
             extended_start_time = management.calc_start_date(trend_period=self.trend_interval, longest_indicator=longest_indicator, base_start_date=range_start)
             print(f"Running backtest from {range_start.date()} to {range_end.date()}")
