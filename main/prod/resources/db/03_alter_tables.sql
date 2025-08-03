@@ -28,6 +28,6 @@ BEGIN
     END IF;
 END $$;
 
--- 2. Altering table public.optimization_tests to add column side (long or short):
-ALTER TABLE public.optimization_tests
+-- 2. Altering table public.optmization_tests to add column side (long or short):
+ALTER TABLE public.optmization_tests
 ADD COLUMN IF NOT EXISTS side VARCHAR(5);
