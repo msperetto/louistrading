@@ -210,7 +210,8 @@ def _sanitize_backtest(backtest):
         "label_period": backtest.label_period,
         "period_trend": backtest.period_trend,
         "trend_class": backtest.trend_class,
-        "strategy_class": backtest.strategy_class
+        "strategy_class": backtest.strategy_class,
+        "side": backtest.side
     }
     # Replace non-JSON-compliant floats with None or a string
     for k, v in d.items():

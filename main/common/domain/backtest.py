@@ -33,7 +33,8 @@ class Backtest():
                 label_period: str = None,
                 period_trend: str = None,
                 trend_class: str = None,
-                strategy_class: str = None):
+                strategy_class: str = None,
+                side: str = None):
         self.test_id = test_id
         self.start_time = start_time
         self.end_time = end_time
@@ -61,6 +62,7 @@ class Backtest():
         self.period_trend = period_trend
         self.trend_class = trend_class
         self.strategy_class = strategy_class
+        self.side = side
 
     def __repr__(self):
         return (f"Backtest(test_id={self.test_id}, start_time={self.start_time}, end_time={self.end_time}, "
@@ -72,4 +74,4 @@ class Backtest():
                 f"total_trades={self.total_trades}, best_trade={self.best_trade}, worst_trade={self.worst_trade}, "
                 f"average_trade={self.average_trade}, profit_factor={self.profit_factor}, created_at={self.created_at}, "
                 f"label_period='{self.label_period}', period_trend='{self.period_trend}', trend_class='{self.trend_class}', "
-                f"strategy_class='{self.strategy_class}')")
+                f"strategy_class='{self.strategy_class}', side='{self.side}')")
