@@ -46,94 +46,120 @@ function filterData() {
 
 function updateDashboard() {
   const filtered = filterData();
-  renderTopScoreTable(filtered);
-  renderRiskReturnDensityPlot(filtered);
-  renderBubbleChart_maxdd_sharpe(filtered);
-  renderWinRateProfitFactorScatter(filtered);
+  renderBubbleChart(filtered);
+  renderSharpeRatioBarChart(filtered);
+  renderSharpeRatioBoxPlot(filtered);
   renderSharpeRatioHistogram(filtered);
-  
+  renderMaxDDBarChart(filtered);
+  renderTop10List(filtered);
+  renderBarChart(filtered);
+  renderLineChart(filtered);
+  renderTable(filtered);
+  renderStrategyPerformanceOverview(filtered);
+  renderEquityCurve(filtered);
+  renderSharpeVsDrawdown(filtered);
+  renderReturnsDistribution(filtered);
+  renderPerformanceByPeriod(filtered);
+  renderTrendAnalysis(filtered);
+  renderBuyConditionAnalysis(filtered);
+  renderMonthlyYearlyReturns(filtered);
+  renderTradeDurationAnalysis(filtered);
+  renderProfitFactorOverTime(filtered);
+  renderCorrelationMatrix(filtered);
+  renderCumulativeReturnVsBuyHold(filtered);
 }
 
 
-function renderTopScoreTable(filteredData) {
-  // Sort by score descending and take top 12
-  const top = [...filteredData]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 12);
-
-  if (top.length === 0) {
-    $('#top_score_table').html('<tr><td colspan="4">No data available</td></tr>');
-    return;
-  }
-
-  // If DataTable already exists, update it
-  if ($.fn.dataTable.isDataTable('#top_score_table')) {
-    $('#top_score_table').DataTable().clear().rows.add(top).draw();
-    return;
-  }
-
-  // Otherwise, initialize DataTable
-  $('#top_score_table').DataTable({
-    data: top,
-    columns: [
-      { title: "Test ID", data: "test_id" },
-      { title: "Return %", data: "return_percent" },
-      { title: "Sharpe Ratio", data: "sharpe_ratio" },
-      { title: "Profit Factor", data: "profit_factor" }
-    ],
-    pageLength: 12,
-    destroy: true
-  });
+// Helper to update charts based on selection
+function updateChartsWithSelection(selectedData) {
+  renderSharpeRatioBarChart(selectedData);
+  renderSharpeRatioBoxPlot(selectedData);
+  renderSharpeRatioHistogram(selectedData);
+  renderMaxDDBarChart(selectedData);
+  renderTop10List(selectedData);
+  renderBarChart(selectedData);
+  renderLineChart(selectedData);
+  renderTable(selectedData);
+  renderStrategyPerformanceOverview(selectedData);
+  renderEquityCurve(selectedData);
+  renderSharpeVsDrawdown(selectedData);
+  renderReturnsDistribution(selectedData);
+  renderPerformanceByPeriod(selectedData);
+  renderTrendAnalysis(selectedData);
+  renderBuyConditionAnalysis(selectedData);
+  renderMonthlyYearlyReturns(selectedData);
+  renderTradeDurationAnalysis(selectedData);
+  renderProfitFactorOverTime(selectedData);
+  renderCorrelationMatrix(selectedData);
+  renderCumulativeReturnVsBuyHold(selectedData);
 }
 
+let bubbleChartInitialized = false;
 
-function renderRiskReturnDensityPlot(filteredData) {
-  if (!filteredData || filteredData.length === 0) {
-    Plotly.purge('risk_return_density_chart');
-    return;
-  }
-
-  // 2D histogram for density
-  const densityTrace = {
-    x: filteredData.map(d => d.max_drawdown),
-    y: filteredData.map(d => d.return_percent),
-    type: 'histogram2d',
-    colorscale: 'Viridis',
-    colorbar: { title: "Density" },
-    xbins: { size: 0.1 }, // adjust bin size as needed
-    ybins: { size: 0.1 }
-  };
-
-  // Find top 12% by score
-  const sorted = [...filteredData].sort((a, b) => b.score - a.score);
-  const topCount = Math.ceil(filteredData.length * 0.12);
-  const topTests = sorted.slice(0, topCount);
-
-  // Overlay scatter for top 12%
-  const highlightTrace = {
-    x: topTests.map(d => d.max_drawdown),
-    y: topTests.map(d => d.return_percent),
+function renderBubbleChart(filteredData) {
+  const maxReturn = Math.max(...filteredData.map(d => Math.abs(d.return_percent)), 1);
+  const trace = {
+    x: filteredData.map(d => d.return_percent),
+    y: filteredData.map(d => d.win_rate),
+    text: filteredData.map(d => `
+      <b>Test ID:</b> ${d.test_id}<br>
+      <b>Pair:</b> ${d.pair}<br>
+      <b>Period:</b> ${d.period}<br>
+      <b>Strategy:</b> ${d.strategy_class}<br>
+      <b>Return %:</b> ${d.return_percent}<br>
+      <b>Win Rate:</b> ${d.win_rate}<br>
+      <b>Sharpe Ratio:</b> ${d.sharpe_ratio}<br>
+      <b>Profit Factor:</b> ${d.profit_factor}<br>
+      <b>Max DD:</b> ${d.max_drawdown}<br>
+      <b>Total Trades:</b> ${d.total_trades}
+    `),
     mode: 'markers',
-    type: 'scatter',
     marker: {
-      size: 16,
-      color: 'rgba(255,0,0,0.7)',
-      line: { width: 2, color: 'white' }
+      size: filteredData.map(d => Math.max(6, Math.abs(d.return_percent))), // smaller minimum
+      sizemode: 'area',
+      sizeref: 4.0 * maxReturn / (70**2), // increase divisor for smaller bubbles
+      opacity: 0.5, // more transparent
+      color: filteredData.map(d => d.sharpe_ratio),
+      colorscale: 'Viridis',
+      showscale: true,
+      colorbar: { title: "Sharpe Ratio" }
     },
-    text: topTests.map(d => `Test ID: ${d.test_id}<br>Score: ${d.score}`),
-    name: 'Top 12% by Score',
     hoverinfo: 'text'
   };
-
   const layout = {
-    title: "Risk vs Return Density (Highlight: Top 12% by Score)",
-    xaxis: { title: "Max Drawdown (%)" },
-    yaxis: { title: "Return (%)" },
-    height: 500,
-    margin: { t: 40 }
+    xaxis: { title: "Return %" },
+    yaxis: { title: "Win Rate" },
+    title: "",
+    height: 400,
+    margin: { t: 30 },
+    dragmode: 'lasso'
   };
+  Plotly.newPlot('bubble_chart', [trace], layout, {responsive: true});
 
-  Plotly.newPlot('risk_return_density_chart', [densityTrace, highlightTrace], layout, {responsive: true});
+  // using this if to only attach event listeners once, so we can reset the chart with
+  // double click
+  if (!bubbleChartInitialized) {
+    const bubbleDiv = document.getElementById("bubble_chart");
+    bubbleDiv.on('plotly_selected', (eventData) => {
+      if (!eventData || !eventData.points || eventData.points.length === 0) {
+        // If no points are selected, reset to all filteredData
+        updateChartsWithSelection(filteredData);
+        return;
+      }
+
+      // Extract selected points and update charts
+      const selectedIndices = eventData.points.map(p => p.pointIndex);
+      const selectedData = selectedIndices.map(i => filteredData[i]);
+      updateChartsWithSelection(selectedData);
+    });
+
+    bubbleDiv.on('plotly_deselect', () => {
+      // Reset to all filteredData when deselected
+      updateChartsWithSelection(filteredData);
+    });
+
+    bubbleChartInitialized = true;
+  }
 }
 
 function renderSharpeRatioBarChart(filteredData) {
@@ -180,88 +206,6 @@ function renderSharpeRatioHistogram(filteredData) {
     margin: { t: 30 }
   };
   Plotly.newPlot('sharpe_ratio_histogram', [trace], layout, {responsive: true});
-}
-
-function renderBubbleChart_maxdd_sharpe(filteredData) {
-  if (!filteredData || filteredData.length === 0) {
-    Plotly.purge('bubble_chart');
-    return;
-  }
-
-  // Get unique test IDs for color mapping
-  const uniqueTestIds = [...new Set(filteredData.map(d => d.test_id))];
-  const colorMap = {};
-  uniqueTestIds.forEach((id, i) => { colorMap[id] = i; });
-
-  const trace = {
-    x: filteredData.map(d => d.max_drawdown),
-    y: filteredData.map(d => d.sharpe_ratio),
-    text: filteredData.map(d =>
-      `Test ID: ${d.test_id}<br>Profit Factor: ${d.profit_factor}<br>Max DD: ${d.max_drawdown}<br>Sharpe: ${d.sharpe_ratio}`),
-    mode: 'markers',
-    type: 'scatter',
-    marker: {
-      size: filteredData.map(d => Math.max(8, d.profit_factor * 8)), // scale size for visibility
-      color: filteredData.map(d => colorMap[d.test_id]),
-      colorscale: 'Rainbow',
-      colorbar: { title: "Test ID" },
-      opacity: 0.7,
-      line: { width: 1, color: 'white' }
-    },
-    hoverinfo: 'text'
-  };
-
-  const layout = {
-    title: "Bubble Chart: Max Drawdown vs Sharpe Ratio (Size: Profit Factor, Color: Test ID)",
-    xaxis: { title: "Max Drawdown (%)" },
-    yaxis: { title: "Sharpe Ratio" },
-    height: 500,
-    margin: { t: 40 }
-  };
-
-  Plotly.newPlot('bubble_chart', [trace], layout, {responsive: true});
-}
-
-
-function renderWinRateProfitFactorScatter(filteredData) {
-  if (!filteredData || filteredData.length === 0) {
-    Plotly.purge('winrate_profitfactor_scatter');
-    return;
-  }
-
-  // Unique test IDs for color mapping
-  const uniqueTestIds = [...new Set(filteredData.map(d => d.test_id))];
-  const colorMap = {};
-  uniqueTestIds.forEach((id, i) => { colorMap[id] = i; });
-
-  const trace = {
-    x: filteredData.map(d => d.win_rate),
-    y: filteredData.map(d => d.profit_factor),
-    text: filteredData.map(d =>
-      `Test ID: ${d.test_id}<br>Total Trades: ${d.total_trades}<br>Win Rate: ${d.win_rate}<br>Profit Factor: ${d.profit_factor}`),
-    mode: 'markers',
-    type: 'scatter',
-    marker: {
-      symbol: 'x',
-      size: filteredData.map(d => Math.max(18, d.total_trades / 1.5)), // scale for visibility
-      color: filteredData.map(d => colorMap[d.test_id]),
-      colorscale: 'Rainbow',
-      colorbar: { title: "Test ID" },
-      opacity: 0.7,
-      line: { width: 2, color: 'white' }
-    },
-    hoverinfo: 'text'
-  };
-
-  const layout = {
-    title: "Win Rate vs Profit Factor (Size: # Trades, Color: Test ID)",
-    xaxis: { title: "Win Rate (%)" },
-    yaxis: { title: "Profit Factor" },
-    height: 500,
-    margin: { t: 40 }
-  };
-
-  Plotly.newPlot('winrate_profitfactor_scatter', [trace], layout, {responsive: true});
 }
 
 function renderSharpeRatioBoxPlot(filteredData) {
