@@ -7,8 +7,9 @@ from cryptography.fernet import Fernet
 from common.dao import database_operations as db
 
 class Login():
-    def __init__(self, exchange):
+    def __init__(self, exchange, account_operation_type):
         self.exchange = exchange
+        self.account_operation_type = account_operation_type
 
     def create_cryptography_key(self):
         # password_provided = getpass("Enter your cryptography password: ")
@@ -31,12 +32,12 @@ class Login():
         id = input(f"Enter {self.exchange} apikey id: ")
         sk = getpass(f"Enter {self.exchange} key: ").encode()
         encrypted = f_key.encrypt(sk).decode()
-        db.insert_exchange_config(id, encrypted, self.exchange)
+        db.insert_exchange_config(id, encrypted, self.exchange, self.account_operation_type)
         return f_key
 
 
     def get_sign_pair(self, fernet_k):
-        sign_pair = db.get_exchange_config(self.exchange)
+        sign_pair = db.get_exchange_config(self.exchange, self.account_operation_type)
         encrypted_sk = sign_pair["sk"].encode()
         decr_sk = fernet_k.decrypt(encrypted_sk)
         return sign_pair["id"], decr_sk
@@ -44,7 +45,7 @@ class Login():
 
     def login_database(self):
         #Getting id and key from exchange
-        if db.get_exchange_config(self.exchange):
+        if db.get_exchange_config(self.exchange, self.account_operation_type):
             f_key = self.create_cryptography_key()
             self.e_id, self.e_sk = self.get_sign_pair(f_key)
         else:

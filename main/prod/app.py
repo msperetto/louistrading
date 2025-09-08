@@ -7,9 +7,10 @@ from prod.released_strategies.strategy_B2 import Strategy_B2
 from prod.login import Login
 import logging
 from prod import logger
+from common.enums import Account_Operation_Type
 
 
-#  TODO: 
+# TODO: Buscar as estratégias a serem utilizadas diretamente do banco de dados
 class Main():
     def __init__(self):
         # Import all strategies from the released strategies folder.
@@ -18,7 +19,7 @@ class Main():
 
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config)
-        self.exchange_session = Login("binance")
+        self.exchange_session = Login("binance", Account_Operation_Type.TRADING)
         self.exchange_session.login_database()
         
         self.strategies = [Strategy_B2(), Strategy_SH7()]

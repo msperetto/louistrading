@@ -27,3 +27,11 @@ BEGIN
         RAISE NOTICE 'Column order_id has been successfully updated to type bigint.';
     END IF;
 END $$;
+
+-- 2. Adding account_operation_type column in exchange_config table
+ALTER TABLE public.exchange_config 
+ADD COLUMN IF NOT EXISTS account_operation_type varchar(16);
+
+-- 3. Adding operation_type column in strategy table
+ALTER TABLE public.strategy
+ADD COLUMN IF NOT EXISTS operation_type varchar(16);

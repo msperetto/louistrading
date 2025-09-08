@@ -10,6 +10,14 @@ class Operation_Type(str, Enum):
     CLOSE = "Close"
     STOP = "Stop"
 
+class Account_Operation_Type(str, Enum):
+    TRADING = "trading"
+    DELIST = "delist"
+
+class Strategy_Operation_Type(str, Enum):
+    TRADING = "trading"
+    DELIST = "delist"
+
 class Side_Type(str, Enum):
     LONG = "BUY"
     SHORT = "SELL"

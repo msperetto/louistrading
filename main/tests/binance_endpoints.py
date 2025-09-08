@@ -4,6 +4,7 @@ from prod.login import Login
 import logging
 from prod import test_logger as logger
 from prod.binance import Binance
+from common.enums import Account_Operation_Type
 
 
 #  TODO: 
@@ -15,7 +16,7 @@ class Main():
 
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config)
-        self.exchange_session = Login("binance")
+        self.exchange_session = Login("binance", Account_Operation_Type.TRADING)
         self.exchange_session.login_database()
 
         self.exchange_id = self.exchange_session.e_id

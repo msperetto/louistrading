@@ -6,26 +6,26 @@ def get_strategy_by_id(strategy_id: int) -> Strategy:
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, name, enabled 
+                SELECT id, name, enabled, operation_type 
                 FROM strategy 
                 WHERE id = %s;
                 """, (strategy_id,))
             row = cur.fetchone()
             if row:
-                return Strategy(row['id'], row['name'], row['enabled'])
+                return Strategy(row['id'], row['name'], row['enabled'], row['operation_type'])
             return None  # Retorna None caso o ID não exista
 
 def get_strategy_by_name(strategy_name: str) -> Strategy:
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, name, enabled 
+                SELECT id, name, enabled, operation_type 
                 FROM strategy 
                 WHERE name = %s;
                 """, (strategy_name,))
             row = cur.fetchone()
             if row:
-                return Strategy(row['id'], row['name'], row['enabled'])
+                return Strategy(row['id'], row['name'], row['enabled'], row['operation_type'])
             return None  # Retorna None caso o nome não exista
 
 def get_strategies(strategy_ids: list[int]) -> list[Strategy]:
@@ -35,6 +35,6 @@ def get_strategies(strategy_ids: list[int]) -> list[Strategy]:
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, name, enabled FROM strategy WHERE id = ANY(%s);
+                SELECT id, name, enabled, operation_type FROM strategy WHERE id = ANY(%s);
             """, (strategy_ids,))
-            return [Strategy(row['id'], row['name'], row['enabled']) for row in cur.fetchall()]
+            return [Strategy(row['id'], row['name'], row['enabled'], row['operation_type']) for row in cur.fetchall()]
