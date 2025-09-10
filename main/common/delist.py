@@ -65,7 +65,7 @@ class Delist():
             return tickers
 
     def _get_all_futures_symbols(self):
-        return Binance().get_all_futures_symbols()
+        return Binance().get_all_symbols()
     
     def _check_utilized_announcement(self, announcement_date):
         """
