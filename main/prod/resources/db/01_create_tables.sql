@@ -172,3 +172,11 @@ CREATE TABLE IF NOT EXISTS public.bot_execution_control(
     last_execution timestamp with time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (last_execution)
 );
+
+
+-- Create table to register past delist announcements, so we don't send duplicated orders:
+CREATE TABLE IF NOT EXISTS public.delist_announcement (
+    id SERIAL PRIMARY KEY,
+    --announcement date in format YYYY-MM-DD:
+    announcement_date VARCHAR(10) NOT NULL
+);
