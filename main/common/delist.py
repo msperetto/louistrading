@@ -20,6 +20,11 @@ class Delist():
         pass
 
     def get_delisting_coins(self):
+        """
+        Scrape Binance announcements to find new delisting announcements.
+        If a new announcement is found, it is added to the database and the tickers are extracted.
+        :return: A list of tickers to be delisted, or None if no new announcements are found.
+        """
         for announcement in get_binance_announcements():
             title = announcement.get_text(strip=True)
             link = announcement.get("href")
@@ -47,6 +52,11 @@ class Delist():
         return soup.find_all("a")
 
     def _extract_tickers_from_title(self, title):
+        """
+        Extract tickers from the announcement title.
+        :param title: The announcement title string.
+        :return: A list of extracted ticker symbols.
+        """
         # Extract tickers (between "Binance Will Delist" and "on YYYY-MM-DD")
         match = re.search(r"Binance Will Delist (.+?) on \d{4}-\d{2}-\d{2}", title)
         if match:
@@ -58,6 +68,11 @@ class Delist():
         return Binance().get_all_futures_symbols()
     
     def _check_utilized_announcement(self, announcement_date):
+        """
+        Check if an announcement date has already been utilized (exists in DB).
+        :param announcement_date: The announcement date to check (format 'YYYY-MM-DD').
+        :return: True if the announcement date exists in the database, False otherwise.
+        """
         existing_announcements = get_delist_announcements()
         for ann in existing_announcements:
             if ann.announcement_date == announcement_date:
@@ -65,4 +80,9 @@ class Delist():
         return False
 
     def check_ticker_in_futures(self, ticker):
+        """
+        Check if a ticker is being traded in Binance Futures.
+        :param ticker: The ticker symbol to check (e.g., 'BTCUSDT').
+        :return: True if the ticker is traded in Binance Futures, False otherwise.
+        """
         return ticker in self._get_all_futures_symbols()
