@@ -22,6 +22,7 @@ class Binance():
 
     BASE_ENDPOINT = 'https://fapi.binance.com'
     WS_ENDPOINT = 'wss://fstream.binance.com/ws/'
+    DELIST_URL = 'https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query'
     TICKER_PRICE_ENDPOINT = '/fapi/v1/ticker/price'
     EXCHANGEINFO_ENDPOINT = '/fapi/v1/exchangeInfo'
     SERVERTIME_ENDPOINT = '/fapi/v1/time'
@@ -393,3 +394,29 @@ class Binance():
             alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error deleting all open orders: {response}")
         else:
             return response
+
+    def get_delist_announcements(self):
+        """
+        Fetch and parse Binance delisting announcements to extract tickers.
+        :return: A list of tickers to be delisted or None if no new announcements.
+        """
+        params = {
+            "type": 1,
+            "pageNo": 1,
+            "pageSize": 10,
+            "catalogId": 161
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive"
+        }
+
+        response = requests.get(self.DELIST_URL, params=params, headers=headers)
+        if response.status_code != 200:
+            logger.error(f'Error fetching delist announcements: {response.status_code}')
+            return None
+        data = response.json()
+        announcements = data.get("data", {}).get("catalogs", {})[0].get("articles", [])
+        return announcements

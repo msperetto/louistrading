@@ -6,12 +6,6 @@ from prod.binance import Binance
 from common.domain.delist_announcement import DelistAnnouncement
 from common.dao.delist_announcement_dao import get_delist_announcements, insert_delist_announcement
 
-BASE_URL = "https://www.binance.com"
-DELISTING_URL = "https://www.binance.com/en/support/announcement/list/161"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-}
-
 BASE_STABLE_COIN = 'USDT'
 
 
@@ -45,11 +39,13 @@ class Delist():
         return None
 
     def get_binance_announcements(self):
-        response = requests.get(DELISTING_URL, headers=headers)
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # geting all <a> tags
-        return soup.find_all("a")
+        """
+        Fetch the latest announcements from Binance and parse them.
+        :return: A list of dictionaries with all 1st page delist announcements.
+            (fields: id, code, title, type, releaseDate(in miliseconds))
+        """
+        announcements = Binance().get_delist_announcements()
+        return announcements
 
     def _extract_tickers_from_title(self, title):
         """
