@@ -19,7 +19,7 @@ class Delist():
         If a new announcement is found, it is added to the database and the tickers are extracted.
         :return: A list of tickers to be delisted, or None if no new announcements are found.
         """
-        for announcement in get_binance_announcements():
+        for announcement in _get_binance_announcements():
             title = announcement.get_text(strip=True)
             link = announcement.get("href")
 
@@ -38,7 +38,7 @@ class Delist():
                     return tickers
         return None
 
-    def get_binance_announcements(self):
+    def _get_binance_announcements(self):
         """
         Fetch the latest announcements from Binance and parse them.
         :return: A list of dictionaries with all 1st page delist announcements.
