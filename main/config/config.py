@@ -4,6 +4,10 @@ from common.enums import Environment_Type
 # Connection string for the database
 DEV_ENV_CON = "host=db dbname=noshirt user=postgres password=postgres"
 
+# Create a db postgres connection on hostname/address: 16.171.16.170, port: 5431, name: marlin, username: postgres, password: postgres
+# DEV_ENV_CON = "host=
+MARLIN_DB_CON = "host=16.171.16.170 port=5431 dbname=noshirt user=postgres password=postgres"
+
 # Definig environment
 NEGOCIATION_ENV =  Environment_Type.PROD
 
