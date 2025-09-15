@@ -22,7 +22,9 @@ class Binance():
 
     BASE_ENDPOINT = 'https://fapi.binance.com'
     WS_ENDPOINT = 'wss://fstream.binance.com/ws/'
-    DELIST_URL = 'https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query'
+    BINANCE_ANNOUNCEMENTS_URL = 'https://www.binance.com/bapi/composite/v1/public/cms/article/catalog/list/query'
+    # Backup URL if the first one stops working. We need to add param type = 1 to that URL
+    BINANCE_ANNOUNCEMENTS_URL_2 = 'https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query'
     TICKER_PRICE_ENDPOINT = '/fapi/v1/ticker/price'
     EXCHANGEINFO_ENDPOINT = '/fapi/v1/exchangeInfo'
     SERVERTIME_ENDPOINT = '/fapi/v1/time'
@@ -401,9 +403,14 @@ class Binance():
         :return: A list of tickers to be delisted or None if no new announcements.
         """
         params = {
+            "pageNo": 1,
+            "pageSize": 5,
+            "catalogId": 161
+        }
+        params_backup = {
             "type": 1,
             "pageNo": 1,
-            "pageSize": 10,
+            "pageSize": 5,
             "catalogId": 161
         }
         headers = {
@@ -413,10 +420,19 @@ class Binance():
             "Connection": "keep-alive"
         }
 
-        response = requests.get(self.DELIST_URL, params=params, headers=headers)
-        if response.status_code != 200:
-            logger.error(f'Error fetching delist announcements: {response.status_code}')
-            return None
-        data = response.json()
-        announcements = data.get("data", {}).get("catalogs", {})[0].get("articles", [])
-        return announcements
+        response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL, params=params, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            announcements = data.get("data", {}).get("articles", [])
+            return announcements
+        else:
+            # try backup url
+            response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL_2, params=params_backup, headers=headers)
+            if response.status_code != 200:
+                logger.error(f'Error fetching delist announcements: {response.status_code}')
+                return None
+            data = response.json()
+            announcements = data.get("data", {}).get("catalogs", {})[0].get("articles", [])
+            return announcements
+
+
