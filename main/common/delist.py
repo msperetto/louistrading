@@ -4,10 +4,9 @@ from datetime import datetime
 import re
 from prod.binance import Binance
 from common.domain.delist_announcement import DelistAnnouncement
-from common.dao.delist_announcement_dao import get_delist_announcements, insert_delist_announcement
+from common.dao.delist_announcement_dao import get_delist_announcement_by_coin, insert_delist_announcement
 
 BASE_STABLE_COIN = 'USDT'
-
 
 class Delist():
     def __init__(self):
@@ -16,27 +15,38 @@ class Delist():
     def get_delisting_coins(self):
         """
         Scrape Binance announcements to find new delisting announcements.
-        If a new announcement is found, it is added to the database and the tickers are extracted.
-        :return: A list of tickers to be delisted, or None if no new announcements are found.
+        If a new announcement is found, it is added to the database and the coins are extracted.
+        :return: A list of coins to be delisted, or None if no new announcements are found.
         """
         for announcement in _get_binance_announcements():
-            title = announcement.get_text(strip=True)
-            link = announcement.get("href")
+            title = announcement.get('title')
 
-            if link and "Binance Will Delist" in title:
-                # Get the next sibling element, which contain the date of the announcement
-                announcement_date = announcement.find_next_sibling().get_text(strip=True)
+            if "Binance Will Delist" in title:
+                new_delist_coins = [] # List to hold newly found delist coins
+                # Extract the date in the format 'YYYY-MM-DD in the title'
+                announcement_date = self._extract_date_from_title(title)
 
-                # Check if the announcement has been already utilized:
-                if self._check_utilized_announcement(announcement_date):
-                    continue
+                coins = self._extract_tickers_from_title(title)
 
-                # If the announcement is new, add it to table and extract the tickers:
-                insert_delist_announcement(announcement_date)
-                tickers = self._extract_tickers_from_title(title)
-                if tickers:
-                    return tickers
+                for coin in coins:
+                    if self._is_new_announcement(coin):
+                        new_delist_coins.append(coin)
+                        insert_delist_announcement(announcement_date, coin)
+                return new_delist_coins
+
         return None
+
+    def _extract_date_from_title(self, title):
+        """
+        Extract the announcement date from the title string.
+        :param title: The announcement title string.
+        :return: The extracted date in 'YYYY-MM-DD' format, or None if not found.
+        """
+        match = re.search(r'(\d{4}-\d{2}-\d{2})', title)
+        if match:
+            return match.group(1)
+        return None
+        
 
     def _get_binance_announcements(self):
         """
@@ -63,17 +73,16 @@ class Delist():
     def _get_all_futures_symbols(self):
         return Binance().get_all_symbols()
     
-    def _check_utilized_announcement(self, announcement_date):
+    def _is_new_announcement(self, coin):
         """
-        Check if an announcement date has already been utilized (exists in DB).
-        :param announcement_date: The announcement date to check (format 'YYYY-MM-DD').
-        :return: True if the announcement date exists in the database, False otherwise.
+        Check if an announcement coin has already been utilized (exists in DB).
+        :param coin: The announcement coin to check.
+        :return: True if the announcement coin exists in the database, False otherwise.
         """
-        existing_announcements = get_delist_announcements()
-        for ann in existing_announcements:
-            if ann.announcement_date == announcement_date:
-                return True
-        return False
+        announcement = get_delist_announcement_by_coin(coin)
+        if announcement:
+            return False
+        return True
 
     def check_ticker_in_futures(self, ticker):
         """

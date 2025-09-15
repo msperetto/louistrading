@@ -178,5 +178,6 @@ CREATE TABLE IF NOT EXISTS public.bot_execution_control(
 CREATE TABLE IF NOT EXISTS public.delist_announcement (
     id SERIAL PRIMARY KEY,
     --announcement date in format YYYY-MM-DD:
-    announcement_date VARCHAR(10) NOT NULL
+    announcement_date VARCHAR(10) NOT NULL,
+    coin VARCHAR(15) NOT NULL
 );
