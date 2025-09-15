@@ -404,13 +404,13 @@ class Binance():
         """
         params = {
             "pageNo": 1,
-            "pageSize": 5,
+            "pageSize": 2,
             "catalogId": 161
         }
         params_backup = {
             "type": 1,
             "pageNo": 1,
-            "pageSize": 5,
+            "pageSize": 2,
             "catalogId": 161
         }
         headers = {
@@ -443,13 +443,13 @@ class Binance():
         """
         params = {
             "pageNo": 1,
-            "pageSize": 5,
+            "pageSize": 2,
             "catalogId": 48
         }
         params_backup = {
             "type": 1,
             "pageNo": 1,
-            "pageSize": 5,
+            "pageSize": 2,
             "catalogId": 48
         }
         headers = {
