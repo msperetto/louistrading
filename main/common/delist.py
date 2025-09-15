@@ -84,7 +84,7 @@ class Delist():
             return False
         return True
 
-    def check_ticker_in_futures(self, ticker):
+    def is_ticker_in_futures(self, ticker):
         """
         Check if a ticker is being traded in Binance Futures.
         :param ticker: The ticker symbol to check (e.g., 'BTCUSDT').
