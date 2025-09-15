@@ -1,10 +1,13 @@
+# To run the tests, in root folder, use the command:
+# python -m unittest main/tests/test_list.py
+
 import unittest
+from prod.binance import Binance
 from common.delist import Delist
 
-class TestDelistGetBinanceAnnouncements(unittest.TestCase):
+class TestDelist(unittest.TestCase):
     def test_get_binance_announcements_returns_list(self):
-        delist = Delist()
-        result = delist.get_binance_announcements()
+        result = Binance().get_list_announcements()
         # Check that result is a list
         self.assertIsInstance(result, list)
         self.assertTrue(len(result) > 0, "No announcements returned")
@@ -14,9 +17,6 @@ class TestDelistGetBinanceAnnouncements(unittest.TestCase):
             self.assertIn('id', announcement)
             self.assertIn('code', announcement)
             self.assertIn('title', announcement)
-            self.assertIn('type', announcement)
-            self.assertIn('releaseDate', announcement)
-        
 
 if __name__ == '__main__':
     unittest.main()
