@@ -1,4 +1,5 @@
 import psycopg
+from config.config import DEV_ENV_CON
 from common.domain.delist_announcement import DelistAnnouncement
 
 def get_delist_announcement_by_date(announcement_date: str) -> DelistAnnouncement:
