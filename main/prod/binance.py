@@ -436,3 +436,40 @@ class Binance():
             return announcements
 
 
+    def get_list_announcements(self):
+        """
+        Fetch and parse Binance listing announcements to extract tickers.
+        :return: A list of tickers to be listed or None if no new announcements.
+        """
+        params = {
+            "pageNo": 1,
+            "pageSize": 5,
+            "catalogId": 48
+        }
+        params_backup = {
+            "type": 1,
+            "pageNo": 1,
+            "pageSize": 5,
+            "catalogId": 48
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive"
+        }
+
+        response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL, params=params, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            announcements = data.get("data", {}).get("articles", [])
+            return announcements
+        else:
+            # try backup url
+            response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL_2, params=params_backup, headers=headers)
+            if response.status_code != 200:
+                logger.error(f'Error fetching list announcements: {response.status_code}')
+                return None
+            data = response.json()
+            announcements = data.get("data", {}).get("catalogs", {})[0].get("articles", [])
+            return announcements
