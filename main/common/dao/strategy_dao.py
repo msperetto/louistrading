@@ -38,3 +38,12 @@ def get_strategies(strategy_ids: list[int]) -> list[Strategy]:
                 SELECT id, name, enabled, operation_type FROM strategy WHERE id = ANY(%s);
             """, (strategy_ids,))
             return [Strategy(row['id'], row['name'], row['enabled'], row['operation_type']) for row in cur.fetchall()]
+
+def get_enabled_strategies_by_type(operation_type: str) -> list[Strategy]:
+    with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, name, enabled, operation_type FROM strategy 
+                WHERE enabled = TRUE AND operation_type = %s;
+            """, (operation_type,))
+            return [Strategy(row['id'], row['name'], row['enabled'], row['operation_type']) for row in cur.fetchall()]
