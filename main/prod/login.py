@@ -7,9 +7,10 @@ from cryptography.fernet import Fernet
 from common.dao import database_operations as db
 
 class Login():
-    def __init__(self, exchange, account_operation_type):
+    def __init__(self, exchange, account_operation_type, account_id):
         self.exchange = exchange
         self.account_operation_type = account_operation_type
+        self.account_id = account_id
 
     def create_cryptography_key(self):
         # password_provided = getpass("Enter your cryptography password: ")

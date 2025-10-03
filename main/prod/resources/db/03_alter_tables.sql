@@ -35,3 +35,6 @@ ADD COLUMN IF NOT EXISTS account_operation_type varchar(16);
 -- 3. Adding operation_type column in strategy table
 ALTER TABLE public.strategy
 ADD COLUMN IF NOT EXISTS operation_type varchar(16);
+
+ALTER TABLE IF EXISTS public.exchange_config
+    ADD COLUMN account_id integer;

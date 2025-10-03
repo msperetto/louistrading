@@ -54,12 +54,12 @@ def get_active_pairs():
             return result
 
 
-def insert_exchange_config(id, key, exchange: str, account_operation_type: str):
+def insert_exchange_config(id, key, exchange: str, account_operation_type: str, account_id: int = None):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO exchange_config (id, sk, exchange, account_operation_type) VALUES(%s, %s, %s, %s); 
-            """, (id, key, exchange, account_operation_type,))
+                INSERT INTO exchange_config (id, sk, exchange, account_operation_type, account_id) VALUES(%s, %s, %s, %s, %s); 
+            """, (id, key, exchange, account_operation_type, account_id,))
 
             conn.commit()
 
@@ -68,7 +68,7 @@ def get_exchange_config(exchange: str, account_operation_type: str):
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, sk FROM exchange_config WHERE exchange = %s AND account_operation_type = %s;
+                SELECT id, sk, account_operation_type, account_id FROM exchange_config WHERE exchange = %s AND account_operation_type = %s;
                 """,(exchange, account_operation_type,))
             return cur.fetchone()
 

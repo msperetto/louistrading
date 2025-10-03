@@ -9,23 +9,29 @@ from prod.login import Login
 import logging
 from prod import logger
 from common.enums import Account_Operation_Type, Strategy_Operation_Type
+from config.config import ACCOUNT_ID, ACCOUNT_ID_DELIST
 
 
 class Main():
     def __init__(self):
         # Import all strategies from the released strategies folder.
         import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
-
+        all_exchange_sessions = []
 
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config)
-        self.exchange_session = Login("binance", Account_Operation_Type.TRADING)
-        self.exchange_session.login_database()
+        self.exchange_session_trading = Login("binance", Account_Operation_Type.TRADING, ACCOUNT_ID)
+        self.exchange_session_trading.login_database()
+        all_exchange_sessions.append(self.exchange_session_trading)
+
+        self.exchange_session_delist = Login("binance", Account_Operation_Type.DELIST, ACCOUNT_ID_DELIST)
+        self.exchange_session_delist.login_database()
+        all_exchange_sessions.append(self.exchange_session_delist)
         
         self.strategies_trading = self._get_strategies_by_type(Strategy_Operation_Type.TRADING)
+        self.strategies_delist = self._get_strategies_by_type(Strategy_Operation_Type.DELIST)
 
-
-        self.bot = TradingBot(self.strategies, db, self.setup, self.exchange_session)
+        self.bot = TradingBot(self.strategies_trading, db, self.setup, self.exchange_session_trading)
 
     def _get_strategies_by_type(self, operation_type:str):
         """
