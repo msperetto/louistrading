@@ -153,6 +153,15 @@ class TradeSell_LowLastCandle_EMAshort_lt_SMAmedium(Trade):
         return (util.get_value_by_index(self.data.Close, -1) < util.get_value_by_index(self.data.High, -2)) and \
                 (util.get_value_by_index(self.intraday_ema_short(), -1) < util.get_value_by_index(self.intraday_sma_medium(), -1))
 
+
+class TradeSell_Delist(Trade):
+    def __init__(self):
+        pass
+
+    def sellConfirmation(self):
+        return True
+        
+
 class TradeSell_Low_lt_LowLastCandle(Trade):
     def __init__(self, data):
         self.data = data
