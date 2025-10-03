@@ -62,6 +62,12 @@ binance_logger = setup_logger('binance', 'binance.log')
 # Setup test logger
 test_logger = setup_logger('test', 'test.log')
 
+# Setup Account Balance Updater logger
+account_balance_updater_logger = setup_logger('account_balance_updater', 'account_balance_updater.log')
+
+# Setup Delist logger
+delist_logger = setup_logger('delist', 'delist.log')
+
 # Setup Notification object
 from prod.notification import Notification
 notify = Notification()
