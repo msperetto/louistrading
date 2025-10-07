@@ -33,7 +33,7 @@ class Delist():
         If a new announcement is found, it is added to the database and the coins are extracted.
         :return: A list of coins to be delisted, or None if no new announcements are found.
         """
-        for announcement in _get_binance_announcements():
+        for announcement in self._get_binance_announcements():
             title = announcement.get('title')
 
             if "Binance Will Delist" in title:
