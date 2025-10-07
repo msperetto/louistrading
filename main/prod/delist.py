@@ -1,16 +1,21 @@
 import requests
 from datetime import datetime
-from time import sleep
 import re
+import time
 from config.config import ACCOUNT_ID_DELIST
 from common.domain.delist_announcement import DelistAnnouncement
 from common.dao.delist_announcement_dao import get_delist_announcement_by_coin, insert_delist_announcement
 from common.domain.account_balance import AccountBalance
-from common.dao.account_balance_dao import get_account_balance, update_account_balance
-from common.enums import Account_Operation_Type, Side_Type, Strategy_Operation_Type
+from common.dao import trade_dao, alert_dao, strategy_dao, account_balance_dao
+from common.enums import Strategy_Operation_Type, Alert_Level
 from common.util import get_pairs_precision, get_pairs_price_precision
 from prod.binance import Binance
+from prod.dataset import Dataset
+from prod.candle_data import CandleData
+from common import management
+from prod.strategy_manager import StrategyManager
 from prod import delist_logger as logger
+from prod import notify
 
 BASE_STABLE_COIN = 'USDT'
 BALANCE_SAFE_PERCENTAGE = 0.8 # 80% of the available balance will be used for opening positions
@@ -112,7 +117,7 @@ class Delist():
 
     
     def _get_available_balance(self):
-        account_balance: AccountBalance = get_account_balance(ACCOUNT_ID_DELIST)
+        account_balance: AccountBalance = account_balance_dao.get_account_balance(ACCOUNT_ID_DELIST)
         if account_balance:
             return account_balance.account_balance
         return 0.0
@@ -129,14 +134,14 @@ class Delist():
             #TODO: think if make sense to create a _should_run_strategy method for delist strategy.
             # Similar to what we do in tradingBot, so it runs depending on the candle interval.
             # sleeps for 1 hour and try to handle opened trades again.
-            sleep(3600)
+            time.sleep(3600)
             self.handle_opened_trades()
 
         # while there are no new delisting coins, sleep for 1 minute and check again.
         # if there are new delisting coins, we will get them and open trades for them.
         delist_coins = self.get_delisting_coins()
         while not delist_coins:
-            sleep(60)
+            time.sleep(60)
             delist_coins = self.get_delisting_coins()
 
         # If we reach here, it means there are new delisting coins to handle.

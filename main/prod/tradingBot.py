@@ -14,7 +14,6 @@ from common.strategy import *
 from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
 from prod.login import Login
-import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
 from common.dao import alert_dao as alert_db
 from prod.binance import Binance
