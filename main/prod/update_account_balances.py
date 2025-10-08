@@ -15,7 +15,7 @@ class UpdateAccountBalances:
         self.exchange_sessions = exchange_sessions
         self.binance = Binance()
 
-    def update_account_balances():
+    def update_account_balances(self):
         """
         Update account balances in the database.
         """
@@ -50,7 +50,7 @@ class UpdateAccountBalances:
         balances = []
         for exchange_session in self.exchange_sessions:
             account_balance = float(self.binance.get_account_info(exchange_session.e_id, exchange_session.e_sk)["availableBalance"])
-            account_balance_dao.update_account_balance(exchange_session.account_id, account_balance, self.margin_ratio)
+            update_account_balance(exchange_session.account_id, account_balance, self.margin_ratio)
             #append a dictionary with operation type and balance:
             balances.append({"account_id": exchange_session.account_id, "operation_type": exchange_session.account_operation_type, "balance": account_balance})
         return balances
