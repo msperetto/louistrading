@@ -15,17 +15,12 @@ class Main():
     def __init__(self):
         # Import all strategies from the released strategies folder.
         import_all_strategies(STRATEGIES_PATH_PROD, STRATEGIES_MODULE_PROD, globals())
-        all_exchange_sessions = []
 
         base_config = db.get_initial_config()
         self.setup = Env_setup(base_config)
         self.exchange_session_trading = Login("binance", Account_Operation_Type.TRADING, ACCOUNT_ID)
         self.exchange_session_trading.login_database()
-        all_exchange_sessions.append(self.exchange_session_trading)
 
-        self.exchange_session_delist = Login("binance", Account_Operation_Type.DELIST, ACCOUNT_ID_DELIST)
-        self.exchange_session_delist.login_database()
-        all_exchange_sessions.append(self.exchange_session_delist)
         
         self.strategies_trading = get_strategies_by_type(Strategy_Operation_Type.TRADING, globals())
 
