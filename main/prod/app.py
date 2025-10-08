@@ -1,6 +1,5 @@
-from common.util import import_all_strategies
+from common.util import import_all_strategies, get_strategies_by_type
 from common import STRATEGIES_MODULE_PROD, STRATEGIES_PATH_PROD
-from common.dao.strategy_dao import get_enabled_strategies_by_type
 from common.domain.strategy import Strategy
 from prod.tradingBot import TradingBot
 from common.dao import database_operations as db
@@ -28,30 +27,10 @@ class Main():
         self.exchange_session_delist.login_database()
         all_exchange_sessions.append(self.exchange_session_delist)
         
-        self.strategies_trading = self._get_strategies_by_type(Strategy_Operation_Type.TRADING)
-        self.strategies_delist = self._get_strategies_by_type(Strategy_Operation_Type.DELIST)
+        self.strategies_trading = get_strategies_by_type(Strategy_Operation_Type.TRADING, globals())
 
         self.bot = TradingBot(self.strategies_trading, db, self.setup, self.exchange_session_trading)
 
-    def _get_strategies_by_type(self, operation_type:str):
-        """
-        Gets from DB all trading enabled strategies classes names and instantiates it.
-        Returns:
-            list of Strategy objects
-        """
-        strategies: list[Strategy] = get_enabled_strategies_by_type(operation_type)
-        strategy_objects = []
-        for strategy in strategies:
-            try:
-                strategy_class = globals()[strategy.name]
-                strategy_instance = strategy_class()
-                strategy_objects.append(strategy_instance)
-                logger.info(f"Strategy {strategy.name} instantiated successfully.")
-            except KeyError as e:
-                logger.error(f"Strategy class '{strategy.name}' not found: {e}")
-            except Exception as e:
-                logger.error(f"Error instantiating strategy '{strategy.name}': {e}")
-        return strategy_objects
 
     def start(self):
         print("Running...")
