@@ -20,6 +20,8 @@ services:
     command: python main/prod/app.py
     ports:
       - "8080:80"
+    secrets:
+      - decrypt_secret_trading
     depends_on:
       - db
 
@@ -40,7 +42,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     secrets:
-      - decrypt_secret
+      - decrypt_secret_trading
     command: uvicorn main.prod.api:api --host=0.0.0.0
     ports:
       - "8000:8000"
@@ -60,6 +62,8 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     command: python main/prod/app_delist.py
+    secrets:
+      - decrypt_secret_delist
     depends_on:
       - db
 
@@ -76,6 +80,9 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     command: python main/prod/app_update_account_balances.py
+    secrets:
+      - decrypt_secret_trading
+      - decrypt_secret_delist
     depends_on:
       - db
 
@@ -160,7 +167,10 @@ services:
     # entrypoint: ["bin/bash", "/resources/init-db.sh"]
 
 secrets:
-  decrypt_secret:
-    file: ./decrypt_secret.txt
+  decrypt_secret_trading:
+    file: ~/.secrets/marlin/decrypt_secret_trading.txt
+  decrypt_secret_delist:
+    file: ~/.secrets/marlin/decrypt_secret_delist.txt
+
 volumes:
   noshirt_postgres_data:

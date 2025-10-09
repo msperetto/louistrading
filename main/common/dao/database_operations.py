@@ -64,12 +64,22 @@ def insert_exchange_config(id, key, exchange: str, account_operation_type: str, 
             conn.commit()
 
 
-def get_exchange_config(exchange: str, account_operation_type: str):
+def get_exchange_config(exchange: str, account_operation_type: str, account_id: int = None):
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, sk, account_operation_type, account_id FROM exchange_config WHERE exchange = %s AND account_operation_type = %s;
-                """,(exchange, account_operation_type,))
+            if account_id:
+                cur.execute("""
+                    SELECT id, sk, account_operation_type, account_id 
+                    FROM exchange_config 
+                    WHERE exchange = %s AND account_operation_type = %s AND account_id = %s;
+                    """,(exchange, account_operation_type, account_id,))
+            else:
+                # Backward compatibility
+                cur.execute("""
+                    SELECT id, sk, account_operation_type, account_id 
+                    FROM exchange_config 
+                    WHERE exchange = %s AND account_operation_type = %s;
+                    """,(exchange, account_operation_type,))
             return cur.fetchone()
 
 def get_bot_execution_control():
