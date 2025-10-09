@@ -1,5 +1,3 @@
-import pandas_ta as ta
-import pandas as pd
 from common import management
 from common.dao import database_operations as db
 from common.enums import Side_Type

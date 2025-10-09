@@ -4,7 +4,6 @@ from prod.update_account_balances import UpdateAccountBalances
 from common.dao import database_operations as db
 from prod.env_setup import Env_setup
 from prod.login import Login
-import logging
 from prod import account_balance_updater_logger as logger
 from common.enums import Account_Operation_Type
 from config.config import ACCOUNT_ID, ACCOUNT_ID_DELIST

@@ -7,9 +7,6 @@ from backtesting.lib import resample_apply
 from common.strategybuy import StrategyBuy
 from common.strategysell import StrategySell
 from common.trendanalysis import TrendAnalysis
-import pandas_ta as ta
-import pandas as pd
-from time import sleep
 from common.strategy import *
 
 # It deals with a list of strategies. 
