@@ -2,7 +2,7 @@
 # python -m unittest main/tests/test_delist.py
 
 import unittest
-from common.delist import Delist
+from prod.delist import Delist
 
 class TestDelist(unittest.TestCase):
     def test_check_ticker_in_futures_true(self):

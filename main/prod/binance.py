@@ -101,7 +101,7 @@ class Binance():
                 return requests.post(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                binance_Logger.error(f'Signed request error: {e}')
+                binance_logger.error(f'Signed request error: {e}')
 
 
     def get_all_symbols(self):
@@ -191,6 +191,62 @@ class Binance():
             logger.error(f'Error getting orderbook: {e}')
         
         return orderbook
+    
+    def simulate_position_details(self, symbol, quantity, side):
+        """
+        Simulate opening a position by fetching current orderbook data.
+        Does not execute any trade - only returns the details of what would happen.
+        
+        Args:
+            symbol (str): The trading pair symbol.
+            quantity (float): The quantity of the asset to trade.
+            side (str): The side of the order, either "BUY" or "SELL".
+        
+        Returns:
+            dict: A dictionary with simulated position details including price, total value, etc.
+        """
+        try:
+            orderbook = self.get_orderbook(symbol, 5)
+            
+            if side.upper() == "BUY":
+                # For buying, we look at asks (sell orders)
+                best_price = float(orderbook['asks'][0][0]) if orderbook.get('asks') else None
+                order_type = "Market Buy"
+            else:
+                # For selling, we look at bids (buy orders)
+                best_price = float(orderbook['bids'][0][0]) if orderbook.get('bids') else None
+                order_type = "Market Sell"
+            
+            if not best_price:
+                return {
+                    "error": f"Could not fetch orderbook for {symbol}",
+                    "symbol": symbol,
+                    "quantity": quantity,
+                    "side": side
+                }
+            
+            total_value = best_price * quantity
+            
+            return {
+                "symbol": symbol,
+                "side": side.upper(),
+                "order_type": order_type,
+                "quantity": quantity,
+                "estimated_price": best_price,
+                "estimated_total_value": total_value,
+                "orderbook_snapshot": {
+                    "top_5_bids": orderbook.get('bids', [])[:5],
+                    "top_5_asks": orderbook.get('asks', [])[:5]
+                }
+            }
+        except Exception as e:
+            logger.error(f'Error simulating position for {symbol}: {e}')
+            return {
+                "error": str(e),
+                "symbol": symbol,
+                "quantity": quantity,
+                "side": side
+            }
 
     def get_extended_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000), period_type: str = "intraday"):
         # Binance only allow 1500 max candles per request, so for longer periods of time, its necessary

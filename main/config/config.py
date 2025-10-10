@@ -8,8 +8,11 @@ DEV_ENV_CON = "host=db dbname=noshirt user=postgres password=postgres"
 # DEV_ENV_CON = "host=
 MARLIN_DB_CON = "host=16.171.16.170 port=5431 dbname=noshirt user=postgres password=postgres"
 
-# Definig environment
+# Defining environment
 NEGOCIATION_ENV =  Environment_Type.PROD
+
+# Test mode for delist announcements (when NEGOCIATION_ENV is TEST)
+USE_TEST_ANNOUNCEMENTS = True  # Set to False to use real Binance data even in TEST mode
 
 # Base URL for local API
 BASE_LOCAL_URL = "http://localhost:8000/"

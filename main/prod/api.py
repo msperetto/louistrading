@@ -12,10 +12,19 @@ from common.dao.trade_dao import get_open_trade_pairs
 from common.dao.alert_dao import get_active_alerts
 from common.dao.backtest_dao import get_backtests
 from common.dao.account_balance_dao import get_account_balance
+from common.dao.test_delist_announcement_dao import (
+    get_unprocessed_test_announcements, 
+    insert_test_announcement, 
+    get_all_test_announcements,
+    delete_test_announcement,
+    clear_all_test_announcements,
+    mark_announcement_processed
+)
 from common.domain.trade import Trade
 from common.domain.alert import Alert
 from common.domain.account_balance import AccountBalance
 from common.domain.backtest import Backtest
+from common.domain.test_delist_announcement import TestDelistAnnouncement
 from config.config import ACCOUNT_ID
 from time import sleep
 import threading
@@ -36,6 +45,12 @@ class Order(BaseModel):
     id: int
     item: str
     quantity: int
+
+class TestAnnouncementRequest(BaseModel):
+    title: str
+    announcement_date: str  # Format: YYYY-MM-DD
+    coins: list[str]
+    notes: str = None
 
 bot_ready = Event()
 app = Main()
@@ -219,3 +234,108 @@ def _sanitize_backtest(backtest):
         if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
             d[k] = None  # or str(v)
     return d
+
+# Test Announcement API Endpoints
+
+@api.get("/test-announcements")
+async def get_test_announcements():
+    """Get all test delist announcements"""
+    try:
+        announcements = get_all_test_announcements()
+        return {
+            "status": "success",
+            "data": [
+                {
+                    "id": ann.id,
+                    "title": ann.title,
+                    "announcement_date": ann.announcement_date,
+                    "coins": ann.coins,
+                    "created_at": ann.created_at.isoformat(),
+                    "processed": ann.processed,
+                    "notes": ann.notes
+                } for ann in announcements
+            ]
+        }
+    except Exception as e:
+        api_logger.error(f"Error getting test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.get("/test-announcements/unprocessed")
+async def get_unprocessed_test_announcements_endpoint():
+    """Get unprocessed test delist announcements"""
+    try:
+        announcements = get_unprocessed_test_announcements()
+        return {
+            "status": "success",
+            "data": [
+                {
+                    "id": ann.id,
+                    "title": ann.title,
+                    "announcement_date": ann.announcement_date,
+                    "coins": ann.coins,
+                    "created_at": ann.created_at.isoformat(),
+                    "notes": ann.notes
+                } for ann in announcements
+            ]
+        }
+    except Exception as e:
+        api_logger.error(f"Error getting unprocessed test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.post("/test-announcements")
+async def create_test_announcement(request: TestAnnouncementRequest):
+    """Create a new test delist announcement"""
+    try:
+        announcement_id = insert_test_announcement(
+            title=request.title,
+            announcement_date=request.announcement_date,
+            coins=request.coins,
+            notes=request.notes
+        )
+        return {
+            "status": "success",
+            "message": "Test announcement created successfully",
+            "announcement_id": announcement_id
+        }
+    except Exception as e:
+        api_logger.error(f"Error creating test announcement: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.delete("/test-announcements/{announcement_id}")
+async def delete_test_announcement_endpoint(announcement_id: int):
+    """Delete a test announcement"""
+    try:
+        delete_test_announcement(announcement_id)
+        return {
+            "status": "success",
+            "message": "Test announcement deleted successfully"
+        }
+    except Exception as e:
+        api_logger.error(f"Error deleting test announcement: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.delete("/test-announcements")
+async def clear_all_test_announcements_endpoint():
+    """Clear all test announcements"""
+    try:
+        clear_all_test_announcements()
+        return {
+            "status": "success",
+            "message": "All test announcements cleared successfully"
+        }
+    except Exception as e:
+        api_logger.error(f"Error clearing test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.post("/test-announcements/{announcement_id}/mark-processed")
+async def mark_announcement_processed_endpoint(announcement_id: int):
+    """Mark a test announcement as processed"""
+    try:
+        mark_announcement_processed(announcement_id)
+        return {
+            "status": "success",
+            "message": "Test announcement marked as processed"
+        }
+    except Exception as e:
+        api_logger.error(f"Error marking announcement as processed: {e}")
+        return {"status": "error", "message": str(e)}

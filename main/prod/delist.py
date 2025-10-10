@@ -2,12 +2,13 @@ import requests
 from datetime import datetime
 import re
 import time
-from config.config import ACCOUNT_ID_DELIST
+from config.config import ACCOUNT_ID_DELIST, NEGOCIATION_ENV, USE_TEST_ANNOUNCEMENTS, BASE_LOCAL_URL
 from common.domain.delist_announcement import DelistAnnouncement
 from common.dao.delist_announcement_dao import get_delist_announcement_by_coin, insert_delist_announcement
+from common.dao.test_delist_announcement_dao import get_unprocessed_test_announcements, mark_announcement_processed
 from common.domain.account_balance import AccountBalance
 from common.dao import trade_dao, alert_dao, strategy_dao, account_balance_dao
-from common.enums import Strategy_Operation_Type, Alert_Level
+from common.enums import Strategy_Operation_Type, Alert_Level, Environment_Type
 from common.util import get_pairs_precision, get_pairs_price_precision
 from prod.binance import Binance
 from prod.dataset import Dataset
@@ -30,9 +31,80 @@ class Delist():
     def get_delisting_coins(self):
         """
         Scrape Binance announcements to find new delisting announcements.
+        If in TEST mode and USE_TEST_ANNOUNCEMENTS is True, uses fake announcements from database.
         If a new announcement is found, it is added to the database and the coins are extracted.
         :return: A list of coins to be delisted, or None if no new announcements are found.
         """
+        # Check if we should use test announcements
+        if NEGOCIATION_ENV == Environment_Type.TEST and USE_TEST_ANNOUNCEMENTS:
+            return self._get_delisting_coins_from_test_data()
+        else:
+            return self._get_delisting_coins_from_binance()
+
+    def _get_delisting_coins_from_test_data(self):
+        """
+        Get delisting coins from test announcements in the database.
+        This method mirrors the production logic to test the exact same flow.
+        :return: A list of coins to be delisted, or None if no new announcements are found.
+        """
+        logger.info("Using TEST mode - fetching announcements from database")
+        
+        try:
+            test_announcements = get_unprocessed_test_announcements()
+            
+            for test_ann in test_announcements:
+                title = test_ann.title
+                logger.info(f"Processing test announcement: {title}")
+                
+                # Mirror production logic: check if title contains delist keyword
+                if "Binance Will Delist" in title:
+                    new_delist_coins = []
+                    
+                    # Extract date from title (same as production)
+                    announcement_date = self._extract_date_from_title(title)
+                    
+                    # If date not found in title, use the stored announcement_date
+                    if not announcement_date:
+                        announcement_date = test_ann.announcement_date
+                        logger.info(f"Date not found in title, using stored date: {announcement_date}")
+                    
+                    # Extract coins from title (same as production)
+                    coins = self._extract_tickers_from_title(title)
+                    
+                    # If extraction fails, use the stored coins list
+                    if not coins:
+                        coins = test_ann.coins
+                        logger.info(f"Coins not extracted from title, using stored coins: {coins}")
+                    
+                    # Process each coin (same as production)
+                    for coin in coins:
+                        if self._is_new_announcement(coin):
+                            ticker = f"{coin}{BASE_STABLE_COIN}"
+                            if self.is_ticker_in_futures(ticker):
+                                logger.info(f"New delist announcement found for coin: {coin} - Announcement date: {announcement_date}")
+                                new_delist_coins.append(coin)
+                                insert_delist_announcement(announcement_date, coin)
+                    
+                    # Mark test announcement as processed
+                    mark_announcement_processed(test_ann.id)
+                    logger.info(f"Test announcement {test_ann.id} marked as processed")
+                    
+                    if new_delist_coins:
+                        return new_delist_coins
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error processing test announcements: {e}")
+            return None
+
+    def _get_delisting_coins_from_binance(self):
+        """
+        Get delisting coins from real Binance announcements.
+        :return: A list of coins to be delisted, or None if no new announcements are found.
+        """
+        logger.info("Using PRODUCTION mode - fetching announcements from Binance")
+        
         for announcement in self._get_binance_announcements():
             title = announcement.get('title')
 
@@ -153,8 +225,11 @@ class Delist():
 
     def handle_new_trades(self, delist_coins):
         self.pairs_precision = get_pairs_precision(delist_coins)
-        self.get_pairs_price_precision = get_pairs_price_precision(delist_coins)
+        self.pairs_price_precision = get_pairs_price_precision(delist_coins)
         self.setup.order_value = self._define_open_order_value(delist_coins)
+        
+        binance = Binance()
+        
         for coin in delist_coins:
             pair = f"{coin}{BASE_STABLE_COIN}"
             final_dataset = self.create_combined_dataset(pair, self.strategy)
@@ -169,11 +244,51 @@ class Delist():
                     self.strategy
                 )
             try:
-                if manager.try_open_position():
-                    available_orders -= 1
-                    self.current_balance = self._get_current_balance()
-                    # If the position was opened, then jump to the next pair.
+                # In TEST mode, simulate the position instead of opening it
+                if NEGOCIATION_ENV == Environment_Type.TEST:
+                    # Calculate quantity based on order value and current price
+                    current_price = float(binance.get_symbol_price(pair))
+                    quantity = round(self.setup.order_value / current_price, self.pairs_precision[pair])
+                    
+                    # Get simulated position details from orderbook
+                    position_details = binance.simulate_position_details(
+                        pair, 
+                        quantity, 
+                        self.strategy.side
+                    )
+                    
+                    # Log detailed information about what would be traded
+                    logger.info("="*80)
+                    logger.info("SIMULATED POSITION OPENING (TEST MODE)")
+                    logger.info("="*80)
+                    logger.info(f"Pair: {pair}")
+                    logger.info(f"Coin: {coin}")
+                    logger.info(f"Strategy: {self.strategy.name}")
+                    logger.info(f"Side: {position_details.get('side', 'N/A')}")
+                    logger.info(f"Order Type: {position_details.get('order_type', 'N/A')}")
+                    logger.info(f"Quantity: {position_details.get('quantity', 'N/A')}")
+                    logger.info(f"Estimated Entry Price: {position_details.get('estimated_price', 'N/A')}")
+                    logger.info(f"Order Value (USDT): {self.setup.order_value}")
+                    logger.info(f"Estimated Total Value: {position_details.get('estimated_total_value', 'N/A')}")
+                    logger.info(f"Available Balance: {self.available_balance}")
+                    logger.info(f"Orderbook Top 5 Bids: {position_details.get('orderbook_snapshot', {}).get('top_5_bids', [])}")
+                    logger.info(f"Orderbook Top 5 Asks: {position_details.get('orderbook_snapshot', {}).get('top_5_asks', [])}")
+                    
+                    if 'error' in position_details:
+                        logger.error(f"Error in simulation: {position_details['error']}")
+                    else:
+                        logger.info("Position would be opened successfully (simulated)")
+                    
+                    logger.info("="*80)
+                    
+                    # In test mode, we don't actually open the position
                     continue
+                else:
+                    # Production mode: actually open the position
+                    if manager.try_open_position():
+                        self.available_balance = self._update_available_balance()
+                        # If the position was opened, then jump to the next pair.
+                        continue
             except Exception as e:
                 logger.error(f"An error occurred while trying to open position for pair {pair} with strategy {self.strategy}: {e}")
                 alert_dao.insert_alert(
