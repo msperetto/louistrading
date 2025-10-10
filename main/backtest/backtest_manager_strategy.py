@@ -9,7 +9,7 @@ from backtesting.lib import resample_apply
 from common.strategybuy import StrategyBuy
 from common.strategysell import StrategySell
 from common.trendanalysis import TrendAnalysis
-import pandas_ta as ta
+import talib
 import pandas as pd
 from time import sleep
 from common.strategyLong import StrategyLong
@@ -58,19 +58,19 @@ class BacktestManagerStrategy(Strategy):
         self.classes = {}
 
         # creating indicators series (1 indicator value for each candle)
-        if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_short)
-        if self.intraday_ema_medium != 0: self.intraday_ema_medium = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_medium)
-        if self.intraday_ema_long != 0: self.intraday_ema_long = self.I(ta.ema, pd.Series(self.data.Close), self.intraday_ema_long)
-        if self.intraday_adx != 0: self.intraday_adx = self.I(ta.adx, pd.Series(self.data.High), pd.Series(self.data.Low), pd.Series(self.data.Close), self.intraday_adx)
+        if self.intraday_ema_short != 0: self.intraday_ema_short = self.I(talib.EMA, pd.Series(self.data.Close), self.intraday_ema_short)
+        if self.intraday_ema_medium != 0: self.intraday_ema_medium = self.I(talib.EMA, pd.Series(self.data.Close), self.intraday_ema_medium)
+        if self.intraday_ema_long != 0: self.intraday_ema_long = self.I(talib.EMA, pd.Series(self.data.Close), self.intraday_ema_long)
+        if self.intraday_adx != 0: self.intraday_adx = self.I(talib.ADX, pd.Series(self.data.High), pd.Series(self.data.Low), pd.Series(self.data.Close), self.intraday_adx)
 
-        if self.intraday_sma_short != 0: self.intraday_sma_short = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_short)
-        if self.intraday_sma_medium != 0: self.intraday_sma_medium = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_medium)
-        if self.intraday_sma_long != 0: self.intraday_sma_long = self.I(ta.sma, pd.Series(self.data.Close), self.intraday_sma_long)
-        if self.intraday_rsi != 0: self.intraday_rsi = self.I(ta.rsi, pd.Series(self.data.Close), self.intraday_rsi)
+        if self.intraday_sma_short != 0: self.intraday_sma_short = self.I(talib.SMA, pd.Series(self.data.Close), self.intraday_sma_short)
+        if self.intraday_sma_medium != 0: self.intraday_sma_medium = self.I(talib.SMA, pd.Series(self.data.Close), self.intraday_sma_medium)
+        if self.intraday_sma_long != 0: self.intraday_sma_long = self.I(talib.SMA, pd.Series(self.data.Close), self.intraday_sma_long)
+        if self.intraday_rsi != 0: self.intraday_rsi = self.I(talib.RSI, pd.Series(self.data.Close), self.intraday_rsi)
 
-        if self.trend_ema_short != 0: self.trend_ema_short = resample_apply(self.trend_interval, ta.ema, self.data.Close, self.trend_ema_short)
-        if self.trend_sma_medium != 0: self.trend_sma_medium = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_medium)
-        if self.trend_sma_long != 0: self.trend_sma_long = resample_apply(self.trend_interval, ta.sma, self.data.Close, self.trend_sma_long)
+        if self.trend_ema_short != 0: self.trend_ema_short = resample_apply(self.trend_interval, talib.EMA, self.data.Close, self.trend_ema_short)
+        if self.trend_sma_medium != 0: self.trend_sma_medium = resample_apply(self.trend_interval, talib.SMA, self.data.Close, self.trend_sma_medium)
+        if self.trend_sma_long != 0: self.trend_sma_long = resample_apply(self.trend_interval, talib.SMA, self.data.Close, self.trend_sma_long)
 
         # TODO: Understand why the import_all_strategies() function is not working properly
         # import_all_strategies()

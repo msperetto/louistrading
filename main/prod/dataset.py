@@ -1,37 +1,63 @@
-import pandas_ta as ta
+import talib
 import pandas as pd
+import numpy as np
 from common.indicators_catalog import indicators_catalog
 
 class Dataset():
     def __init__(self, dataset, strategy):
-        #initializing strategy (group of indicators)
-        #a strategy for pandas_ta is a group of indicators that will be added to the dataset
         self.dataset = dataset
         self.strategy = strategy
-        self.indicator_management = ta.Strategy(
-            name="grouping_indicators",
-            ta=[{}]
-        )
+        self.indicator_management = []
 
     def calc_indicator(self, indicator: str, **kwargs):
         try:
-            return self.dataset.ta(kind=indicator, append=True, **kwargs)
+            # Map pandas_ta indicators to talib equivalents
+            indicator_map = {
+                'ema': talib.EMA,
+                'sma': talib.SMA,
+                'rsi': talib.RSI,
+                'adx': talib.ADX
+            }
+            
+            if indicator.lower() not in indicator_map:
+                raise ValueError(f'Indicator "{indicator}" not supported')
+            
+            talib_func = indicator_map[indicator.lower()]
+            length = kwargs.get('length', 14)
+            
+            # Get the appropriate price data based on indicator
+            if indicator.lower() == 'adx':
+                high = self.dataset['High'].values if 'High' in self.dataset.columns else self.dataset['high'].values
+                low = self.dataset['Low'].values if 'Low' in self.dataset.columns else self.dataset['low'].values
+                close = self.dataset['Close'].values if 'Close' in self.dataset.columns else self.dataset['close'].values
+                result = talib_func(high, low, close, timeperiod=length)
+            else:
+                close = self.dataset['Close'].values if 'Close' in self.dataset.columns else self.dataset['close'].values
+                result = talib_func(close, timeperiod=length)
+            
+            # Convert to pandas Series and add to dataset
+            result_series = pd.Series(result, index=self.dataset.index)
+            result_series.name = f'{indicator.upper()}_{length}'
+            self.dataset[result_series.name] = result_series
+            return result_series
+            
         except Exception as e:
             raise RuntimeError(f'Indicator "{indicator}" error with exception: {e}')
 
     def add_indicator_to_manager(self, indicator):
         #indicator has to be a dictionary like: {"kind": "rsi", "length": 22}
-        self.indicator_management.ta.append(indicator)
+        self.indicator_management.append(indicator)
 
     def apply_indicators_to_df(self):
-        self.dataset.ta.strategy(self.indicator_management)
+        for indicator in self.indicator_management:
+            self.calc_indicator(indicator['kind'], length=indicator['length'])
 
     def join_indicator_to_dataset(self, indicator):
         return self.dataset.join(indicator)
 
     # add the indicators columns to the candles dataset
     def add_indicators_to_candle_dataset(self, period_type):
-        self.indicator_management.ta.remove({})
+        self.indicator_management = []
         indicators_list = []
 
         for attr, config in indicators_catalog.items():

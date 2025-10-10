@@ -26,7 +26,7 @@ multitasking==0.0.11
 numpy==1.26.4
 packaging==24.0
 pandas==2.3.3
-pandas_ta==0.3.14b0
+TA-Lib==0.4.28
 peewee==3.17.1
 pillow==10.3.0
 psycopg==3.2.1
