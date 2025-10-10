@@ -1,4 +1,4 @@
-import talib
+import ta
 import pandas as pd
 import numpy as np
 from common.indicators_catalog import indicators_catalog
@@ -11,35 +11,30 @@ class Dataset():
 
     def calc_indicator(self, indicator: str, **kwargs):
         try:
-            # Map pandas_ta indicators to talib equivalents
-            indicator_map = {
-                'ema': talib.EMA,
-                'sma': talib.SMA,
-                'rsi': talib.RSI,
-                'adx': talib.ADX
-            }
-            
-            if indicator.lower() not in indicator_map:
-                raise ValueError(f'Indicator "{indicator}" not supported')
-            
-            talib_func = indicator_map[indicator.lower()]
+            # Map indicators to ta library equivalents
             length = kwargs.get('length', 14)
             
-            # Get the appropriate price data based on indicator
-            if indicator.lower() == 'adx':
-                high = self.dataset['High'].values if 'High' in self.dataset.columns else self.dataset['high'].values
-                low = self.dataset['Low'].values if 'Low' in self.dataset.columns else self.dataset['low'].values
-                close = self.dataset['Close'].values if 'Close' in self.dataset.columns else self.dataset['close'].values
-                result = talib_func(high, low, close, timeperiod=length)
-            else:
-                close = self.dataset['Close'].values if 'Close' in self.dataset.columns else self.dataset['close'].values
-                result = talib_func(close, timeperiod=length)
+            # Get the appropriate price data
+            close = self.dataset['Close'] if 'Close' in self.dataset.columns else self.dataset['close']
+            high = self.dataset['High'] if 'High' in self.dataset.columns else self.dataset['high']
+            low = self.dataset['Low'] if 'Low' in self.dataset.columns else self.dataset['low']
             
-            # Convert to pandas Series and add to dataset
-            result_series = pd.Series(result, index=self.dataset.index)
-            result_series.name = f'{indicator.upper()}_{length}'
-            self.dataset[result_series.name] = result_series
-            return result_series
+            # Calculate indicators using ta library
+            if indicator.lower() == 'ema':
+                result = ta.trend.EMAIndicator(close=close, window=length).ema_indicator()
+            elif indicator.lower() == 'sma':
+                result = ta.trend.SMAIndicator(close=close, window=length).sma_indicator()
+            elif indicator.lower() == 'rsi':
+                result = ta.momentum.RSIIndicator(close=close, window=length).rsi()
+            elif indicator.lower() == 'adx':
+                result = ta.trend.ADXIndicator(high=high, low=low, close=close, window=length).adx()
+            else:
+                raise ValueError(f'Indicator "{indicator}" not supported')
+            
+            # Add to dataset
+            column_name = f'{indicator.upper()}_{length}'
+            self.dataset[column_name] = result
+            return result
             
         except Exception as e:
             raise RuntimeError(f'Indicator "{indicator}" error with exception: {e}')
