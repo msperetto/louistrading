@@ -2,7 +2,7 @@
 # to be run every hour in a loop
 # as a separate process from the trading bot
 import time
-from config.config import ACCOUNT_ID, ACCOUND_ID_DELIST, BASE_LOCAL_URL
+from config.config import ACCOUNT_ID, ACCOUNT_ID_DELIST, BASE_LOCAL_URL
 from common.dao import database_operations as db
 from common.domain.account_balance import AccountBalance
 from common.dao.account_balance_dao import get_account_balance, update_account_balance, insert_account_balance
