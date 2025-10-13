@@ -50,8 +50,5 @@ class UpdateAccountBalances:
         balances = []
         for exchange_session in self.exchange_sessions:
             account_balance = float(self.binance.get_account_info(exchange_session.e_id, exchange_session.e_sk)["availableBalance"])
-            update_account_balance(exchange_session.account_id, account_balance, self.margin_ratio)
-            #append a dictionary with operation type and balance:
             balances.append({"account_id": exchange_session.account_id, "operation_type": exchange_session.account_operation_type, "balance": account_balance})
         return balances
-            
