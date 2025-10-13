@@ -1,17 +1,14 @@
 # Python runtime as a parent image
-FROM python:3.11
+FROM python:3.11-slim
 
 # Set the working directory in the container
 WORKDIR /noshirt
 
 # Install system dependencies and security updates
 RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y build-essential gcc g++ libpq-dev \
+    python3-dev libxml2-dev libxslt1-dev libssl-dev gfortran && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
 COPY requirements.txt /noshirt/
