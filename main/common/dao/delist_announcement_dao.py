@@ -44,9 +44,9 @@ def insert_delist_announcement(announcement_date: str, coin: str) -> DelistAnnou
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO delist_announcement (announcement_date) 
+                INSERT INTO delist_announcement (announcement_date, coin) 
                 VALUES (%s, %s) 
-                RETURNING id, announcement_date;
+                RETURNING id, announcement_date, coin;
                 """, (announcement_date, coin,))
             row = cur.fetchone()
             return DelistAnnouncement(row['id'], row['announcement_date'], row['coin'])
