@@ -25,6 +25,7 @@ class Delist():
     def __init__(self, strategy, exchange_session):
         self.strategy = strategy # We'll have only one strategy for delist
         self.exchange_session = exchange_session
+        self.margin_ratio = 2  # Assuming a margin ratio of 2 for simplicity
         self.available_balance = self._update_available_balance()
         self.setup = None # It's a 
 
@@ -184,7 +185,7 @@ class Delist():
 
     def _update_available_balance(self):
         account_balance = float(Binance().get_account_info(self.exchange_session.e_id, self.exchange_session.e_sk)["availableBalance"])
-        account_balance_dao.update_account_balance(ACCOUNT_ID_DELIST, account_balance)
+        account_balance_dao.update_account_balance(ACCOUNT_ID_DELIST, account_balance, self.margin_ratio)
         return account_balance
 
     
