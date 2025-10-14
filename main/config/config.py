@@ -9,7 +9,7 @@ DEV_ENV_CON = "host=db dbname=noshirt user=postgres password=postgres"
 MARLIN_DB_CON = "host=16.171.16.170 port=5431 dbname=noshirt user=postgres password=postgres"
 
 # Defining environment
-NEGOCIATION_ENV =  Environment_Type.PROD
+NEGOCIATION_ENV =  Environment_Type.TEST
 
 # Test mode for delist announcements (when NEGOCIATION_ENV is TEST)
 USE_TEST_ANNOUNCEMENTS = True  # Set to False to use real Binance data even in TEST mode
