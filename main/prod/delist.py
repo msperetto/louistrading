@@ -394,8 +394,7 @@ class Delist():
         # adding strategy indicators to trend dataset
         trend_dataset = Dataset(trend_data.candle_df, strategy)
 
-        trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset(
-            "trend")
+        trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
 
         #logging trend dataset for debugging:
         logger.debug(f"Trend dataset for {pair} after adding indicators:\n{trend_dataset.dataset}")
