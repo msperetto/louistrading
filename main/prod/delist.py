@@ -266,7 +266,6 @@ class Delist():
                     logger.info("="*80)
                     logger.info(f"Pair: {pair}")
                     logger.info(f"Coin: {coin}")
-                    logger.info(f"Strategy: {self.strategy.name}")
                     logger.info(f"Side: {position_details.get('side', 'N/A')}")
                     logger.info(f"Order Type: {position_details.get('order_type', 'N/A')}")
                     logger.info(f"Quantity: {position_details.get('quantity', 'N/A')}")
