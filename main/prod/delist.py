@@ -257,8 +257,7 @@ class Delist():
                     # Get simulated position details from orderbook
                     position_details = binance.simulate_position_details(
                         pair, 
-                        quantity, 
-                        self.strategy.side
+                        quantity 
                     )
                     
                     # Log detailed information about what would be traded

@@ -192,7 +192,7 @@ class Binance():
         
         return orderbook
     
-    def simulate_position_details(self, symbol, quantity, side):
+    def simulate_position_details(self, symbol, quantity, side = "SELL"):
         """
         Simulate opening a position by fetching current orderbook data.
         Does not execute any trade - only returns the details of what would happen.
