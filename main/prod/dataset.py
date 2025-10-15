@@ -13,6 +13,7 @@ class Dataset():
         try:
             # Map indicators to ta library equivalents
             length = kwargs.get('length', 14)
+            prefix = kwargs.get('prefix', None)
             
             # Get the appropriate price data
             close = self.dataset['Close'] if 'Close' in self.dataset.columns else self.dataset['close']
@@ -31,8 +32,11 @@ class Dataset():
             else:
                 raise ValueError(f'Indicator "{indicator}" not supported')
             
-            # Add to dataset
-            column_name = f'{indicator.upper()}_{length}'
+            # Add to dataset with correct prefix if provided
+            if prefix:
+                column_name = f'{prefix}_{indicator.upper()}_{length}'
+            else:
+                column_name = f'{indicator.upper()}_{length}'
             self.dataset[column_name] = result
             return result
             
@@ -40,12 +44,13 @@ class Dataset():
             raise RuntimeError(f'Indicator "{indicator}" error with exception: {e}')
 
     def add_indicator_to_manager(self, indicator):
-        #indicator has to be a dictionary like: {"kind": "rsi", "length": 22}
+        # indicator has to be a dictionary like: {"kind": "rsi", "length": 22, "prefix": "TREND"}
         self.indicator_management.append(indicator)
 
     def apply_indicators_to_df(self):
         for indicator in self.indicator_management:
-            self.calc_indicator(indicator['kind'], length=indicator['length'])
+            # Pass prefix if present
+            self.calc_indicator(indicator['kind'], length=indicator['length'], prefix=indicator.get('prefix'))
 
     def join_indicator_to_dataset(self, indicator):
         return self.dataset.join(indicator)
