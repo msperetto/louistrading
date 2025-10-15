@@ -225,20 +225,17 @@ class Delist():
         return len(opened_trades) > 0
 
     def handle_new_trades(self, delist_coins):
-        self.pairs_precision = get_pairs_precision(delist_coins)
-        self.pairs_price_precision = get_pairs_price_precision(delist_coins)
-        self.setup.order_value = self._define_open_order_value(delist_coins)
+        # Build valid pairs (e.g., 'FORTHUSDT') for all coins that are in futures
+        valid_pairs = [f"{coin}{BASE_STABLE_COIN}" for coin in delist_coins]
 
-        # log pair precisions for debugging
-        logger.debug(f"Pairs precision: {self.pairs_precision}")
+        self.pairs_precision = get_pairs_precision(valid_pairs)
+        self.pairs_price_precision = get_pairs_price_precision(valid_pairs)
+        self.setup.order_value = self._define_open_order_value(valid_pairs)
 
-        logger.debug(f"Pairs price precision: {self.pairs_price_precision}")
-        
-        
         binance = Binance()
-        
-        for coin in delist_coins:
-            pair = f"{coin}{BASE_STABLE_COIN}"
+
+        for pair in valid_pairs:
+            coin = pair.replace(BASE_STABLE_COIN, '')
             final_dataset = self.create_combined_dataset(pair, self.strategy)
             manager = StrategyManager(
                     pair,
@@ -253,12 +250,9 @@ class Delist():
             try:
                 # In TEST mode, simulate the position instead of opening it
                 if NEGOCIATION_ENV == Environment_Type.TEST:
-                    logger.info(f"TEST MODE: Simulating position opening for pair {pair} with strategy {self.strategy.name}")
                     # Calculate quantity based on order value and current price
                     current_price = float(binance.get_symbol_price(pair))
-                    logger.info(f"Current price for {pair}: {current_price}")
                     quantity = round(self.setup.order_value / current_price, self.pairs_precision[pair])
-                    logger.info(f"Calculated quantity for {pair}: {quantity}")
                     
                     # Get simulated position details from orderbook
                     position_details = binance.simulate_position_details(
@@ -415,4 +409,3 @@ class Delist():
         order_value = (self.available_balance * BALANCE_SAFE_PERCENTAGE) / len(coins)
         logger.info(f"Available balance: {self.available_balance}, Order value per coin: {order_value}")
         return order_value
-        
