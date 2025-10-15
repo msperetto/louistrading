@@ -228,6 +228,12 @@ class Delist():
         self.pairs_precision = get_pairs_precision(delist_coins)
         self.pairs_price_precision = get_pairs_price_precision(delist_coins)
         self.setup.order_value = self._define_open_order_value(delist_coins)
+
+        # log pair precisions for debugging
+        logger.debug(f"Pairs precision: {self.pairs_precision}")
+
+        logger.debug(f"Pairs price precision: {self.pairs_price_precision}")
+        
         
         binance = Binance()
         
@@ -247,9 +253,12 @@ class Delist():
             try:
                 # In TEST mode, simulate the position instead of opening it
                 if NEGOCIATION_ENV == Environment_Type.TEST:
+                    logger.info(f"TEST MODE: Simulating position opening for pair {pair} with strategy {self.strategy.name}")
                     # Calculate quantity based on order value and current price
                     current_price = float(binance.get_symbol_price(pair))
+                    logger.info(f"Current price for {pair}: {current_price}")
                     quantity = round(self.setup.order_value / current_price, self.pairs_precision[pair])
+                    logger.info(f"Calculated quantity for {pair}: {quantity}")
                     
                     # Get simulated position details from orderbook
                     position_details = binance.simulate_position_details(
@@ -374,6 +383,9 @@ class Delist():
         intraday_dataset = Dataset(intraday_data.candle_df, strategy)
         intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
+        # logging intraday dataset for debugging:
+        logger.debug(f"Intraday dataset for {pair}:\n{intraday_dataset.dataset}")
+
         # getting trend candle dataset from binance
         trend_data = CandleData(
             pair, strategy.trend_interval, start_date, "trend")
@@ -381,8 +393,15 @@ class Delist():
 
         # adding strategy indicators to trend dataset
         trend_dataset = Dataset(trend_data.candle_df, strategy)
+
         trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset(
             "trend")
+
+        #logging trend dataset for debugging:
+        logger.debug(f"Trend dataset for {pair} after adding indicators:\n{trend_dataset.dataset}")
+
+        # logging trend indicators list for debugging:
+        logger.debug(f"Trend indicators list for {pair}: {trend_indicators_list}")
 
         #merging intraday and trend datasets in one final dataset
         return intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
