@@ -92,6 +92,10 @@ class Delist():
                     
                     if new_delist_coins:
                         return new_delist_coins
+                
+                else:
+                    logger.info(f"Test announcement does not contain delist message, skipping: {title}")
+                    mark_announcement_processed(test_ann.id)
             
             return None
             
