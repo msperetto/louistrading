@@ -379,9 +379,6 @@ class Delist():
         intraday_dataset = Dataset(intraday_data.candle_df, strategy)
         intraday_dataset.add_indicators_to_candle_dataset("intraday")
 
-        # logging intraday dataset for debugging:
-        logger.debug(f"Intraday dataset for {pair}:\n{intraday_dataset.dataset}")
-
         # getting trend candle dataset from binance
         trend_data = CandleData(
             pair, strategy.trend_interval, start_date, "trend")
@@ -391,12 +388,6 @@ class Delist():
         trend_dataset = Dataset(trend_data.candle_df, strategy)
 
         trend_indicators_list = trend_dataset.add_indicators_to_candle_dataset("trend")
-
-        #logging trend dataset for debugging:
-        logger.debug(f"Trend dataset for {pair} after adding indicators:\n{trend_dataset.dataset}")
-
-        # logging trend indicators list for debugging:
-        logger.debug(f"Trend indicators list for {pair}: {trend_indicators_list}")
 
         #merging intraday and trend datasets in one final dataset
         return intraday_dataset.merge_dataframes(trend_dataset.dataset, *trend_indicators_list)
