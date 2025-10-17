@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 from threading import Thread, Event
 # from prod.tradingBot import TradingBot
 from prod.app import Main
@@ -50,7 +51,7 @@ class TestAnnouncementRequest(BaseModel):
     title: str
     announcement_date: str  # Format: YYYY-MM-DD
     coins: list[str]
-    notes: str = None
+    notes: Optional[str] = None
 
 bot_ready = Event()
 app = Main()

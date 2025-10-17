@@ -1,0 +1,68 @@
+name: Delist Integration Tests
+
+on:
+  push:
+    branches: [ main, peretto/main/delist ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests psycopg
+    
+    - name: Create secrets file
+      run: |
+        mkdir -p ~/.secrets/marlin
+        echo "test_secret_key" > ~/.secrets/marlin/decrypt_secret_trading.txt
+        echo "test_secret_key" > ~/.secrets/marlin/decrypt_secret_delist.txt
+    
+    - name: Set environment variables
+      run: |
+        echo "ENVIRONMENT=TEST" >> $GITHUB_ENV
+        echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
+    
+    - name: Start Docker services
+      run: |
+        docker-compose up -d db
+        sleep 10  # Wait for DB to be ready
+        docker-compose up -d api delist telegram update_account_balances
+        sleep 15  # Wait for services to initialize
+    
+    - name: Check services status
+      run: |
+        docker-compose ps
+        docker-compose logs db
+        docker-compose logs delist
+    
+    - name: Run integration tests
+      run: |
+        python main/tests/integration/delist_integration_test.py \
+          --csv main/tests/resources/delist_test_cases.csv
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          main/tests/integration/*.log
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        docker-compose down -v
