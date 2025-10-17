@@ -13,6 +13,7 @@ from common.dao.trade_dao import get_open_trade_by_pair
 from common.domain.trade import Trade
 from datetime import datetime
 from config.config import BASE_LOCAL_URL
+from pathlib import Path
 
 if os.getenv('ENVIRONMENT') != Environment_Place.AWS:
     from dotenv import load_dotenv

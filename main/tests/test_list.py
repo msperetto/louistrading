@@ -3,7 +3,6 @@
 
 import unittest
 from prod.binance import Binance
-from common.delist import Delist
 
 class TestDelist(unittest.TestCase):
     def test_get_binance_announcements_returns_list(self):
