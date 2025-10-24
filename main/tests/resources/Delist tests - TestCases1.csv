@@ -1,0 +1,116 @@
+TEST CASE,COINS,COINS IN FUTURES,BINANCE BALANCE,REAL TRADE,Expected Result,TEST OK,API POST CALL
+"Text start with ""Binance Will Delist"";
+3 coins;
+1 coin in Futures;","EPX, FORTH, KEY",FORTH,$0.00,No,Open fake position only for FORTH,Yes,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist EPX, FORTH, KEY Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""EPX"", ""FORTH"", ""KEY""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 coins in Futures;","ACA, BTC, ETH, AMP","BTC, ETH",$0.00,No,Open fake position for BTC and ETH,Yes,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist ACA, BTC, ETH, AMP Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""ACA"", ""BTC"", ""ETH"", ""AMP""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 non existing coins;
+0 coin in Futures;","FKCOINX, LOUISCOIN, ALCX, ATM",,$0.00,No,Run normally without opening position,Yes,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist FKCOINX, LOUISCOIN, ALCX, ATM Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""FKCOINX"", ""LOUISCOIN"", ""ALCX"", ""ATM""]
+  }'"
+"""Text start with ""Binance Will NOT Delist"";
+3 coins;
+2 coins in Futures;""","BLESS, YB, ARDR","BLESS, YB",$0.00,No,Run normally without opening position,Yes,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will NOT Delist BLESS, YB, ARDR Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""BLESS"", ""YB"", ""ARDR""]
+  }'"
+"""Text start with ""Binance Will Delist"";
+3 coins;
+2 coins in Futures;""","BLESS, YB, ARDR","BLESS, YB",$0.00,No,Open fake position for BLESS and YB,Yes,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist BLESS, YB, ARDR Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""BLESS"", ""YB"", ""ARDR""]
+  }'"
+"""Text start with ""Binance will delist"";
+3 coins;
+2 coins in Futures;""","GNO, BAS, CLO","BAS, CLO",$0.00,No,,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance will delist GNO, BAS, CLO Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""GNO"", ""BAS"", ""CLO""]
+  }'"
+"Text start with ""Binance Will Delist"";
+3 coins;
+1 coin in Futures;","EPX, FORTH, KEY",FORTH,$100.00,No,Open fake position only for FORTH,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist EPX, FORTH, KEY Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""EPX"", ""FORTH"", ""KEY""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 coins in Futures;","ACA, BTC, ETH, AMP","BTC, ETH",$100.00,No,Open fake position for BTC and ETH,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist ACA, BTC, ETH, AMP Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""ACA"", ""BTC"", ""ETH"", ""AMP""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 non existing coins;
+0 coin in Futures;","FKCOINX, LOUISCOIN, ALCX, ATM",,$100.00,No,Run normally without opening position,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist FKCOINX, LOUISCOIN, ALCX, ATM Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""FKCOINX"", ""LOUISCOIN"", ""ALCX"", ""ATM""]
+  }'"
+"""Text start with ""Binance Will NOT Delist"";
+3 coins;
+2 coins in Futures;""","BLESS, YB, ARDR","BLESS, YB",$100.00,No,Run normally without opening position,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will NOT Delist BLESS, YB, ARDR Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""BLESS"", ""YB"", ""ARDR""]
+  }'"
+"""Text start with ""Binance will delist"";
+3 coins;
+2 coins in Futures;""","GNO, BAS, CLO","BAS, CLO",$100.00,No,,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance will delist GNO, BAS, CLO Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""GNO"", ""BAS"", ""CLO""]
+  }'"
+"Text start with ""Binance Will Delist"";
+3 coins;
+1 coin in Futures;","EPX, FORTH, KEY",FORTH,$100.00,Yes,Open fake position only for FORTH,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist EPX, FORTH, KEY Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""EPX"", ""FORTH"", ""KEY""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 coins in Futures;","ACA, BTC, ETH, AMP","BTC, ETH",$100.00,Yes,Open fake position for BTC and ETH,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist ACA, BTC, ETH, AMP Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""ACA"", ""BTC"", ""ETH"", ""AMP""]
+  }'"
+"Text start with ""Binance Will Delist"";
+4 coins;
+2 non existing coins;
+0 coin in Futures;","FKCOINX, LOUISCOIN, ALCX, ATM",,$100.00,Yes,Run normally without opening position,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will Delist FKCOINX, LOUISCOIN, ALCX, ATM Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""FKCOINX"", ""LOUISCOIN"", ""ALCX"", ""ATM""]
+  }'"
+"""Text start with ""Binance Will NOT Delist"";
+3 coins;
+2 coins in Futures;""","BLESS, YB, ARDR","BLESS, YB",$100.00,Yes,Run normally without opening position,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance Will NOT Delist BLESS, YB, ARDR Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""BLESS"", ""YB"", ""ARDR""]
+  }'"
+"""Text start with ""Binance will delist"";
+3 coins;
+2 coins in Futures;""","GNO, BAS, CLO","BAS, CLO",$100.00,Yes,,,"curl -X POST http://16.171.16.170:8000/test-announcements -H ""Content-Type: application/json"" -d '{
+    ""title"": ""Binance will delist GNO, BAS, CLO Trading Pairs on 2025-12-31"",
+    ""announcement_date"": ""2025-12-31"",
+    ""coins"": [""GNO"", ""BAS"", ""CLO""]
+  }'"

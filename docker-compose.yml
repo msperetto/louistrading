@@ -20,6 +20,8 @@ services:
     command: python main/prod/app.py
     ports:
       - "8080:80"
+    secrets:
+      - decrypt_secret_trading
     depends_on:
       - db
 
@@ -40,10 +42,49 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db
     secrets:
-      - decrypt_secret
+      - decrypt_secret_trading
     command: uvicorn main.prod.api:api --host=0.0.0.0
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+
+  delist:
+    build: .
+    container_name: noshirt_delist
+    volumes:
+      - .:/noshirt
+    restart: always
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/prod/app_delist.py
+    secrets:
+      - decrypt_secret_delist
+    depends_on:
+      - db
+
+  update_account_balances:
+    build: .
+    container_name: noshirt_update_account_balances
+    volumes:
+      - .:/noshirt
+    restart: always
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+    command: python main/prod/app_update_account_balances.py
+    secrets:
+      - decrypt_secret_trading
+      - decrypt_secret_delist
     depends_on:
       - db
 
@@ -112,6 +153,28 @@ services:
     depends_on:
       - db
 
+  # Integration test runner service
+  integration_test:
+    build: .
+    container_name: noshirt_integration_test
+    volumes:
+      - .:/noshirt
+    environment:
+      - PYTHONPATH=/noshirt/main
+      - POSTGRES_DB=noshirt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - API_BASE_URL=http://api:8000
+      - ENVIRONMENT=TEST
+    command: python main/tests/integration/delist_integration_test.py
+    depends_on:
+      - db
+      - api
+      - delist
+    profiles:
+      - test  # Only runs when explicitly called
+
   db:
     image: postgres
     container_name: noshirt-postgres
@@ -128,7 +191,10 @@ services:
     # entrypoint: ["bin/bash", "/resources/init-db.sh"]
 
 secrets:
-  decrypt_secret:
-    file: ./decrypt_secret.txt
+  decrypt_secret_trading:
+    file: ~/.secrets/marlin/decrypt_secret_trading.txt
+  decrypt_secret_delist:
+    file: ~/.secrets/marlin/decrypt_secret_delist.txt
+
 volumes:
   noshirt_postgres_data:

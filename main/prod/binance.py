@@ -22,6 +22,11 @@ class Binance():
 
     BASE_ENDPOINT = 'https://fapi.binance.com'
     WS_ENDPOINT = 'wss://fstream.binance.com/ws/'
+    BINANCE_ANNOUNCEMENTS_URL = 'https://www.binance.com/bapi/composite/v1/public/cms/article/catalog/list/query'
+    # Backup URL if the first one stops working. We need to add param type = 1 to that URL
+    BINANCE_ANNOUNCEMENTS_URL_2 = 'https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query'
+    DELIST_CATALOG_ID = 161
+    LIST_CATALOG_ID = 48
     TICKER_PRICE_ENDPOINT = '/fapi/v1/ticker/price'
     EXCHANGEINFO_ENDPOINT = '/fapi/v1/exchangeInfo'
     SERVERTIME_ENDPOINT = '/fapi/v1/time'
@@ -33,6 +38,16 @@ class Binance():
     ACCOUNT_ENDPOINT = '/fapi/v2/account'
     ALL_OPEN_ORDERS_ENDPOINT = '/fapi/v1/allOpenOrders'
     USER_TRADES_ENDPOINT = '/fapi/v1/userTrades'
+
+    def __init__(self):
+        self._headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/58.0.3029.110 Safari/537.3",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive"
+        }
 
     def get_servertime(self):
         request_path = self.SERVERTIME_ENDPOINT
@@ -86,7 +101,7 @@ class Binance():
                 return requests.post(self.BASE_ENDPOINT + path, params=params,
                                     headers={"X-MBX-APIKEY": api_id}).json()
             except Exception as e:
-                binance_Logger.error(f'Signed request error: {e}')
+                binance_logger.error(f'Signed request error: {e}')
 
 
     def get_all_symbols(self):
@@ -176,6 +191,62 @@ class Binance():
             logger.error(f'Error getting orderbook: {e}')
         
         return orderbook
+    
+    def simulate_position_details(self, symbol, quantity, side = "SELL"):
+        """
+        Simulate opening a position by fetching current orderbook data.
+        Does not execute any trade - only returns the details of what would happen.
+        
+        Args:
+            symbol (str): The trading pair symbol.
+            quantity (float): The quantity of the asset to trade.
+            side (str): The side of the order, either "BUY" or "SELL".
+        
+        Returns:
+            dict: A dictionary with simulated position details including price, total value, etc.
+        """
+        try:
+            orderbook = self.get_orderbook(symbol, 5)
+            
+            if side.upper() == "BUY":
+                # For buying, we look at asks (sell orders)
+                best_price = float(orderbook['asks'][0][0]) if orderbook.get('asks') else None
+                order_type = "Market Buy"
+            else:
+                # For selling, we look at bids (buy orders)
+                best_price = float(orderbook['bids'][0][0]) if orderbook.get('bids') else None
+                order_type = "Market Sell"
+            
+            if not best_price:
+                return {
+                    "error": f"Could not fetch orderbook for {symbol}",
+                    "symbol": symbol,
+                    "quantity": quantity,
+                    "side": side
+                }
+            
+            total_value = best_price * quantity
+            
+            return {
+                "symbol": symbol,
+                "side": side.upper(),
+                "order_type": order_type,
+                "quantity": quantity,
+                "estimated_price": best_price,
+                "estimated_total_value": total_value,
+                "orderbook_snapshot": {
+                    "top_5_bids": orderbook.get('bids', [])[:5],
+                    "top_5_asks": orderbook.get('asks', [])[:5]
+                }
+            }
+        except Exception as e:
+            logger.error(f'Error simulating position for {symbol}: {e}')
+            return {
+                "error": str(e),
+                "symbol": symbol,
+                "quantity": quantity,
+                "side": side
+            }
 
     def get_extended_kline(self, pair: str, interval: str, startTime: str, endTime = round(time.time() * 1000), period_type: str = "intraday"):
         # Binance only allow 1500 max candles per request, so for longer periods of time, its necessary
@@ -393,3 +464,72 @@ class Binance():
             alert_dao.insert_alert(symbol, Alert_Level.WARNING, True, f"Error deleting all open orders: {response}")
         else:
             return response
+
+    def get_delist_announcements(self):
+        """
+        Fetch and parse Binance delisting announcements.
+        :return: A list new delisting announcements.
+        """
+        announcements = self._fetch_binance_announcements(self.DELIST_CATALOG_ID)
+        if announcements is None:
+            announcements = self._fetch_binance_announcements_backup(self.DELIST_CATALOG_ID)
+        
+        return announcements            
+
+    def get_list_announcements(self):
+        """
+        Fetch and parse Binance listing announcements.
+        :return: A list of new listing announcements.
+        """
+        announcements = self._fetch_binance_announcements(self.LIST_CATALOG_ID)
+        if announcements is None:
+            announcements = self._fetch_binance_announcements_backup(self.LIST_CATALOG_ID)
+        
+        return announcements
+        
+    def _fetch_binance_announcements(self, catalog_id):
+        """
+        Fetch the latest delist announcements from Binance and parse them.
+        :return: A list of dictionaries with all 1st page listing announcements.
+            (fields: id, code, title)
+        """
+        params = {
+            "pageNo": 1,
+            "pageSize": 2,
+            "catalogId": catalog_id
+        }
+        try:
+            response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL,
+                                    params=params,
+                                    headers=self._headers,
+                                    timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("data", {}).get("articles", [])
+        except Exception as e:
+            logger.warning(f"Primary fetch failed: {e}")
+            return None
+    
+    def _fetch_binance_announcements_backup(self, catalog_id):
+        """
+        Fetch the latest delist announcements from Binance using the backup URL and parse them.
+        :return: A list of dictionaries with all 1st page listing announcements.
+            (fields: id, code, title)
+        """
+        params = {
+            "type": 1,
+            "pageNo": 1,
+            "pageSize": 2,
+            "catalogId": catalog_id
+        }
+        try:
+            response = requests.get(self.BINANCE_ANNOUNCEMENTS_URL_2,
+                                    params=params,
+                                    headers=self._headers,
+                                    timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("data", {}).get("catalogs", {})[0].get("articles", [])
+        except Exception as e:
+            logger.error(f"Backup fetch failed: {e}")
+            return None

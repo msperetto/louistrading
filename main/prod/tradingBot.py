@@ -14,7 +14,6 @@ from common.strategy import *
 from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
 from prod.login import Login
-import pandas as pd
 from tests.negociation_main_tests import TestNegociationMain
 from common.dao import alert_dao as alert_db
 from prod.binance import Binance
@@ -22,7 +21,7 @@ import os
 import logging
 import time
 from config.config import NEGOCIATION_ENV, ACCOUNT_ID
-from common.enums import Environment_Type, Alert_Level, Operation_Type
+from common.enums import Environment_Type, Alert_Level, Operation_Type, Strategy_Operation_Type
 from prod import logger
 from common.util import get_pairs_precision, get_pairs_price_precision
 from prod import notify
@@ -224,7 +223,8 @@ class TradingBot:
         # Handle opened trades. Check if we is ready to sell.
         logger.debug(f"handle_opened_trades - begin")
 
-        opened_trades = trade_dao.get_open_trade_pairs()
+        # get opened trades by the strategy operation type:
+        opened_trades = trade_dao.get_open_trades_by_operation_type(Strategy_Operation_Type.TRADING.value)
 
         # TODO: What if an exception occurs in a specific trade?
         # We might want to continue processing the for loop and try to close the next trade. 

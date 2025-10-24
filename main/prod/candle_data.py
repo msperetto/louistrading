@@ -1,4 +1,3 @@
-import pandas as pd
 from prod.binance import Binance as binance
 from common.dao import database_operations as db
 

@@ -4,6 +4,7 @@ from binance_ws import BinanceWebSocketListener
 from stopLogic import StopManager
 from prod import stop_thread_logger
 from prod.login import Login
+from common.enums import Account_Operation_Type
 
 def process_filled_stops(stop_filled_queue, stop_manager: StopManager):
     while True:
@@ -15,7 +16,7 @@ def process_filled_stops(stop_filled_queue, stop_manager: StopManager):
         stop_filled_queue.task_done()
 
 def main():
-    exchange_session = Login("binance")
+    exchange_session = Login("binance", Account_Operation_Type.TRADING)
     exchange_session.login_database()
     api_id = self.exchange_session.e_id
     api_key = self.exchange_session.e_sk

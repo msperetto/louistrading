@@ -1,37 +1,63 @@
-import pandas_ta as ta
+import ta
 import pandas as pd
+import numpy as np
 from common.indicators_catalog import indicators_catalog
 
 class Dataset():
     def __init__(self, dataset, strategy):
-        #initializing strategy (group of indicators)
-        #a strategy for pandas_ta is a group of indicators that will be added to the dataset
         self.dataset = dataset
         self.strategy = strategy
-        self.indicator_management = ta.Strategy(
-            name="grouping_indicators",
-            ta=[{}]
-        )
+        self.indicator_management = []
 
     def calc_indicator(self, indicator: str, **kwargs):
         try:
-            return self.dataset.ta(kind=indicator, append=True, **kwargs)
+            # Map indicators to ta library equivalents
+            length = kwargs.get('length', 14)
+            prefix = kwargs.get('prefix', None)
+            
+            # Get the appropriate price data
+            close = self.dataset['Close'] if 'Close' in self.dataset.columns else self.dataset['close']
+            high = self.dataset['High'] if 'High' in self.dataset.columns else self.dataset['high']
+            low = self.dataset['Low'] if 'Low' in self.dataset.columns else self.dataset['low']
+            
+            # Calculate indicators using ta library
+            if indicator.lower() == 'ema':
+                result = ta.trend.EMAIndicator(close=close, window=length).ema_indicator()
+            elif indicator.lower() == 'sma':
+                result = ta.trend.SMAIndicator(close=close, window=length).sma_indicator()
+            elif indicator.lower() == 'rsi':
+                result = ta.momentum.RSIIndicator(close=close, window=length).rsi()
+            elif indicator.lower() == 'adx':
+                result = ta.trend.ADXIndicator(high=high, low=low, close=close, window=length).adx()
+            else:
+                raise ValueError(f'Indicator "{indicator}" not supported')
+            
+            # Add to dataset with correct prefix if provided
+            if prefix:
+                column_name = f'{prefix}_{indicator.upper()}_{length}'
+            else:
+                column_name = f'{indicator.upper()}_{length}'
+            self.dataset[column_name] = result
+            return result
+            
         except Exception as e:
             raise RuntimeError(f'Indicator "{indicator}" error with exception: {e}')
 
     def add_indicator_to_manager(self, indicator):
-        #indicator has to be a dictionary like: {"kind": "rsi", "length": 22}
-        self.indicator_management.ta.append(indicator)
+        # indicator has to be a dictionary like: {"kind": "rsi", "length": 22, "prefix": "TREND"}
+        self.indicator_management.append(indicator)
 
     def apply_indicators_to_df(self):
-        self.dataset.ta.strategy(self.indicator_management)
+        for indicator in self.indicator_management:
+            # Pass prefix if present
+            self.calc_indicator(indicator['kind'], length=indicator['length'], prefix=indicator.get('prefix'))
 
     def join_indicator_to_dataset(self, indicator):
         return self.dataset.join(indicator)
 
     # add the indicators columns to the candles dataset
     def add_indicators_to_candle_dataset(self, period_type):
-        self.indicator_management.ta.remove({})
+        self.indicator_management = []
         indicators_list = []
 
         for attr, config in indicators_catalog.items():

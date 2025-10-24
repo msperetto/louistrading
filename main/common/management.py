@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import json
-import pandas as pd
 from common.strategy import *
 
 # number 5 is only to increase a bit the size of biggest indicator interval

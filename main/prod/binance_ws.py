@@ -2,6 +2,7 @@ import asyncio
 import json
 import websockets
 from queue import Queue
+import requests
 from threading import Thread
 from prod import marlin_stop_logger
 
@@ -13,17 +14,17 @@ class BinanceWebSocketListener:
 
     def __init__(self, api_key, stop_filled_queue: Queue):
         self.listen_key = self._get_listen_key(self.api_key)
-        self.ws_url = f"{BINANCE_WS_URL}/{self.listen_key}"
+        self.ws_url = f"{self.BINANCE_WS_URL}/{self.listen_key}"
         self.stop_filled_queue = stop_filled_queue
         self.running = False
 
-    def _get_listen_key(api_key):
+    def _get_listen_key(self, api_key):
         headers = {"X-MBX-APIKEY": api_key}
         resp = requests.post(f"{self.BINANCE_API_URL+self.LISTEN_KEY_ENDPOINT}", headers=headers)
         resp.raise_for_status()
         return resp.json()["listenKey"]
 
-    def keepalive_listen_key(api_key, listen_key, stop_event):
+    def keepalive_listen_key(self, api_key, listen_key, stop_event):
         headers = {"X-MBX-APIKEY": api_key}
         while not stop_event.is_set():
             try:

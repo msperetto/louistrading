@@ -15,8 +15,6 @@ from common.util import get_side
 from prod.dataset import Dataset
 from prod.negotiate import Negotiate
 from backtesting.lib import resample_apply
-import pandas_ta as ta
-from time import sleep
 from common.strategy import *
 from common.indicators_catalog import indicators_catalog
 

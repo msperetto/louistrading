@@ -9,7 +9,7 @@ def insert_report(pair, period, stats, best_indicators_combination, period_label
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO optmization_tests(start_time, end_time, pair, period, return_percent,
+                INSERT INTO optimization_tests(start_time, end_time, pair, period, return_percent,
                                               return_buy_hold, win_rate, sharpe_ratio, max_drawdown, 
                                               best_indicators_combination, filter_buy, trigger_buy, trade_buy,
                                               filter_sell, trigger_sell, trade_sell, total_trades, best_trade,
@@ -54,22 +54,32 @@ def get_active_pairs():
             return result
 
 
-def insert_exchange_config(id, key, exchange: str):
+def insert_exchange_config(id, key, exchange: str, account_operation_type: str, account_id: int = None):
     with psycopg.connect(DEV_ENV_CON) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO exchange_config (id, sk, exchange) VALUES(%s, %s, %s); 
-            """, (id, key, exchange))
+                INSERT INTO exchange_config (id, sk, exchange, account_operation_type, account_id) VALUES(%s, %s, %s, %s, %s); 
+            """, (id, key, exchange, account_operation_type, account_id,))
 
             conn.commit()
 
 
-def get_exchange_config(exchange: str):
+def get_exchange_config(exchange: str, account_operation_type: str, account_id: int = None):
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, sk FROM exchange_config WHERE exchange = %s;
-                """,(exchange,))
+            if account_id:
+                cur.execute("""
+                    SELECT id, sk, account_operation_type, account_id 
+                    FROM exchange_config 
+                    WHERE exchange = %s AND account_operation_type = %s AND account_id = %s;
+                    """,(exchange, account_operation_type, account_id,))
+            else:
+                # Backward compatibility
+                cur.execute("""
+                    SELECT id, sk, account_operation_type, account_id 
+                    FROM exchange_config 
+                    WHERE exchange = %s AND account_operation_type = %s;
+                    """,(exchange, account_operation_type,))
             return cur.fetchone()
 
 def get_bot_execution_control():
@@ -138,10 +148,10 @@ def export_to_csv():
     with psycopg.connect(DEV_ENV_CON, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT * FROM optmization_tests;
+                SELECT * FROM optimization_tests;
                 """)
             keys = ""
-            with open('noshirt_optmization.csv', 'w', newline='') as csvfile:
+            with open('noshirt_optimization.csv', 'w', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, cur.fetchone().keys())
                 writer.writeheader()
                 writer.writerows(cur.fetchall())

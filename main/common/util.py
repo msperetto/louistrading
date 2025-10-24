@@ -2,6 +2,8 @@ from config.config import NEGOCIATION_ENV
 from common.enums import *
 from common.strategyLong import StrategyLong
 from common.strategyShort import StrategyShort
+from common.dao.strategy_dao import get_enabled_strategies_by_type
+from common.domain.strategy import Strategy
 import importlib
 import pkgutil
 import os
@@ -95,3 +97,26 @@ def get_pairs_price_precision(pairs: List) -> Dict:
     except Exception as e:
         logger.error(f"Error retrieving price precision for {pair}: {e}")
         return None
+
+def get_strategies_by_type(operation_type: str, caller_globals):
+    """
+    Gets from DB all enabled strategies classes names for the given operation type and instantiates them.
+    Args:
+        operation_type: The operation type (e.g., Strategy_Operation_Type.TRADING, Strategy_Operation_Type.DELIST)
+        caller_globals: The globals() from the calling module to access strategy classes
+    Returns:
+        list of Strategy objects
+    """
+    strategies: list[Strategy] = get_enabled_strategies_by_type(operation_type)
+    strategy_objects = []
+    for strategy in strategies:
+        try:
+            strategy_class = caller_globals[strategy.name]
+            strategy_instance = strategy_class()
+            strategy_objects.append(strategy_instance)
+            logger.info(f"Strategy {strategy.name} instantiated successfully.")
+        except KeyError as e:
+            logger.error(f"Strategy class '{strategy.name}' not found: {e}")
+        except Exception as e:
+            logger.error(f"Error instantiating strategy '{strategy.name}': {e}")
+    return strategy_objects

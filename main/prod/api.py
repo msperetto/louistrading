@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 from threading import Thread, Event
 # from prod.tradingBot import TradingBot
 from prod.app import Main
@@ -9,21 +11,47 @@ from prod import notify
 from common.dao.database_operations import get_initial_config, get_bot_execution_control, get_active_pairs
 from common.dao.trade_dao import get_open_trade_pairs
 from common.dao.alert_dao import get_active_alerts
+from common.dao.backtest_dao import get_backtests
 from common.dao.account_balance_dao import get_account_balance
+from common.dao.test_delist_announcement_dao import (
+    get_unprocessed_test_announcements, 
+    insert_test_announcement, 
+    get_all_test_announcements,
+    delete_test_announcement,
+    clear_all_test_announcements,
+    mark_announcement_processed
+)
 from common.domain.trade import Trade
 from common.domain.alert import Alert
 from common.domain.account_balance import AccountBalance
+from common.domain.backtest import Backtest
+from common.domain.test_delist_announcement import TestDelistAnnouncement
 from config.config import ACCOUNT_ID
 from time import sleep
 import threading
 import os
+import math
 
 api = FastAPI()
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development; restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Order(BaseModel):
     id: int
     item: str
     quantity: int
+
+class TestAnnouncementRequest(BaseModel):
+    title: str
+    announcement_date: str  # Format: YYYY-MM-DD
+    coins: list[str]
+    notes: Optional[str] = None
 
 bot_ready = Event()
 app = Main()
@@ -149,6 +177,14 @@ async def account_balance():
     }
     return response
 
+@api.get("/backtests")
+async def get_backtest_results():
+    api_logger.debug("Fetching backtest results")
+    backtest_results = get_backtests()
+    api_logger.debug(f"Backtest results fetched: {len(backtest_results)} records found")
+    response = [_sanitize_backtest(backtest) for backtest in backtest_results]
+    return response
+
 @api.get("/orders")
 def get_orders():
     return orders
@@ -160,3 +196,147 @@ def get_balance():
 @api.get("/test") 
 def test():
     return {"status": "OK"}
+
+
+def _sanitize_backtest(backtest):
+    d = {
+        "test_id": backtest.test_id,
+        "start_time": backtest.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "end_time": backtest.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "pair": backtest.pair,
+        "period": backtest.period,
+        "return_percent": backtest.return_percent,
+        "return_buy_hold": backtest.return_buy_hold,
+        "win_rate": backtest.win_rate,
+        "sharpe_ratio": backtest.sharpe_ratio,
+        "max_drawdown": backtest.max_drawdown,
+        "best_indicators_combination": backtest.best_indicators_combination,
+        "filter_buy": backtest.filter_buy,
+        "trigger_buy": backtest.trigger_buy,
+        "trade_buy": backtest.trade_buy,
+        "filter_sell": backtest.filter_sell,
+        "trigger_sell": backtest.trigger_sell,
+        "trade_sell": backtest.trade_sell,
+        "total_trades": backtest.total_trades,
+        "best_trade": backtest.best_trade,
+        "worst_trade": backtest.worst_trade,
+        "average_trade": backtest.average_trade,
+        "profit_factor": backtest.profit_factor,
+        "created_at": backtest.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "label_period": backtest.label_period,
+        "period_trend": backtest.period_trend,
+        "trend_class": backtest.trend_class,
+        "strategy_class": backtest.strategy_class,
+        "side": backtest.side,
+        "score": backtest.score
+    }
+    # Replace non-JSON-compliant floats with None or a string
+    for k, v in d.items():
+        if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+            d[k] = None  # or str(v)
+    return d
+
+# Test Announcement API Endpoints
+
+@api.get("/test-announcements")
+async def get_test_announcements():
+    """Get all test delist announcements"""
+    try:
+        announcements = get_all_test_announcements()
+        return {
+            "status": "success",
+            "data": [
+                {
+                    "id": ann.id,
+                    "title": ann.title,
+                    "announcement_date": ann.announcement_date,
+                    "coins": ann.coins,
+                    "created_at": ann.created_at.isoformat(),
+                    "processed": ann.processed,
+                    "notes": ann.notes
+                } for ann in announcements
+            ]
+        }
+    except Exception as e:
+        api_logger.error(f"Error getting test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.get("/test-announcements/unprocessed")
+async def get_unprocessed_test_announcements_endpoint():
+    """Get unprocessed test delist announcements"""
+    try:
+        announcements = get_unprocessed_test_announcements()
+        return {
+            "status": "success",
+            "data": [
+                {
+                    "id": ann.id,
+                    "title": ann.title,
+                    "announcement_date": ann.announcement_date,
+                    "coins": ann.coins,
+                    "created_at": ann.created_at.isoformat(),
+                    "notes": ann.notes
+                } for ann in announcements
+            ]
+        }
+    except Exception as e:
+        api_logger.error(f"Error getting unprocessed test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.post("/test-announcements")
+async def create_test_announcement(request: TestAnnouncementRequest):
+    """Create a new test delist announcement"""
+    try:
+        announcement_id = insert_test_announcement(
+            title=request.title,
+            announcement_date=request.announcement_date,
+            coins=request.coins,
+            notes=request.notes
+        )
+        return {
+            "status": "success",
+            "message": "Test announcement created successfully",
+            "announcement_id": announcement_id
+        }
+    except Exception as e:
+        api_logger.error(f"Error creating test announcement: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.delete("/test-announcements/{announcement_id}")
+async def delete_test_announcement_endpoint(announcement_id: int):
+    """Delete a test announcement"""
+    try:
+        delete_test_announcement(announcement_id)
+        return {
+            "status": "success",
+            "message": "Test announcement deleted successfully"
+        }
+    except Exception as e:
+        api_logger.error(f"Error deleting test announcement: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.delete("/test-announcements")
+async def clear_all_test_announcements_endpoint():
+    """Clear all test announcements"""
+    try:
+        clear_all_test_announcements()
+        return {
+            "status": "success",
+            "message": "All test announcements cleared successfully"
+        }
+    except Exception as e:
+        api_logger.error(f"Error clearing test announcements: {e}")
+        return {"status": "error", "message": str(e)}
+
+@api.post("/test-announcements/{announcement_id}/mark-processed")
+async def mark_announcement_processed_endpoint(announcement_id: int):
+    """Mark a test announcement as processed"""
+    try:
+        mark_announcement_processed(announcement_id)
+        return {
+            "status": "success",
+            "message": "Test announcement marked as processed"
+        }
+    except Exception as e:
+        api_logger.error(f"Error marking announcement as processed: {e}")
+        return {"status": "error", "message": str(e)}

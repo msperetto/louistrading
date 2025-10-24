@@ -76,3 +76,31 @@ def get_open_trade_by_pair(pair):
                     strategy_id=row["strategy_id"]
                 )
             return None
+
+
+def get_open_trades_by_operation_type(operation_type):
+    """
+    get strategy_id from trade table and get the operation_type from strategy table
+    """
+    with connect(DEV_ENV_CON, row_factory=rows.dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT t.* FROM trade t
+                JOIN strategy s ON t.strategy_id = s.id
+                WHERE t.open = true AND s.operation_type = %s;
+            """, (operation_type,))
+            result_rows = cur.fetchall()
+            return [
+                Trade(
+                    id=row["id"],
+                    open=row["open"],
+                    open_time=row["open_time"],
+                    close_time=row["close_time"],
+                    side=row["side"],
+                    pair=row["pair"],
+                    profit=row["profit"],
+                    spread=row["spread"],
+                    roi=row["roi"],
+                    strategy_id=row["strategy_id"]
+                ) for row in result_rows
+            ]
